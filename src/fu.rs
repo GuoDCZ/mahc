@@ -1,0 +1,17 @@
+pub enum Fu {
+    BasePoints,
+    ClosedRon,
+    Tsumo,
+    Pinfu,
+    Chitoitsu,
+    SimpleOpenTriplet,
+    SimpleClosedTriplet,
+    SimpleOpenQuad,
+    SimpleClosedQuad,
+    NonSimpleOpenTriplet,
+    NonSimpleClosedTriplet,
+    NonSimpleOpenQuad,
+    NonSimpleClosedQuad,
+    OneKindWait,
+    FuPair,
+}
