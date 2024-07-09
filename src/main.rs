@@ -113,18 +113,35 @@ mod test {
         );
     }
     #[test]
-    fn han_4_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "4", "--fu", "60", "--ba", "3"]);
+    fn han_1_fu_30_calc() {
+        let args = Args::parse_from(&["", "--manual", "-n", "1", "--fu", "30", ]);
+        let out = parse_calculator(&args);
+        assert_eq!(
+            out.unwrap(),
+            ("Dealer: 1500 (500)\nnon-dealer: 1000 (300/500)".to_string())
+        );
+    }
+    #[test]
+    fn han_2_fu_80_calc() {
+        let args = Args::parse_from(&["", "--manual", "-n", "2", "--fu", "80", ]);
+        let out = parse_calculator(&args);
+        assert_eq!(
+            out.unwrap(),
+            ("Dealer: 7700 (2600)\nnon-dealer: 5200 (1300/2600)".to_string())
+        );
+    }
+    #[test]
+    fn han_3_mangan_calc() {
+        let args = Args::parse_from(&["", "--manual", "-n", "3", "--fu", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("Dealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
         );
     }
-
     #[test]
-    fn han_3_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "3", "--fu", "70", "--ba", "3"]);
+    fn han_4_mangan_calc() {
+        let args = Args::parse_from(&["", "--manual", "-n", "4", "--fu", "60", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
