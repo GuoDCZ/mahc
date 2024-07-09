@@ -1,3 +1,7 @@
+
+# Riichi Mahjong Calculator Via the Terminal
+
+# ![this.jpg](https://c.tenor.com/xfbt6ap9IYIAAAAC/tenor.gif)
 command options
 ===============
 
@@ -10,10 +14,10 @@ command options
 -p --prev    prevelant wind       (default: East)
 -t --tsumo   tsumo                (default: false)
 -r --riichi  riichi               (default: false)
+-m --manual  calc mode            (default: false)
 -n           han                  (default: 0)
 -fu          fu                   (default: 0)
 -b --ba      honba count          (default: 0)
--m --manual  calc mode            (default: false)
 .
 .
 .
@@ -37,7 +41,16 @@ Notation
 
 #### Examples
 
-##### Normal Mode
+##### Calculator Mode
+```
+~/$ mahc -m -n 4 --fu 30 --ba 3
+> Dealer:    12500 (4200) 
+  non-dealer: 8600 (2300/ 4200)
+```
+
+
+
+##### Normal Mode NOT YET IMPLEMENTED
 ```
 ~/$ mahc 234p3s -c 2pp4mcRk -w 3s -d 3s4p -s E -p E
 > Dealer ron
@@ -59,19 +72,4 @@ Notation
 - 3sou and 4pin dora <br>
 - east seat wind <br>
 - east prevalent wind <br>
-
-##### Calculator Mode
-```
-~/$ mahc --m 4han-30fu --ba 3
-> Dealer:    12500 (4200) 
-  non-dealer: 8600 (2300/ 4200)
-```
-
-
-
-
-
-
-
-
 
