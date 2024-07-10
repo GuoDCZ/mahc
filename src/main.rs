@@ -8,6 +8,10 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct Args {
+    /// Hand tiles
+    #[arg(short, long)]
+    inhand: Option<String>,
+
     /// Called tiles
     #[arg(short, long)]
     called: Option<String>,
@@ -56,19 +60,27 @@ pub struct Args {
 pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
     let han = args.n as u16;
     let fu = args.fu as u16;
-    if han == 0 {
-        return Err(calc::CalculatorErrors::NoHan);
-    }
-    if fu == 0 {
-        return Err(calc::CalculatorErrors::NoFu);
-    }
     let honba = args.ba;
-    let scores = calc::calculate(han, fu, honba).unwrap();
 
-    return Ok(format!(
-        "Dealer: {} ({})\nnon-dealer: {} ({}/{})",
-        scores[0], scores[1], scores[2], scores[3], scores[4],
-    ));
+    let scores = calc::calculate(han, fu, honba);
+    match scores {
+        Ok(o) => Ok(format!(
+            "Dealer: {} ({})\nnon-dealer: {} ({}/{})",
+            o[0], o[1], o[2], o[3], o[4]
+        )),
+        Err(e) => Err(e),
+    }
+}
+pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
+    lib::Hand::new(
+        args.inhand.clone().unwrap(),
+        args.called.clone(),
+        args.win.clone().unwrap(),
+        args.riichi,
+        args.tsumo,
+    );
+    println!("end of parse hand");
+    todo!();
 }
 
 fn main() {
@@ -84,6 +96,7 @@ fn main() {
             }
         }
     }
+    let result = parse_hand(&args);
 }
 
 #[cfg(test)]
@@ -91,11 +104,22 @@ mod test {
     use super::*;
 
     #[test]
+    fn basic_valid_ron() {
+        //dealer yakuhai only
+        let args = Args::parse_from(&[
+            "", "--inhand", "234p3s", "-c", "2pp4mcRk", "-w", "3s", "-s", "E", "-p", "E",
+        ]);
+        let out = parse_calculator(&args);
+        assert_eq!(true, false);
+    }
+
+    #[test]
     fn no_han_for_calc() {
         let args = Args::parse_from(&["", "--manual", "--fu", "30", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(out.unwrap_err(), calc::CalculatorErrors::NoHan);
     }
+
     #[test]
     fn no_fu_for_calc() {
         let args = Args::parse_from(&["", "--manual", "-n", "4", "--ba", "3"]);
@@ -114,7 +138,7 @@ mod test {
     }
     #[test]
     fn han_1_fu_30_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "1", "--fu", "30", ]);
+        let args = Args::parse_from(&["", "--manual", "-n", "1", "--fu", "30"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -123,7 +147,7 @@ mod test {
     }
     #[test]
     fn han_2_fu_80_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "2", "--fu", "80", ]);
+        let args = Args::parse_from(&["", "--manual", "-n", "2", "--fu", "80"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),

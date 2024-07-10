@@ -14,6 +14,12 @@ impl CalculatorErrors {
 }
 
 pub fn calculate(han: u16, fu: u16, honba: u8) -> Result<Vec<u16>, CalculatorErrors> {
+    if han == 0 {
+        return Err(CalculatorErrors::NoHan);
+    }
+    if fu == 0 {
+        return Err(CalculatorErrors::NoFu);
+    }
     let k = mahc::LimitHands::get_limit_hand(han, fu);
     match k {
         Some(limithand) => {
