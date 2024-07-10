@@ -52,7 +52,7 @@ Notation
 
 ##### Normal Mode NOT YET IMPLEMENTED
 ```
-~/$ mahc 234p3s -c 2pp4mcRk -w 3s -d 3s4p -s E -p E
+~/$ mahc 234p3s -c 2pp4mcRdk -w 3s -d 3s4p -s E -p E
 > Dealer ron
   1 Han/ 40 Fu 2000 pts 
 
