@@ -7,7 +7,7 @@ command options
 
 ```
 --help
--c --chi     called tiles         (default: last tile in hand)
+-t --tiles   tiles                (default: none)
 -w --win     winning tile         (default: last tile in hand)
 -d --dora    dora (and ura) tiles (default: none)
 -s --seat    seat wind            (default: East)
