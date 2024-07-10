@@ -13,6 +13,18 @@ impl CalculatorErrors {
     }
 }
 
+pub fn get_hand_score(
+    tiles: Vec<String>,
+    win: String,
+    dora: String,
+    seat: String,
+    prev: String,
+    tsumo: bool,
+    riichi: bool,
+) -> Vec<u16> {
+    todo!()
+}
+
 pub fn calculate(han: u16, fu: u16, honba: u8) -> Result<Vec<u16>, CalculatorErrors> {
     if han == 0 {
         return Err(CalculatorErrors::NoHan);

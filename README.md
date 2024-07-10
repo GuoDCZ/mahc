@@ -40,6 +40,7 @@ Notation
 
 
 #### Examples
+Args { inhand: Some(["234po", "123s", "999R", "444mo", "33s"])
 
 ##### Calculator Mode
 ```
@@ -52,7 +53,7 @@ Notation
 
 ##### Normal Mode NOT YET IMPLEMENTED
 ```
-~/$ mahc 234p3s -c 2pp4mcRdk -w 3s -d 3s4p -s E -p E
+~/$ mahc --tiles 234p 33s 222po EEEw rrrrdo -w 3s -d 3s4p -s E -p E
 > Dealer ron
   1 Han/ 40 Fu 2000 pts 
 
@@ -66,8 +67,8 @@ Notation
 ```
 
 - this hand has:
-- 234pin and 3sou in hand <br>
-- 2pin pon, 4man chi, red kan <br>
+- 234pin, East Trip and 3sou in hand <br>
+- 2pin pon, red open kan <br>
 - 3sou winning tile <br>
 - 3sou and 4pin dora <br>
 - east seat wind <br>
