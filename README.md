@@ -33,9 +33,9 @@ Notation
 <br>
 - sou:  1s, 2s, 3s, 4s, 5s, 6s, 7s, 8s, 9s
 <br>
-- wind: 1z, 2z, 3z, 4z or ESWS (east, south, west, north)
+- wind: ESWS (east, south, west, north)
 <br>
-- drgn: 5z, 6z, 7z or RGW (red, green, white) 
+- drgn: rgw (red, green, white) 
 <br>
 
 
