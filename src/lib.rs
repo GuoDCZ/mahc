@@ -163,12 +163,15 @@ impl Hand {
                 println!("midwait{:?}", 2);
                 totalfu += 2;
             }
-            if self.win_tile().value == "1" || self.win_tile().value == "9" {
+            if !(self.win_tile().value == "1" || self.win_tile().value == "9")
+                && self.groups.last().unwrap().isterminal
+            {
                 println!("single terminal{:?}", 2);
                 totalfu += 2;
             }
         }
         println!("ttal:fu{:?}", totalfu);
+        assert_eq!(true, false);
         //works cuz ints
         return ((totalfu + 9) / 10) * 10;
     }

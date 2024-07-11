@@ -92,6 +92,25 @@ fn main() {
 mod test {
 
     use super::*;
+
+    #[test]
+    fn fu_calc_edge_wait() {
+        let out = lib::Hand::new(
+            vec![
+                "555po".to_string(),
+                "234m".to_string(),
+                "11s".to_string(),
+                "rrrdo".to_string(),
+                "789m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(true), 30);
+    }
+
     #[test]
     fn random_fu() {
         let out = lib::Hand::new(
@@ -110,9 +129,6 @@ mod test {
         assert_eq!(out.calculate_fu(true), 30);
     }
 
-
-
-    use super::*;
     #[test]
     fn fu_cal_middle_wait() {
         let out = lib::Hand::new(
@@ -130,7 +146,6 @@ mod test {
         .unwrap();
         assert_eq!(out.calculate_fu(true), 80);
     }
-
 
     #[test]
     fn fu_cal_kans_seat_wind() {
