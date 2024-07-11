@@ -31,6 +31,7 @@ Notation
 - sou:  1s, 2s, 3s, 4s, 5s, 6s, 7s, 8s, 9s
 - wind: ESWS (east, south, west, north)
 - drgn: rgw (red, green, white) 
+- o: signifies an open set
 
 
 #### Examples
