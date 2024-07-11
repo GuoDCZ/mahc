@@ -94,6 +94,36 @@ mod test {
     use super::*;
 
     #[test]
+    fn fu_calc_simpleopenkan() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "5555mo".to_string(),
+                "11s".to_string(),
+                "8888s".to_string(),
+                "789m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(true).0, 60);
+        assert_eq!(
+            out.calculate_fu(true).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::Tsumo,
+                lib::Fu::NonSimpleOpenTriplet,
+                lib::Fu::SimpleOpenKan,
+                lib::Fu::SimpleClosedKan,
+                lib::Fu::SingleWait,
+            ]
+        );
+    }
+
+
+    #[test]
     fn fu_calc_edge_wait() {
         let out = lib::Hand::new(
             vec![
@@ -108,7 +138,17 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true), 30);
+        assert_eq!(out.calculate_fu(true).0, 30);
+        assert_eq!(
+            out.calculate_fu(true).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::Tsumo,
+                lib::Fu::SimpleOpenTriplet,
+                lib::Fu::NonSimpleOpenTriplet,
+                lib::Fu::SingleWait,
+            ]
+        );
     }
 
     #[test]
@@ -126,7 +166,15 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true), 30);
+        assert_eq!(out.calculate_fu(true).0, 30);
+        assert_eq!(
+            out.calculate_fu(true).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::Tsumo,
+                lib::Fu::NonSimpleOpenTriplet,
+            ]
+        );
     }
 
     #[test]
@@ -144,7 +192,18 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true), 80);
+        assert_eq!(out.calculate_fu(true).0, 80);
+        assert_eq!(
+            out.calculate_fu(true).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::Tsumo,
+                lib::Fu::NonSimpleOpenKan,
+                lib::Fu::NonSimpleClosedKan,
+                lib::Fu::Toitsu,
+                lib::Fu::SingleWait,
+            ]
+        );
     }
 
     #[test]
@@ -162,7 +221,18 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true), 80);
+        assert_eq!(out.calculate_fu(true).0, 80);
+        assert_eq!(
+            out.calculate_fu(true).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::Tsumo,
+                lib::Fu::NonSimpleOpenKan,
+                lib::Fu::NonSimpleClosedKan,
+                lib::Fu::Toitsu,
+                lib::Fu::SingleWait,
+            ]
+        );
     }
 
     #[test]
@@ -180,7 +250,16 @@ mod test {
             "Ew".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(false), 40);
+        assert_eq!(out.calculate_fu(false).0, 40);
+        assert_eq!(
+            out.calculate_fu(false).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::NonSimpleOpenTriplet,
+                lib::Fu::NonSimpleClosedTriplet,
+                lib::Fu::NonSimpleOpenTriplet
+            ]
+        );
     }
 
     #[test]
@@ -194,11 +273,22 @@ mod test {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "ew".to_string(),
-            "ew".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true), 70);
+        assert_eq!(out.calculate_fu(true).0, 70);
+        assert_eq!(
+            out.calculate_fu(true).1,
+            [
+                lib::Fu::BasePoints,
+                lib::Fu::Tsumo,
+                lib::Fu::SimpleClosedTriplet,
+                lib::Fu::SimpleOpenTriplet,
+                lib::Fu::NonSimpleClosedKan,
+                lib::Fu::SingleWait,
+            ]
+        );
     }
 
     #[test]
