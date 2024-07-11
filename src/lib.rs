@@ -171,7 +171,6 @@ impl Hand {
             }
         }
         println!("ttal:fu{:?}", totalfu);
-        assert_eq!(true, false);
         //works cuz ints
         return ((totalfu + 9) / 10) * 10;
     }
