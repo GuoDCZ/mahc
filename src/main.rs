@@ -94,7 +94,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn fu_calc_simpleopenkan() {
+    fn fu_calc_simpleopenkan_simpleclosedkan() {
         let out = lib::Hand::new(
             vec![
                 "rrrdo".to_string(),
@@ -121,7 +121,6 @@ mod test {
             ]
         );
     }
-
 
     #[test]
     fn fu_calc_edge_wait() {
