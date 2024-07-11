@@ -7,8 +7,8 @@ pub enum CalculatorErrors {
 impl CalculatorErrors {
     pub fn to_string(&self) -> String {
         match self {
-            CalculatorErrors::NoHan => "No han provided!\n use -n <number>".to_string(),
-            CalculatorErrors::NoFu => "No fu provided!\n use --fu <number>".to_string(),
+            CalculatorErrors::NoHan => "No han provided!".to_string(),
+            CalculatorErrors::NoFu => "No fu provided!".to_string(),
         }
     }
 }
@@ -25,7 +25,9 @@ pub fn get_hand_score(
     todo!()
 }
 
-pub fn calculate(han: u16, fu: u16, honba: u8) -> Result<Vec<u16>, CalculatorErrors> {
+pub fn calculate(args: &Vec<u16>, honba: u8) -> Result<Vec<u16>, CalculatorErrors> {
+    let han = args[0];
+    let fu = args[1];
     if han == 0 {
         return Err(CalculatorErrors::NoHan);
     }
@@ -35,7 +37,6 @@ pub fn calculate(han: u16, fu: u16, honba: u8) -> Result<Vec<u16>, CalculatorErr
     let k = mahc::LimitHands::get_limit_hand(han, fu);
     match k {
         Some(limithand) => {
-            println!("{:?}", limithand);
             let mut scores = limithand.get_score();
             scores[0] = scores[0] + honba as u16 * 300;
             scores[1] = scores[1] + honba as u16 * 100;

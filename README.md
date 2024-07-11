@@ -7,7 +7,7 @@ command options
 
 ```
 --help
--t --tiles   tiles                (default: none)
+   --tiles   tiles                (default: none)
 -w --win     winning tile         (default: last tile in hand)
 -d --dora    dora (and ura) tiles (default: none)
 -s --seat    seat wind            (default: East)
@@ -15,8 +15,6 @@ command options
 -t --tsumo   tsumo                (default: false)
 -r --riichi  riichi               (default: false)
 -m --manual  calc mode            (default: false)
--n           han                  (default: 0)
--fu          fu                   (default: 0)
 -b --ba      honba count          (default: 0)
 .
 .
@@ -38,7 +36,7 @@ Notation
 
 ##### Calculator Mode
 ```
-~/$ mahc -m -n 4 --fu 30 --ba 3
+~/$ mahc -m 4 30 --ba 3
 > Dealer:    12500 (4200) 
   non-dealer: 8600 (2300/ 4200)
 ```

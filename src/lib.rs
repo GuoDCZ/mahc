@@ -124,6 +124,7 @@ impl TileGroup {
 }
 
 //AHAHAHAHAHAHAHAH I DONT NEED THIS
+//turns our i did need this :)
 #[derive(Debug, Clone, PartialEq)]
 pub enum GroupType {
     Sequence,

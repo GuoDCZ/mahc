@@ -2,7 +2,6 @@ mod calc;
 pub mod fu;
 mod lib;
 pub mod yaku;
-use std::alloc::handle_alloc_error;
 
 use clap::Parser;
 
@@ -38,29 +37,19 @@ pub struct Args {
     #[arg(short, long, default_value_t = false)]
     riichi: bool,
 
-    /// han total
-    #[arg(short, long, default_value_t = 0)]
-    n: u8,
-
-    /// fu total
-    #[arg(short, long, default_value_t = 0)]
-    fu: u8,
-
     /// honba count
     #[arg(short, long, default_value_t = 0)]
     ba: u8,
 
     /// calculator mode
-    #[arg(short, long, default_value_t = false)]
-    manual: bool,
+    #[arg(short, long, default_value = None, value_delimiter = ' ', num_args = 2)]
+    manual: Option<Vec<u16>>,
 }
 
 pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
-    let han = args.n as u16;
-    let fu = args.fu as u16;
     let honba = args.ba;
-
-    let scores = calc::calculate(han, fu, honba);
+    let hanandfu = args.manual.clone().unwrap();
+    let scores = calc::calculate(&hanandfu, honba);
     match scores {
         Ok(o) => Ok(format!(
             "Dealer: {} ({})\nnon-dealer: {} ({}/{})",
@@ -85,7 +74,7 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
 
 fn main() {
     let args = Args::parse();
-    if args.manual == true {
+    if args.manual != None {
         let result = parse_calculator(&args);
         match result {
             Ok(o) => {
@@ -95,8 +84,9 @@ fn main() {
                 println!("Error: {:?}", e.to_string());
             }
         }
+    } else {
+        let result = parse_hand(&args);
     }
-    let result = parse_hand(&args);
 }
 
 #[cfg(test)]
@@ -324,21 +314,21 @@ mod test {
 
     #[test]
     fn no_han_for_calc() {
-        let args = Args::parse_from(&["", "--manual", "--fu", "30", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "0", "30", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(out.unwrap_err(), calc::CalculatorErrors::NoHan);
     }
 
     #[test]
     fn no_fu_for_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "4", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "4", "0", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(out.unwrap_err(), calc::CalculatorErrors::NoFu);
     }
 
     #[test]
     fn valid_calc_input() {
-        let args = Args::parse_from(&["", "--manual", "-n", "4", "--fu", "30", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "4", "30", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -347,7 +337,7 @@ mod test {
     }
     #[test]
     fn han_1_fu_30_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "1", "--fu", "30"]);
+        let args = Args::parse_from(&["", "--manual", "1", "30"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -356,7 +346,7 @@ mod test {
     }
     #[test]
     fn han_2_fu_80_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "2", "--fu", "80"]);
+        let args = Args::parse_from(&["", "--manual", "2", "80"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -365,7 +355,7 @@ mod test {
     }
     #[test]
     fn han_3_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "3", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "3", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -374,7 +364,7 @@ mod test {
     }
     #[test]
     fn han_4_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "4", "--fu", "60", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "4", "60", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -383,7 +373,7 @@ mod test {
     }
     #[test]
     fn han_5_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "5", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "5", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -392,13 +382,13 @@ mod test {
     }
     #[test]
     fn haneman_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "6", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "6", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("Dealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "-n", "7", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "7", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -407,19 +397,19 @@ mod test {
     }
     #[test]
     fn baiman_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "8", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "8", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("Dealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "-n", "9", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "9", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("Dealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "-n", "10", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "10", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -428,13 +418,13 @@ mod test {
     }
     #[test]
     fn sanbaiman_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "11", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "11", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("Dealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "-n", "12", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "12", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -443,7 +433,7 @@ mod test {
     }
     #[test]
     fn kazoeyakuman_calc() {
-        let args = Args::parse_from(&["", "--manual", "-n", "13", "--fu", "70", "--ba", "3"]);
+        let args = Args::parse_from(&["", "--manual", "13", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
