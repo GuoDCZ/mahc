@@ -16,16 +16,24 @@ impl CalculatorErrors {
 pub fn get_hand_score(
     tiles: Vec<String>,
     win: String,
-    dora: String,
+    dora: u16,
     seat: String,
     prev: String,
     tsumo: bool,
     riichi: bool,
 ) -> Vec<u16> {
+    let hand = mahc::Hand::new(tiles, win).unwrap();
+    println!("sequences:{:?}", hand.sequences());
+    println!("triplets: {:?}", hand.triplets());
+    println!("kans:     {:?}", hand.kans());
+    println!("is open:  {:?}", hand.is_open());
+    println!("pairs:    {:?}", hand.pairs());
+    println!("win tile: {:?}", hand.win_tile());
+    
     todo!()
 }
 
-pub fn calculate(args: &Vec<u16>, honba: u8) -> Result<Vec<u16>, CalculatorErrors> {
+pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u16>, CalculatorErrors> {
     let han = args[0];
     let fu = args[1];
     if han == 0 {

@@ -22,6 +22,7 @@ command options
 .
 and so on and so on 
 ```
+# ![demo gif](demo.gif)
 
 Notation
 -------
@@ -45,7 +46,7 @@ Notation
 
 ##### Normal Mode NOT YET IMPLEMENTED
 ```
-~/$ mahc --tiles 234p 33s 222po EEEw rrrrdo -w 3s -d 3s4p -s E -p E
+~/$ mahc --tiles 234p 33s 222po EEEw rrrrdo -w 3s -d 0 -s E -p E
 > Dealer ron
   1 Han/ 40 Fu 2000 pts 
 

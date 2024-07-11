@@ -17,9 +17,9 @@ pub struct Args {
     #[arg(short, long)]
     win: Option<String>,
 
-    /// dora tiles
+    /// Han from dora 
     #[arg(short, long)]
-    dora: Option<String>,
+    dora: Option<u16>,
 
     /// seat wind
     #[arg(short, long, default_value = "e")]
@@ -39,7 +39,7 @@ pub struct Args {
 
     /// honba count
     #[arg(short, long, default_value_t = 0)]
-    ba: u8,
+    ba: u16,
 
     /// calculator mode
     #[arg(short, long, default_value = None, value_delimiter = ' ', num_args = 2)]
@@ -59,7 +59,6 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
     }
 }
 pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
-    println!("{:?}", args);
     calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
@@ -69,7 +68,7 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
         args.tsumo,
         args.riichi,
     );
-    todo!();
+    todo!()
 }
 
 fn main() {
