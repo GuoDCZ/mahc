@@ -22,6 +22,23 @@ pub enum HandErr {
     InvalidShape,
 }
 
+#[derive(Debug, PartialEq)]
+pub enum Fu {
+    BasePoints,
+    ClosedRon,
+    Tsumo,
+    NonSimpleClosedTriplet,
+    SimpleClosedTriplet,
+    NonSimpleOpenTriplet,
+    SimpleOpenTriplet,
+    NonSimpleClosedKan,
+    SimpleClosedKan,
+    NonSimpleOpenKan,
+    SimpleOpenKan,
+    Toitsu,
+    SingleWait,
+}
+
 impl Hand {
     pub fn new(
         tiles: Vec<String>,
@@ -94,17 +111,21 @@ impl Hand {
         return Ok(hand);
     }
 
-    pub fn calculate_fu(&self, tsumo: bool) -> u32 {
+    pub fn calculate_fu(&self, tsumo: bool) -> (u16, Vec<Fu>) {
         //TODO REMOVE THESE PRINTS (and make this calculation less fucky)
+        let mut fu_types: Vec<Fu> = vec![];
         let mut totalfu = 20;
+        fu_types.push(Fu::BasePoints);
         println!("base : {:?}", totalfu);
         if tsumo {
             totalfu += 2;
             println!("tsumo : {:?}", 2);
+            fu_types.push(Fu::Tsumo);
         }
         if !self.is_open() {
             totalfu += 10;
             println!("calosed : {:?}", 10);
+            fu_types.push(Fu::ClosedRon);
         }
         //meld fu cal
         for i in &self.triplets() {
@@ -115,7 +136,20 @@ impl Hand {
                 }
                 if tsumo {
                     fu *= 2;
+                    if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                        fu_types.push(Fu::NonSimpleClosedTriplet);
+                    } else {
+                        fu_types.push(Fu::SimpleClosedTriplet);
+                    }
+                } else {
+                    if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                        fu_types.push(Fu::NonSimpleOpenTriplet);
+                    }
                 }
+                if fu == 2 {
+                    fu_types.push(Fu::SimpleOpenTriplet);
+                }
+
                 totalfu += fu;
                 println!("triplet {:?}", fu);
                 continue;
@@ -126,17 +160,40 @@ impl Hand {
             }
             if !i.isopen {
                 fu *= 2;
+                if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                    fu_types.push(Fu::NonSimpleClosedTriplet);
+                } else {
+                    fu_types.push(Fu::SimpleClosedTriplet);
+                }
+            } else {
+                if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                    fu_types.push(Fu::NonSimpleOpenTriplet);
+                }
+            }
+            if fu == 2 {
+                fu_types.push(Fu::SimpleOpenTriplet);
             }
             totalfu += fu;
             println!("triplet {:?}", fu);
         }
         for i in &self.kans() {
             let mut fu = 8;
-            if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                fu *= 2;
-            }
             if !i.isopen {
                 fu *= 2;
+            }
+            if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                fu *= 2;
+                if !i.isopen {
+                    fu_types.push(Fu::NonSimpleClosedKan);
+                } else {
+                    fu_types.push(Fu::NonSimpleOpenKan);
+                }
+            } else {
+                if !i.isopen {
+                    fu_types.push(Fu::SimpleClosedKan);
+                } else {
+                    fu_types.push(Fu::SimpleOpenKan);
+                }
             }
             totalfu += fu;
             println!("kan{:?}", fu);
@@ -146,31 +203,35 @@ impl Hand {
                 || i.value == self.seat_tile.value
                 || i.suit == Suit::Dragon
             {
+                fu_types.push(Fu::Toitsu);
                 totalfu += 2;
                 println!("pair{:?}", 2);
             }
         }
         //fu wait cal
         if self.groups.last().unwrap().group_type == GroupType::Pair {
+            fu_types.push(Fu::SingleWait);
             totalfu += 2;
             println!("pairwait{:?}", 2);
         }
         if self.groups.last().unwrap().group_type == GroupType::Sequence {
             let midtile = self.groups.last().unwrap().value.parse::<u8>().unwrap() + 1;
             if self.win_tile().value == midtile.to_string() {
+                fu_types.push(Fu::SingleWait);
                 totalfu += 2;
                 println!("midwait{:?}", 2);
             }
             if !(self.win_tile().value == "1" || self.win_tile().value == "9")
                 && self.groups.last().unwrap().isterminal
             {
+                fu_types.push(Fu::SingleWait);
                 totalfu += 2;
                 println!("single terminal{:?}", 2);
             }
         }
         println!("totalfu{:?}", totalfu);
         //works cuz ints
-        return ((totalfu + 9) / 10) * 10;
+        return (((totalfu + 9) / 10) * 10, fu_types);
     }
 
     pub fn sequences(&self) -> Vec<TileGroup> {
