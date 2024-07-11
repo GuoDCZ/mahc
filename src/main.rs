@@ -17,7 +17,7 @@ pub struct Args {
     #[arg(short, long)]
     win: Option<String>,
 
-    /// Han from dora 
+    /// Han from dora
     #[arg(short, long)]
     dora: Option<u16>,
 
@@ -92,6 +92,99 @@ fn main() {
 mod test {
 
     use super::*;
+    #[test]
+    fn random_fu() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "567m".to_string(),
+                "567p".to_string(),
+                "55s".to_string(),
+                "456s".to_string(),
+            ],
+            "6s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(true), 30);
+    }
+
+
+
+    use super::*;
+    #[test]
+    fn fu_cal_middle_wait() {
+        let out = lib::Hand::new(
+            vec![
+                "123mo".to_string(),
+                "rrrrdo".to_string(),
+                "EEEEw".to_string(),
+                "WWw".to_string(),
+                "456p".to_string(),
+            ],
+            "5p".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(true), 80);
+    }
+
+
+    #[test]
+    fn fu_cal_kans_seat_wind() {
+        let out = lib::Hand::new(
+            vec![
+                "123mo".to_string(),
+                "rrrrdo".to_string(),
+                "456po".to_string(),
+                "EEEEw".to_string(),
+                "WWw".to_string(),
+            ],
+            "Ww".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(true), 80);
+    }
+
+    #[test]
+    fn fu_cal_nontimple_closed_trip() {
+        let out = lib::Hand::new(
+            vec![
+                "111mo".to_string(),
+                "rrrd".to_string(),
+                "345s".to_string(),
+                "11s".to_string(),
+                "EEEw".to_string(),
+            ],
+            "Ew".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(false), 40);
+    }
+
+    #[test]
+    fn fu_cal_tsu_singlewait_simple_trip_closed_simple_trip_closed_nonsimple_kan() {
+        let out = lib::Hand::new(
+            vec![
+                "444m".to_string(),
+                "789p".to_string(),
+                "555so".to_string(),
+                "rrrrd".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "ew".to_string(),
+            "ew".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.calculate_fu(true), 70);
+    }
 
     #[test]
     fn invalid_group_sequence_not_in_order() {
@@ -103,6 +196,8 @@ mod test {
                 "SSSw".to_string(),
                 "Sw".to_string(),
             ],
+            "3s".to_string(),
+            "3s".to_string(),
             "3s".to_string(),
         );
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidGroup);
@@ -119,6 +214,8 @@ mod test {
                 "ShSo".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         );
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidGroup);
     }
@@ -133,6 +230,8 @@ mod test {
                 "SSw".to_string(),
                 "ShSo".to_string(),
             ],
+            "3s".to_string(),
+            "3s".to_string(),
             "3s".to_string(),
         );
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidGroup);
@@ -149,6 +248,8 @@ mod test {
                 "SSw".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         );
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidSuit);
     }
@@ -164,6 +265,8 @@ mod test {
                 "SSSw".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         )
         .unwrap();
         assert_eq!(out.pairs()[0].value, "S");
@@ -174,9 +277,19 @@ mod test {
 
     #[test]
     fn hand_too_small() {
-        let out = lib::Hand::new(vec!["SSSw".to_string()], "3s".to_string());
+        let out = lib::Hand::new(
+            vec!["SSSw".to_string()],
+            "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
+        );
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
-        let out = lib::Hand::new(vec!["SSSw".to_string()], "3s".to_string());
+        let out = lib::Hand::new(
+            vec!["SSSw".to_string()],
+            "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
+        );
         println!("{:?}", out);
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
     }
@@ -193,6 +306,8 @@ mod test {
                 "SSSw".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         );
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
     }
@@ -207,6 +322,8 @@ mod test {
                 "SSw".to_string(),
                 "SSSw".to_string(),
             ],
+            "3s".to_string(),
+            "3s".to_string(),
             "3s".to_string(),
         )
         .unwrap();
@@ -227,6 +344,8 @@ mod test {
                 "SSSw".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         )
         .unwrap();
         assert_eq!(out.kans()[0].value, "E");
@@ -245,6 +364,8 @@ mod test {
                 "rrrrd".to_string(),
                 "rrrrd".to_string(),
             ],
+            "3s".to_string(),
+            "3s".to_string(),
             "3s".to_string(),
         )
         .unwrap();
@@ -265,6 +386,8 @@ mod test {
                 "SSSw".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         )
         .unwrap();
         assert_eq!(out.triplets()[0].value, "1");
@@ -284,6 +407,8 @@ mod test {
                 "SSSw".to_string(),
             ],
             "3s".to_string(),
+            "3s".to_string(),
+            "3s".to_string(),
         )
         .unwrap();
         assert_eq!(out.sequences()[0].value, "7");
@@ -302,6 +427,8 @@ mod test {
                 "SSSw".to_string(),
                 "SSSw".to_string(),
             ],
+            "3s".to_string(),
+            "3s".to_string(),
             "3s".to_string(),
         )
         .unwrap();

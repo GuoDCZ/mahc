@@ -45,8 +45,9 @@ Notation
 
 
 ##### Normal Mode NOT YET IMPLEMENTED
+note: the winning group has to go last (this is to calculate fu correctly)
 ```
-~/$ mahc --tiles 234p 33s 222po EEEw rrrrdo -w 3s -d 0 -s E -p E
+~/$ mahc --tiles 234p 222po EEEw rrrrdo 33s -w 3s -d 0 -s E -p E
 > Dealer ron
   1 Han/ 40 Fu 2000 pts 
 

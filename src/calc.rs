@@ -22,14 +22,9 @@ pub fn get_hand_score(
     tsumo: bool,
     riichi: bool,
 ) -> Vec<u16> {
-    let hand = mahc::Hand::new(tiles, win).unwrap();
-    println!("sequences:{:?}", hand.sequences());
-    println!("triplets: {:?}", hand.triplets());
-    println!("kans:     {:?}", hand.kans());
-    println!("is open:  {:?}", hand.is_open());
-    println!("pairs:    {:?}", hand.pairs());
-    println!("win tile: {:?}", hand.win_tile());
-    
+    let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
+    let fu = hand.calculate_fu(tsumo);
+
     todo!()
 }
 
