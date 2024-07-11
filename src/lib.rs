@@ -127,8 +127,8 @@ impl Hand {
             if !i.isopen {
                 fu *= 2;
             }
-            println!("triplet {:?}", fu);
             totalfu += fu;
+            println!("triplet {:?}", fu);
         }
         for i in &self.kans() {
             let mut fu = 8;
@@ -142,15 +142,13 @@ impl Hand {
             println!("kan{:?}", fu);
         }
         for i in self.pairs() {
-            let mut fu = 0;
             if i.value == self.prev_tile.value
                 || i.value == self.seat_tile.value
                 || i.suit == Suit::Dragon
             {
-                fu = 2;
+                totalfu += 2;
+                println!("pair{:?}", 2);
             }
-            println!("pair{:?}", fu);
-            totalfu += fu;
         }
         //fu wait cal
         if self.groups.last().unwrap().group_type == GroupType::Pair {
@@ -160,17 +158,17 @@ impl Hand {
         if self.groups.last().unwrap().group_type == GroupType::Sequence {
             let midtile = self.groups.last().unwrap().value.parse::<u8>().unwrap() + 1;
             if self.win_tile().value == midtile.to_string() {
-                println!("midwait{:?}", 2);
                 totalfu += 2;
+                println!("midwait{:?}", 2);
             }
             if !(self.win_tile().value == "1" || self.win_tile().value == "9")
                 && self.groups.last().unwrap().isterminal
             {
-                println!("single terminal{:?}", 2);
                 totalfu += 2;
+                println!("single terminal{:?}", 2);
             }
         }
-        println!("ttal:fu{:?}", totalfu);
+        println!("totalfu{:?}", totalfu);
         //works cuz ints
         return ((totalfu + 9) / 10) * 10;
     }
