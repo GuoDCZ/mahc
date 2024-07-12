@@ -287,10 +287,7 @@ impl Hand {
     pub fn is_iipeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
         seqs.dedup();
-        if self.sequences().len() == seqs.len() || self.is_open() {
-            return false;
-        }
-        if self.is_ryanpeikou() {
+        if self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou(){
             return false;
         }
         return true;
