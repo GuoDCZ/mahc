@@ -39,6 +39,27 @@ pub enum Fu {
     SingleWait,
 }
 
+impl Fu {
+    pub fn to_string(&self) -> String {
+        match self{
+            Fu::BasePoints =>"BasePoints: 20".to_string(), 
+            Fu::ClosedRon =>"ClosedRon: 10".to_string(), 
+            Fu::Tsumo =>"Tsumo: 2".to_string(), 
+            Fu::NonSimpleClosedTriplet =>"NonSimpleClosedTriplet: 8".to_string(), 
+            Fu::SimpleClosedTriplet =>"ClosedTriplet: 4".to_string(), 
+            Fu::NonSimpleOpenTriplet =>"NonSimpleOpenTriplet: 4".to_string(), 
+            Fu::SimpleOpenTriplet =>"OpenTriplet: 2".to_string(), 
+            Fu::NonSimpleClosedKan =>"NonSimpleClosedKan: 32".to_string(), 
+            Fu::SimpleClosedKan =>"ClosedKan: 16".to_string(), 
+            Fu::NonSimpleOpenKan =>"NonSimpleOpenKan: 16".to_string(), 
+            Fu::SimpleOpenKan =>"OpenKan: 8".to_string(), 
+            Fu::Toitsu =>"Toitsu: 2".to_string(), 
+            Fu::SingleWait =>"SingleWait: 2".to_string(), 
+        }
+    }
+
+}
+
 impl Hand {
     pub fn new(
         tiles: Vec<String>,

@@ -58,16 +58,35 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
     }
 }
 pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
-    calc::get_hand_score(
+    let result = calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
-        args.dora.clone().unwrap(),
+        args.dora.clone().unwrap_or(0),
         args.seat.clone(),
         args.prev.clone(),
         args.tsumo,
         args.riichi,
+        args.ba,
     );
-    todo!()
+
+    //TODO validation (i dont care enough yet)
+    let mut printout: String = String::new();
+    printout.push_str(
+        format!(
+            "Dealer: {} ({})\nnon-dealer: {} ({}/{})",
+            result.0[0], result.0[1], result.0[2], result.0[3], result.0[4],
+        )
+        .as_str(),
+    );
+    printout.push_str("\nYaku: ");
+    for i in result.1 {
+        printout.push_str(format!("\n  {}", i.to_string()).as_str());
+    }
+    printout.push_str("\nFu: ");
+    for i in result.2 {
+        printout.push_str(format!("\n  {}", i.to_string()).as_str());
+    }
+    Ok(printout)
 }
 
 fn main() {
@@ -84,6 +103,7 @@ fn main() {
         }
     } else {
         let result = parse_hand(&args);
+        println!("{}", result.unwrap())
     }
 }
 
@@ -149,7 +169,6 @@ mod test {
         .unwrap();
         assert_eq!(out.is_yakuhai(), 0);
     }
-
     #[test]
     fn yaku_ryanpeikou() {
         let out = lib::Hand::new(

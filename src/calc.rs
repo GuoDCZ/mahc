@@ -1,3 +1,5 @@
+use crate::yaku::Yaku;
+
 #[derive(Debug, PartialEq)]
 pub enum CalculatorErrors {
     NoHan,
@@ -21,11 +23,37 @@ pub fn get_hand_score(
     prev: String,
     tsumo: bool,
     riichi: bool,
-) -> Vec<u16> {
+    honba: u16,
+) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>){
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
     let fu = hand.calculate_fu(tsumo);
+    let yaku = get_yaku_han(hand, riichi);
+    let han_and_fu = vec![yaku.0, fu.0];
+    let scores = calculate(&han_and_fu, honba).unwrap();
+    return (scores, yaku.1, fu.1);
+}
+pub fn get_yaku_han(hand: mahc::Hand, riichi: bool) -> (u16, Vec<Yaku>){
+    let mut yaku: Vec<Yaku> = vec![];
+    let conditions = [
+        (riichi, Yaku::Riichi),
+        (hand.is_tanyao(), Yaku::Tanyao),
+        (hand.is_iipeikou(), Yaku::Iipeikou),
+        (hand.is_ryanpeikou(), Yaku::Ryanpeikou),
+    ];
 
-    todo!()
+    for (condition, yaku_type) in conditions {
+        if condition {
+            yaku.push(yaku_type);
+        }
+    }
+    for _i in 0..hand.is_yakuhai() {
+        yaku.push(Yaku::Yakuhai);
+    }
+    let mut yaku_han = 0;
+    for y in &yaku {
+        yaku_han += y.get_han();
+    }
+    return (yaku_han, yaku);
 }
 
 pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u16>, CalculatorErrors> {
