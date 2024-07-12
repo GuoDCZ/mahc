@@ -90,9 +90,8 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
-
     #[test]
-    fn yaku_iipeko() {
+    fn yaku_yakuhai() {
         let out = lib::Hand::new(
             vec![
                 "rrrdo".to_string(),
@@ -106,7 +105,118 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        //is open 
+        assert_eq!(out.is_yakuhai(), 1);
+        let out = lib::Hand::new(
+            vec![
+                "EEEEwo".to_string(),
+                "234m".to_string(),
+                "22s".to_string(),
+                "234m".to_string(),
+                "rrrd".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_yakuhai(), 2);
+        let out = lib::Hand::new(
+            vec![
+                "3333mo".to_string(),
+                "WWWm".to_string(),
+                "22s".to_string(),
+                "234m".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_yakuhai(), 1);
+        let out = lib::Hand::new(
+            vec![
+                "3333mo".to_string(),
+                "222m".to_string(),
+                "22s".to_string(),
+                "234m".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_yakuhai(), 0);
+    }
+
+    #[test]
+    fn yaku_ryanpeikou() {
+        let out = lib::Hand::new(
+            vec![
+                "123s".to_string(),
+                "123s".to_string(),
+                "789m".to_string(),
+                "789m".to_string(),
+                "77m".to_string(),
+            ],
+            "7m".to_string(),
+            "es".to_string(),
+            "ww".to_string(),
+        )
+        .unwrap();
+        //is open
+        assert_eq!(out.is_ryanpeikou(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "123s".to_string(),
+                "123s".to_string(),
+                "789m".to_string(),
+                "678m".to_string(),
+                "77m".to_string(),
+            ],
+            "7m".to_string(),
+            "es".to_string(),
+            "ww".to_string(),
+        )
+        .unwrap();
+        //is open
+        assert_eq!(out.is_ryanpeikou(), false);
+    }
+
+    #[test]
+    fn yaku_iipeko() {
+        let out = lib::Hand::new(
+            vec![
+                "123s".to_string(),
+                "123s".to_string(),
+                "789m".to_string(),
+                "789m".to_string(),
+                "77m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        //is open
+        assert_eq!(out.is_iipeikou(), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "234m".to_string(),
+                "22s".to_string(),
+                "234m".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        //is open
         assert_eq!(out.is_iipeikou(), false);
 
         let out = lib::Hand::new(
@@ -124,7 +234,6 @@ mod test {
         .unwrap();
         assert_eq!(out.is_iipeikou(), true);
     }
-
 
     #[test]
     fn yaku_tanyao() {

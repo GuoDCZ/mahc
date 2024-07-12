@@ -273,13 +273,47 @@ impl Hand {
         }
         return true;
     }
+    pub fn is_ryanpeikou(&self) -> bool {
+        let mut seqs: Vec<TileGroup> = self.sequences();
+        if seqs.len() != 4 {
+            return false;
+        }
+        seqs.dedup();
+        if seqs.len() != 2 {
+            return false;
+        }
+        return true;
+    }
     pub fn is_iipeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
         seqs.dedup();
         if self.sequences().len() == seqs.len() || self.is_open() {
             return false;
         }
+        if self.is_ryanpeikou() {
+            return false;
+        }
         return true;
+    }
+    pub fn is_yakuhai(&self) -> u16 {
+        let mut count = 0;
+        for i in self.triplets() {
+            if i.value == self.prev_tile.value
+                || i.value == self.seat_tile.value
+                || i.suit == Suit::Dragon
+            {
+                count += 1;
+            }
+        }
+        for i in self.kans() {
+            if i.value == self.prev_tile.value
+                || i.value == self.seat_tile.value
+                || i.suit == Suit::Dragon
+            {
+                count += 1;
+            }
+        }
+        return count;
     }
 }
 
