@@ -2,12 +2,14 @@
 # Riichi Mahjong Calculator Via the Terminal
 
 # ![this.jpg](https://c.tenor.com/xfbt6ap9IYIAAAAC/tenor.gif)
-command options
+# ![demo gif](demo.gif)
+
+Options
 ===============
 
 ```
 --help
-   --tiles   tiles                (default: none)
+--tiles   tiles                (default: none)
 -w --win     winning tile         (default: last tile in hand)
 -d --dora    dora (and ura) tiles (default: none)
 -s --seat    seat wind            (default: East)
@@ -22,7 +24,6 @@ command options
 .
 and so on and so on 
 ```
-# ![demo gif](demo.gif)
 
 Notation
 -------
@@ -68,4 +69,56 @@ note: the winning group has to go last (this is to calculate fu correctly)
 - 3sou and 4pin dora <br>
 - east seat wind <br>
 - east prevalent wind <br>
+
+##### implemented hand validations as of yet
+
+###### One Han Yaku
+- [x] Tanyao
+- [x] Iipeikou 
+- [x] Yakuhai 
+- [ ] MenzenTsumo
+- [ ] Pinfu
+- [ ] Riichi
+- [ ] Ippatsu
+- [ ] HaiteiRaoyue
+- [ ] HouteiRaoyui
+- [ ] RinshanKaihou
+- [ ] Chankan
+
+###### Two Han Yaku
+- [ ] DoubleRiichi
+- [ ] Toitoi
+- [ ] Ittsuu
+- [ ] SanshokuDoujun
+- [ ] Chantaiyao
+- [ ] Sanankou
+- [ ] SanshokuDoukou
+- [ ] Sankantsu
+- [ ] Honroutou
+- [ ] Shousangen
+- [ ] Chiitoitsu
+
+###### Three Han Yaku
+- [ ] Honitsu
+- [ ] JunchanTaiyao
+- [x] Ryanpeikou //done
+
+###### Six Han Yaku
+- [ ] Chinitsu
+
+###### Yakuman 
+- [ ] KazoeYakuman
+- [ ] KokushiMusou
+- [ ] Suuankou
+- [ ] Daisangen
+- [ ] Shousuushii
+- [ ] Daisuushii
+- [ ] Tsuuiisou
+- [ ] Chinroutou
+- [ ] Ryuuiisou
+- [ ] ChuurenPoutou
+- [ ] Suukantsu
+- [ ] Tenhou
+- [ ] Chiihou
+
 
