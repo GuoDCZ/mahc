@@ -41,23 +41,22 @@ pub enum Fu {
 
 impl Fu {
     pub fn to_string(&self) -> String {
-        match self{
-            Fu::BasePoints =>"BasePoints: 20".to_string(), 
-            Fu::ClosedRon =>"ClosedRon: 10".to_string(), 
-            Fu::Tsumo =>"Tsumo: 2".to_string(), 
-            Fu::NonSimpleClosedTriplet =>"NonSimpleClosedTriplet: 8".to_string(), 
-            Fu::SimpleClosedTriplet =>"ClosedTriplet: 4".to_string(), 
-            Fu::NonSimpleOpenTriplet =>"NonSimpleOpenTriplet: 4".to_string(), 
-            Fu::SimpleOpenTriplet =>"OpenTriplet: 2".to_string(), 
-            Fu::NonSimpleClosedKan =>"NonSimpleClosedKan: 32".to_string(), 
-            Fu::SimpleClosedKan =>"ClosedKan: 16".to_string(), 
-            Fu::NonSimpleOpenKan =>"NonSimpleOpenKan: 16".to_string(), 
-            Fu::SimpleOpenKan =>"OpenKan: 8".to_string(), 
-            Fu::Toitsu =>"Toitsu: 2".to_string(), 
-            Fu::SingleWait =>"SingleWait: 2".to_string(), 
+        match self {
+            Fu::BasePoints => "BasePoints: 20".to_string(),
+            Fu::ClosedRon => "ClosedRon: 10".to_string(),
+            Fu::Tsumo => "Tsumo: 2".to_string(),
+            Fu::NonSimpleClosedTriplet => "NonSimpleClosedTriplet: 8".to_string(),
+            Fu::SimpleClosedTriplet => "ClosedTriplet: 4".to_string(),
+            Fu::NonSimpleOpenTriplet => "NonSimpleOpenTriplet: 4".to_string(),
+            Fu::SimpleOpenTriplet => "OpenTriplet: 2".to_string(),
+            Fu::NonSimpleClosedKan => "NonSimpleClosedKan: 32".to_string(),
+            Fu::SimpleClosedKan => "ClosedKan: 16".to_string(),
+            Fu::NonSimpleOpenKan => "NonSimpleOpenKan: 16".to_string(),
+            Fu::SimpleOpenKan => "OpenKan: 8".to_string(),
+            Fu::Toitsu => "Toitsu: 2".to_string(),
+            Fu::SingleWait => "SingleWait: 2".to_string(),
         }
     }
-
 }
 
 impl Hand {
@@ -308,7 +307,7 @@ impl Hand {
     pub fn is_iipeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
         seqs.dedup();
-        if self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou(){
+        if self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou() {
             return false;
         }
         return true;
@@ -316,10 +315,13 @@ impl Hand {
     pub fn is_yakuhai(&self) -> u16 {
         let mut count = 0;
         for i in self.triplets() {
-            if i.value == self.prev_tile.value
-                || i.value == self.seat_tile.value
-                || i.suit == Suit::Dragon
-            {
+            if i.value == self.prev_tile.value {
+                count += 1;
+            }
+            if i.value == self.seat_tile.value {
+                count += 1;
+            }
+            if i.suit ==  Suit::Dragon {
                 count += 1;
             }
         }

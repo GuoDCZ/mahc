@@ -17,8 +17,8 @@ pub struct Args {
     win: Option<String>,
 
     /// Han from dora
-    #[arg(short, long)]
-    dora: Option<u16>,
+    #[arg(short, long, default_value_t = 0)]
+    dora: u16,
 
     /// seat wind
     #[arg(short, long, default_value = "e")]
@@ -61,7 +61,7 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
     let result = calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
-        args.dora.clone().unwrap_or(0),
+        args.dora.clone(),
         args.seat.clone(),
         args.prev.clone(),
         args.tsumo,
@@ -73,16 +73,19 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
     let mut printout: String = String::new();
     printout.push_str(
         format!(
-            "Dealer: {} ({})\nnon-dealer: {} ({}/{})",
+            "\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
             result.0[0], result.0[1], result.0[2], result.0[3], result.0[4],
         )
         .as_str(),
     );
+    if args.dora != 0 {
+        printout.push_str(format!("\n\nDora: {}\n", args.dora).as_str());
+    }
     printout.push_str("\nYaku: ");
     for i in result.1 {
         printout.push_str(format!("\n  {}", i.to_string()).as_str());
     }
-    printout.push_str("\nFu: ");
+    printout.push_str("\n\nFu: ");
     for i in result.2 {
         printout.push_str(format!("\n  {}", i.to_string()).as_str());
     }
