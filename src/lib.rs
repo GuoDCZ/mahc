@@ -263,6 +263,24 @@ impl Hand {
     pub fn is_open(&self) -> bool {
         self.isopen
     }
+
+    //yaku validation
+    pub fn is_tanyao(&self) -> bool {
+        for i in self.groups.clone() {
+            if i.isterminal || i.suit == Suit::Dragon || i.suit == Suit::Wind {
+                return false;
+            }
+        }
+        return true;
+    }
+    pub fn is_iipeikou(&self) -> bool {
+        let mut seqs: Vec<TileGroup> = self.sequences();
+        seqs.dedup();
+        if self.sequences().len() == seqs.len() || self.is_open() {
+            return false;
+        }
+        return true;
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

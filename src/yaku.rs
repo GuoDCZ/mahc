@@ -1,39 +1,29 @@
-pub enum YakuhaiType {
-    Ton,
-    Nan,
-    Sha,
-    Pei,
-    Haku,
-    Hatsu,
-    Chun,
-}
-
 pub enum Yaku {
     // One Han Yaku
+    Tanyao,   //done
+    Iipeikou, //done
+    Yakuhai,
     MenzenTsumo,
+    Pinfu,
     Riichi,
     Ippatsu,
-    Pinfu,
-    Iipeikou,
     HaiteiRaoyue,
     HouteiRaoyui,
     RinshanKaihou,
     Chankan,
-    Tanyao,
-    Yakuhai(YakuhaiType),
 
     // Two Han Yaku
     DoubleRiichi,
-    Chantaiyao,
-    SanshokuDoujun,
-    Ittsuu,
     Toitoi,
+    Ittsuu,
+    SanshokuDoujun,
+    Chantaiyao,
     Sanankou,
     SanshokuDoukou,
     Sankantsu,
-    Chiitoitsu,
     Honroutou,
     Shousangen,
+    Chiitoitsu,
 
     // Three Han Yaku
     Honitsu,
@@ -58,4 +48,3 @@ pub enum Yaku {
     Tenhou,
     Chiihou,
 }
-

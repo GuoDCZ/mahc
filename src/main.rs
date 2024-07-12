@@ -89,8 +89,88 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-
     use super::*;
+
+    #[test]
+    fn yaku_iipeko() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "234m".to_string(),
+                "22s".to_string(),
+                "234m".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        //is open 
+        assert_eq!(out.is_iipeikou(), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "234m".to_string(),
+                "22s".to_string(),
+                "234m".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_iipeikou(), true);
+    }
+
+
+    #[test]
+    fn yaku_tanyao() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "5555mo".to_string(),
+                "22s".to_string(),
+                "8888s".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_tanyao(), false);
+        let out = lib::Hand::new(
+            vec![
+                "333mo".to_string(),
+                "5555mo".to_string(),
+                "11s".to_string(),
+                "8888s".to_string(),
+                "678m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_tanyao(), false);
+        let out = lib::Hand::new(
+            vec![
+                "555mo".to_string(),
+                "678p".to_string(),
+                "22s".to_string(),
+                "333s".to_string(),
+                "345m".to_string(),
+            ],
+            "4m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_tanyao(), true);
+    }
 
     #[test]
     fn fu_calc_simpleopenkan_simpleclosedkan() {
