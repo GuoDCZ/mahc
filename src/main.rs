@@ -1,5 +1,4 @@
 mod calc;
-pub mod fu;
 mod lib;
 pub mod yaku;
 
