@@ -21,11 +21,11 @@ pub struct Args {
     dora: u16,
 
     /// seat wind
-    #[arg(short, long, default_value = "e")]
+    #[arg(short, long, default_value = "Ew")]
     seat: String,
 
     /// prevelant wind
-    #[arg(short, long, default_value = "e")]
+    #[arg(short, long, default_value = "Ew")]
     prev: String,
 
     /// is tsumo
