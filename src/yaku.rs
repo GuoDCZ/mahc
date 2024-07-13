@@ -109,6 +109,7 @@ impl Yaku {
             Yaku::Chiihou => "Chiihou: ".to_string(),
         }
     }
+    //TODO adjust for open or closed !!!!
     pub fn get_han(&self) -> u16 {
         match self {
             Yaku::Tanyao => 1,

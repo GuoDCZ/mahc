@@ -50,10 +50,18 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
     let hanandfu = args.manual.clone().unwrap();
     let scores = calc::calculate(&hanandfu, honba);
     match scores {
-        Ok(o) => Ok(format!(
-            "Dealer: {} ({})\nnon-dealer: {} ({}/{})",
-            o[0], o[1], o[2], o[3], o[4]
-        )),
+        Ok(o) => {
+            if honba != 0 {
+                return Ok(format!(
+                    "{} Han/ {} Fu/ {} Honba\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+                    hanandfu[0], hanandfu[1], honba, o[0], o[1], o[2], o[3], o[4]
+                ));
+            }
+            Ok(format!(
+                    "{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+                    hanandfu[0], hanandfu[1], o[0], o[1], o[2], o[3], o[4]
+            ))
+        }
         Err(e) => Err(e),
     }
 }
@@ -69,15 +77,28 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
         args.ba,
     );
 
-    //TODO validation (i dont care enough yet)
+    //TODO VALIDATION (i dont care enough yet)
     let mut printout: String = String::new();
+    if args.ba != 0 {
+        printout.push_str(
+            format!(
+                "\n{} Han/ {} Fu/ {} Honba",
+                result.3[0], result.3[1], args.ba
+            )
+            .as_str(),
+        )
+    } else {
+        printout.push_str(format!("\n{} Han/ {} Fu", result.3[0], result.3[1]).as_str())
+    }
+
     printout.push_str(
         format!(
-            "\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-            result.0[0], result.0[1], result.0[2], result.0[3], result.0[4],
+            "\nDealer: {} ({})\nNon-dealer: {} ({}/{})",
+            result.0[0], result.0[1], result.0[2], result.0[3], result.0[4]
         )
         .as_str(),
     );
+
     if args.dora != 0 {
         printout.push_str(format!("\n\nDora: {}\n", args.dora).as_str());
     }
@@ -772,7 +793,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 12500 (4200)\nnon-dealer: 8600 (2300/4200)".to_string())
+            ("4 Han/ 30 Fu/ 3 Honba\nDealer: 12500 (4200)\nnon-dealer: 8600 (2300/4200)".to_string())
         );
     }
     #[test]
@@ -781,7 +802,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 1500 (500)\nnon-dealer: 1000 (300/500)".to_string())
+            ("1 Han/ 30 Fu\nDealer: 1500 (500)\nnon-dealer: 1000 (300/500)".to_string())
         );
     }
     #[test]
@@ -790,7 +811,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 7700 (2600)\nnon-dealer: 5200 (1300/2600)".to_string())
+            ("2 Han/ 80 Fu\nDealer: 7700 (2600)\nnon-dealer: 5200 (1300/2600)".to_string())
         );
     }
     #[test]
@@ -799,7 +820,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
+            ("3 Han/ 70 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
         );
     }
     #[test]
@@ -808,7 +829,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
+            ("4 Han/ 60 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
         );
     }
     #[test]
@@ -817,7 +838,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
+            ("5 Han/ 70 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
         );
     }
     #[test]
@@ -826,13 +847,13 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
+            ("6 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
         );
         let args = Args::parse_from(&["", "--manual", "7", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
+            ("7 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
         );
     }
     #[test]
@@ -841,19 +862,19 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
+            ("8 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
         );
         let args = Args::parse_from(&["", "--manual", "9", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
+            ("9 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
         );
         let args = Args::parse_from(&["", "--manual", "10", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
+            ("10 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
         );
     }
     #[test]
@@ -862,13 +883,13 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
+            ("11 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
         );
         let args = Args::parse_from(&["", "--manual", "12", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
+            ("12 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
         );
     }
     #[test]
@@ -877,7 +898,7 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("Dealer: 48900 (16300)\nnon-dealer: 32900 (8300/16300)".to_string())
+            ("13 Han/ 70 Fu/ 3 Honba\nDealer: 48900 (16300)\nnon-dealer: 32900 (8300/16300)".to_string())
         );
     }
 }

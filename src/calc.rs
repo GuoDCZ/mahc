@@ -4,6 +4,7 @@ use crate::yaku::Yaku;
 pub enum CalculatorErrors {
     NoHan,
     NoFu,
+    NoYaku,
 }
 
 impl CalculatorErrors {
@@ -11,6 +12,7 @@ impl CalculatorErrors {
         match self {
             CalculatorErrors::NoHan => "No han provided!".to_string(),
             CalculatorErrors::NoFu => "No fu provided!".to_string(),
+            CalculatorErrors::NoYaku => "No Yaku!".to_string(),
         }
     }
 }
@@ -24,14 +26,13 @@ pub fn get_hand_score(
     tsumo: bool,
     riichi: bool,
     honba: u16,
-) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>) {
+) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>) {
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
     let fu = hand.calculate_fu(tsumo);
     let yaku = get_yaku_han(hand, riichi);
-    let han = yaku.0 + dora;
     let han_and_fu = vec![yaku.0 + dora, fu.0];
     let scores = calculate(&han_and_fu, honba).unwrap();
-    return (scores, yaku.1, fu.1);
+    return (scores,  yaku.1, fu.1, han_and_fu);
 }
 pub fn get_yaku_han(hand: mahc::Hand, riichi: bool) -> (u16, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];

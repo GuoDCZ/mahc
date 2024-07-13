@@ -48,17 +48,24 @@ Notation
 ##### Normal Mode NOT YET IMPLEMENTED
 note: the winning group has to go last (this is to calculate fu correctly)
 ```
-~/$ mahc --tiles 234p 222po EEEw rrrrdo 33s -w 3s -d 0 -s E -p E
-> Dealer ron
-  1 Han/ 40 Fu 2000 pts 
+6 Han/ 50 Fu
+Dealer: 18000 (6000)
+Non-dealer: 12000 (3000/6000)
 
-  Yaku: 
-    Yakuhai             1 Han 
-  Fu:
-    Base points        20 Fu
-    Single wait        2  Fu
-    Simple triplet     20 Fu
-    Non-simples kan    16 Fu
+Dora: 2
+
+Yaku:
+  Iipeikou: 1
+  Yakuhai: 1
+  Yakuhai: 1
+  Yakuhai: 1
+
+Fu:
+  BasePoints: 20
+  ClosedRon: 10
+  NonSimpleClosedTriplet: 8
+  NonSimpleClosedTriplet: 8
+  SingleWait: 2
 ```
 
 - this hand has:
