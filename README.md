@@ -89,7 +89,7 @@ Fu:
 - [ ] Ittsuu
 - [x] SanshokuDoujun
 - [ ] Chantaiyao
-- [ ] Sanankou
+- [x] Sanankou
 - [ ] SanshokuDoukou
 - [ ] Sankantsu
 - [ ] Honroutou
@@ -99,7 +99,7 @@ Fu:
 ###### Three Han Yaku
 - [ ] Honitsu
 - [ ] JunchanTaiyao
-- [x] Ryanpeikou //done
+- [x] Ryanpeikou 
 
 ###### Six Han Yaku
 - [ ] Chinitsu

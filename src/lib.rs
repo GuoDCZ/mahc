@@ -341,6 +341,27 @@ impl Hand {
         }
         return false;
     }
+    pub fn is_sanankou(&self, tsumo: bool) -> bool {
+        let mut closed_triplet_count = 0;
+        for i in self.triplets() {
+            if !i.isopen {
+                if tsumo || i.value != self.win_tile.value {
+                    {
+                        closed_triplet_count += 1;
+                    }
+                }
+            }
+        }
+        for i in self.kans() {
+            if !i.isopen {
+                closed_triplet_count += 1;
+            }
+        }
+        if closed_triplet_count == 3 {
+            return true;
+        }
+        return false;
+    }
     pub fn is_sanshokudoujun(&self) -> bool {
         if self.sequences().len() < 3 {
             return false;
@@ -362,7 +383,6 @@ impl Hand {
         }
         return false;
     }
-
 }
 
 #[derive(Debug, Clone, PartialEq)]

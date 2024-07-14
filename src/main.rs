@@ -136,6 +136,56 @@ mod test {
     use super::*;
     #[test]
 
+    fn yaku_sanankou() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "555m".to_string(),
+                "11s".to_string(),
+                "333p".to_string(),
+            ],
+            "3p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanankou(false), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "555m".to_string(),
+                "11s".to_string(),
+                "333p".to_string(),
+            ],
+            "3p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanankou(true), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "123s".to_string(),
+                "555m".to_string(),
+                "11s".to_string(),
+                "333p".to_string(),
+            ],
+            "3p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanankou(true), false);
+
+
+    }
+
+
     fn yaku_sanshokudoujun() {
         let out = lib::Hand::new(
             vec![
