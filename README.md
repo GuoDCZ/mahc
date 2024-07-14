@@ -68,14 +68,6 @@ Fu:
   SingleWait: 2
 ```
 
-- this hand has:
-- 234pin, East Trip and 3sou in hand <br>
-- 2pin pon, red open kan <br>
-- 3sou winning tile <br>
-- 3sou and 4pin dora <br>
-- east seat wind <br>
-- east prevalent wind <br>
-
 ##### implemented hand validations as of yet
 
 ###### One Han Yaku
@@ -95,7 +87,7 @@ Fu:
 - [ ] DoubleRiichi
 - [x] Toitoi
 - [ ] Ittsuu
-- [x] SanshokuDoujun
+- [ ] SanshokuDoujun
 - [ ] Chantaiyao
 - [ ] Sanankou
 - [ ] SanshokuDoukou
