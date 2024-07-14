@@ -135,6 +135,54 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_toitoi() {
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "EEEw".to_string(),
+                "gggd".to_string(),
+                "222p".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_toitoi(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "2222m".to_string(),
+                "EEEw".to_string(),
+                "11s".to_string(),
+                "gggd".to_string(),
+            ],
+            "gd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_toitoi(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "2222m".to_string(),
+                "EEEw".to_string(),
+                "11s".to_string(),
+                "456so".to_string(),
+            ],
+            "5s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_toitoi(), false);
+    }
+
     fn yaku_yakuhai() {
         let out = lib::Hand::new(
             vec![

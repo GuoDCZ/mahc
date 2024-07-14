@@ -93,7 +93,7 @@ Fu:
 
 ###### Two Han Yaku
 - [ ] DoubleRiichi
-- [ ] Toitoi
+- [x] Toitoi
 - [ ] Ittsuu
 - [ ] SanshokuDoujun
 - [ ] Chantaiyao

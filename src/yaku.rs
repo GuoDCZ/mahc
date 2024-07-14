@@ -49,16 +49,6 @@ pub enum Yaku {
     Tenhou,
     Chiihou,
 }
-// > Dealer ron
-//   1 Han/ 40 Fu 2000 pts 
-//
-//   Yaku: 
-//     Yakuhai             1 Han 
-//   Fu:
-//     Base points        20 Fu
-//     Single wait        2  Fu
-//     Simple triplet     20 Fu
-//     Non-simples kan    16 Fu
 
 impl Yaku {
     pub fn to_string(&self) -> String {
@@ -110,7 +100,7 @@ impl Yaku {
         }
     }
     //TODO adjust for open or closed !!!!
-    pub fn get_han(&self) -> u16 {
+    pub fn get_han(&self, is_open: bool) -> u16 {
         match self {
             Yaku::Tanyao => 1,
             Yaku::Iipeikou => 1,

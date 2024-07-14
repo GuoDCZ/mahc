@@ -321,7 +321,7 @@ impl Hand {
             if i.value == self.seat_tile.value {
                 count += 1;
             }
-            if i.suit ==  Suit::Dragon {
+            if i.suit == Suit::Dragon {
                 count += 1;
             }
         }
@@ -334,6 +334,12 @@ impl Hand {
             }
         }
         return count;
+    }
+    pub fn is_toitoi(&self) -> bool {
+        if self.triplets().len() + self.kans().len() == 4 && self.is_open() {
+            return true;
+        }
+        return false;
     }
 }
 
