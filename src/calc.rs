@@ -26,15 +26,15 @@ pub fn get_hand_score(
     tsumo: bool,
     riichi: bool,
     honba: u16,
-) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>) {
+) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
     let fu = hand.calculate_fu(tsumo);
-    let yaku = get_yaku_han(hand, riichi);
+    let yaku = get_yaku_han(&hand, riichi);
     let han_and_fu = vec![yaku.0 + dora, fu.0];
     let scores = calculate(&han_and_fu, honba).unwrap();
-    return (scores, yaku.1, fu.1, han_and_fu);
+    return (scores, yaku.1, fu.1, han_and_fu, hand.is_open());
 }
-pub fn get_yaku_han(hand: mahc::Hand, riichi: bool) -> (u16, Vec<Yaku>) {
+pub fn get_yaku_han(hand: &mahc::Hand, riichi: bool) -> (u16, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];
     let conditions = [
         (riichi, Yaku::Riichi),
@@ -42,6 +42,7 @@ pub fn get_yaku_han(hand: mahc::Hand, riichi: bool) -> (u16, Vec<Yaku>) {
         (hand.is_iipeikou(), Yaku::Iipeikou),
         (hand.is_ryanpeikou(), Yaku::Ryanpeikou),
         (hand.is_toitoi(), Yaku::Toitoi),
+        (hand.is_sanshokudoujun(), Yaku::SanshokuDoujun),
     ];
 
     for (condition, yaku_type) in conditions {

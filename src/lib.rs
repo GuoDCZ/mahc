@@ -341,6 +341,28 @@ impl Hand {
         }
         return false;
     }
+    pub fn is_sanshokudoujun(&self) -> bool {
+        if self.sequences().len() < 3 {
+            return false;
+        }
+        let mut list_of_vals: Vec<String> = vec![];
+        for i in self.sequences() {
+            list_of_vals.push(i.value.clone());
+        }
+        list_of_vals.dedup();
+
+        if self.sequences().len() == 3 {
+            if list_of_vals.len() == 1 {
+                return true;
+            }
+        } else {
+            if list_of_vals.len() == 2 {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 #[derive(Debug, Clone, PartialEq)]

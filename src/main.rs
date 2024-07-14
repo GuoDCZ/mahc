@@ -58,8 +58,8 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
                 ));
             }
             Ok(format!(
-                    "{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-                    hanandfu[0], hanandfu[1], o[0], o[1], o[2], o[3], o[4]
+                "{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+                hanandfu[0], hanandfu[1], o[0], o[1], o[2], o[3], o[4]
             ))
         }
         Err(e) => Err(e),
@@ -104,7 +104,7 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
     }
     printout.push_str("\nYaku: ");
     for i in result.1 {
-        printout.push_str(format!("\n  {}", i.to_string()).as_str());
+        printout.push_str(format!("\n  {}", i.to_string(result.4)).as_str());
     }
     printout.push_str("\n\nFu: ");
     for i in result.2 {
@@ -135,8 +135,54 @@ fn main() {
 mod test {
     use super::*;
     #[test]
-    fn yaku_toitoi() {
 
+    fn yaku_sanshokudoujun() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "234p".to_string(),
+                "234m".to_string(),
+                "234s".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanshokudoujun(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "678s".to_string(),
+                "234p".to_string(),
+                "234m".to_string(),
+                "234s".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanshokudoujun(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "111p".to_string(),
+                "234p".to_string(),
+                "234m".to_string(),
+                "rrrd".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanshokudoujun(), false);
+    }
+    fn yaku_toitoi() {
         let out = lib::Hand::new(
             vec![
                 "rrrdo".to_string(),
@@ -841,7 +887,8 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("4 Han/ 30 Fu/ 3 Honba\nDealer: 12500 (4200)\nnon-dealer: 8600 (2300/4200)".to_string())
+            ("4 Han/ 30 Fu/ 3 Honba\nDealer: 12500 (4200)\nnon-dealer: 8600 (2300/4200)"
+                .to_string())
         );
     }
     #[test]
@@ -868,7 +915,8 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("3 Han/ 70 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
+            ("3 Han/ 70 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)"
+                .to_string())
         );
     }
     #[test]
@@ -877,7 +925,8 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("4 Han/ 60 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
+            ("4 Han/ 60 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)"
+                .to_string())
         );
     }
     #[test]
@@ -886,7 +935,8 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("5 Han/ 70 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)".to_string())
+            ("5 Han/ 70 Fu/ 3 Honba\nDealer: 12900 (4300)\nnon-dealer: 8900 (2300/4300)"
+                .to_string())
         );
     }
     #[test]
@@ -895,13 +945,15 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("6 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
+            ("6 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)"
+                .to_string())
         );
         let args = Args::parse_from(&["", "--manual", "7", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("7 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)".to_string())
+            ("7 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)"
+                .to_string())
         );
     }
     #[test]
@@ -910,19 +962,22 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("8 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
+            ("8 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)"
+                .to_string())
         );
         let args = Args::parse_from(&["", "--manual", "9", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("9 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
+            ("9 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)"
+                .to_string())
         );
         let args = Args::parse_from(&["", "--manual", "10", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("10 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)".to_string())
+            ("10 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)"
+                .to_string())
         );
     }
     #[test]
@@ -931,13 +986,15 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("11 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
+            ("11 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)"
+                .to_string())
         );
         let args = Args::parse_from(&["", "--manual", "12", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("12 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)".to_string())
+            ("12 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)"
+                .to_string())
         );
     }
     #[test]
@@ -946,7 +1003,8 @@ mod test {
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
-            ("13 Han/ 70 Fu/ 3 Honba\nDealer: 48900 (16300)\nnon-dealer: 32900 (8300/16300)".to_string())
+            ("13 Han/ 70 Fu/ 3 Honba\nDealer: 48900 (16300)\nnon-dealer: 32900 (8300/16300)"
+                .to_string())
         );
     }
 }

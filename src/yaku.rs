@@ -51,7 +51,7 @@ pub enum Yaku {
 }
 
 impl Yaku {
-    pub fn to_string(&self) -> String {
+    pub fn to_string(&self, is_open: bool) -> String {
         match self {
             Yaku::Tanyao => "Tanyao: 1".to_string(),
             Yaku::Iipeikou => "Iipeikou: 1".to_string(),
@@ -68,7 +68,13 @@ impl Yaku {
             Yaku::DoubleRiichi => "DoubleRiichi: 2".to_string(),
             Yaku::Toitoi => "Toitoi: 2".to_string(),
             Yaku::Ittsuu => "Ittsuu: 2".to_string(),
-            Yaku::SanshokuDoujun => "SanshokuDoujun: 2".to_string(),
+            Yaku::SanshokuDoujun => {
+                if is_open {
+                    "Sanshoku Doujun: 1".to_string()
+                } else {
+                    "Sanshoku Doujun: 2".to_string()
+                }
+            }
             Yaku::Chantaiyao => "Chantaiyao: 2".to_string(),
             Yaku::Sanankou => "Sanankou: 2".to_string(),
             Yaku::SanshokuDoukou => "SanshokuDoukou: 2".to_string(),
@@ -82,7 +88,7 @@ impl Yaku {
             Yaku::Ryanpeikou => "Ryanpeikou: 3".to_string(),
 
             Yaku::Chinitsu => "Chinitsu: 6".to_string(),
-            
+
             //TODO gota be a better way of doing this
             Yaku::KazoeYakuman => "KazoeYakuman: ".to_string(),
             Yaku::KokushiMusou => "KokushiMusou: ".to_string(),
@@ -117,7 +123,13 @@ impl Yaku {
             Yaku::DoubleRiichi => 2,
             Yaku::Toitoi => 2,
             Yaku::Ittsuu => 2,
-            Yaku::SanshokuDoujun => 2,
+            Yaku::SanshokuDoujun => {
+                if is_open {
+                    1
+                } else {
+                    2
+                }
+            }
             Yaku::Chantaiyao => 2,
             Yaku::Sanankou => 2,
             Yaku::SanshokuDoukou => 2,
@@ -131,7 +143,7 @@ impl Yaku {
             Yaku::Ryanpeikou => 3,
 
             Yaku::Chinitsu => 6,
-            
+
             //TODO gota be a better way of doing this
             Yaku::KazoeYakuman => 0,
             Yaku::KokushiMusou => 0,

@@ -95,7 +95,7 @@ Fu:
 - [ ] DoubleRiichi
 - [x] Toitoi
 - [ ] Ittsuu
-- [ ] SanshokuDoujun
+- [x] SanshokuDoujun
 - [ ] Chantaiyao
 - [ ] Sanankou
 - [ ] SanshokuDoukou
