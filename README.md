@@ -45,7 +45,7 @@ Notation
 
 
 
-##### Normal Mode NOT YET IMPLEMENTED
+##### Normal Mode NOT FULLY YET IMPLEMENTED (some yaku missing)
 note: the winning group has to go last (this is to calculate fu correctly)
 ```
 6 Han/ 50 Fu
