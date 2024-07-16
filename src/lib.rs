@@ -384,9 +384,7 @@ impl Hand {
         return false;
     }
     pub fn is_honitsu(&self) -> bool {
-        let mut tile_groups = self.triplets();
-        tile_groups.append(&mut self.sequences());
-        tile_groups.append(&mut self.triplets());
+        let tile_groups = self.groups.clone();
         let mut has_honor = false;
         let mut has_normal = false;
         let mut suit: Option<Suit> = None;
