@@ -383,6 +383,38 @@ impl Hand {
         }
         return false;
     }
+    pub fn is_honitsu(&self) -> bool {
+        let mut tile_groups = self.triplets();
+        tile_groups.append(&mut self.sequences());
+        tile_groups.append(&mut self.triplets());
+        let mut has_honor = false;
+        let mut has_normal = false;
+        let mut suit: Option<Suit> = None;
+        for i in &tile_groups {
+            if i.suit == Suit::Dragon || i.suit == Suit::Wind {
+                has_honor = true;
+            } else {
+                has_normal = true;
+                suit = Some(i.suit.clone());
+            }
+        }
+
+        if !has_normal || !has_honor {
+            return false;
+        }
+
+        if let Some(s) = suit {
+            for i in &tile_groups {
+                if i.suit != s && i.suit != Suit::Dragon && i.suit != Suit::Wind {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

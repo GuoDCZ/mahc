@@ -83,7 +83,12 @@ impl Yaku {
             Yaku::Shousangen => "Shousangen: 2".to_string(),
             Yaku::Chiitoitsu => "Chiitoitsu: 2".to_string(),
 
-            Yaku::Honitsu => "Honitsu: 3".to_string(),
+            Yaku::Honitsu => {
+                if is_open {
+                    return "Honitsu: 2".to_string();
+                }
+                return "Honitsu: 3".to_string();
+            }
             Yaku::JunchanTaiyao => "JunchanTaiyao: 3".to_string(),
             Yaku::Ryanpeikou => "Ryanpeikou: 3".to_string(),
 
@@ -138,7 +143,12 @@ impl Yaku {
             Yaku::Shousangen => 2,
             Yaku::Chiitoitsu => 2,
 
-            Yaku::Honitsu => 3,
+            Yaku::Honitsu => {
+                if is_open {
+                    return 2;
+                }
+                return 3;
+            }
             Yaku::JunchanTaiyao => 3,
             Yaku::Ryanpeikou => 3,
 

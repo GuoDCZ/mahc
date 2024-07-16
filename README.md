@@ -47,15 +47,15 @@ Notation
 
 ##### Normal Mode NOT FULLY YET IMPLEMENTED (some yaku missing)
 note: the winning group has to go last (this is to calculate fu correctly)
-```
-6 Han/ 50 Fu
+``` 
+~/$ mahc --tiles rrrd EEEw 234p 234p 11p -w 1p -p Ew -s Ew
+
+7 Han/ 50 Fu
 Dealer: 18000 (6000)
 Non-dealer: 12000 (3000/6000)
-
-Dora: 2
-
 Yaku:
   Iipeikou: 1
+  Honitsu: 3
   Yakuhai: 1
   Yakuhai: 1
   Yakuhai: 1
@@ -66,6 +66,7 @@ Fu:
   NonSimpleClosedTriplet: 8
   NonSimpleClosedTriplet: 8
   SingleWait: 2
+
 ```
 
 ##### implemented hand validations as of yet
@@ -97,7 +98,7 @@ Fu:
 - [ ] Chiitoitsu
 
 ###### Three Han Yaku
-- [ ] Honitsu
+- [x] Honitsu
 - [ ] JunchanTaiyao
 - [x] Ryanpeikou 
 

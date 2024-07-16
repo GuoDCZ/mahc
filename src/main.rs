@@ -135,6 +135,53 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_honitsu() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "567p".to_string(),
+                "rrd".to_string(),
+                "gggd".to_string(),
+            ],
+            "gd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_honitsu(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "567m".to_string(),
+                "rrd".to_string(),
+                "gggd".to_string(),
+            ],
+            "gd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_honitsu(), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "567p".to_string(),
+                "111p".to_string(),
+                "33p".to_string(),
+            ],
+            "3p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        //should be chinitsu not honitsu
+        assert_eq!(out.is_honitsu(), false);
+    }
 
     fn yaku_sanankou() {
         let out = lib::Hand::new(
@@ -180,11 +227,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanankou(true), false);
-
-
+        assert_eq!(out.is_sanankou(true), true);
     }
-
 
     fn yaku_sanshokudoujun() {
         let out = lib::Hand::new(

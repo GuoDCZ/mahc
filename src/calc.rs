@@ -44,6 +44,7 @@ pub fn get_yaku_han(hand: &mahc::Hand, riichi: bool, tsumo: bool) -> (u16, Vec<Y
         (hand.is_toitoi(), Yaku::Toitoi),
         (hand.is_sanshokudoujun(), Yaku::SanshokuDoujun),
         (hand.is_sanankou(tsumo), Yaku::Sanankou),
+        (hand.is_honitsu(), Yaku::Honitsu),
     ];
 
     for (condition, yaku_type) in conditions {
