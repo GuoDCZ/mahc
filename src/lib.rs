@@ -340,9 +340,7 @@ impl Hand {
         let mut closed_triplet_count = 0;
         for i in self.triplets() {
             if !i.isopen {
-                if tsumo || i.value != self.win_tile.value {
-                    closed_triplet_count += 1;
-                }
+                closed_triplet_count += 1;
             }
         }
         for i in self.kans() {
@@ -350,6 +348,10 @@ impl Hand {
                 closed_triplet_count += 1;
             }
         }
+        if tsumo && self.groups.last().unwrap().group_type == GroupType::Triplet {
+            closed_triplet_count -= 1;
+        }
+
         closed_triplet_count == 3
     }
     pub fn is_sanshokudoujun(&self) -> bool {
@@ -413,12 +415,29 @@ impl Hand {
         dragon_count == 2 && self.pairs()[0].suit == Suit::Dragon
     }
     pub fn is_junchantaiyao(&self) -> bool {
-        for i in self.groups.clone(){
-            if i.suit == Suit::Dragon || i.suit == Suit::Wind || !i.isterminal{
+        for i in self.groups.clone() {
+            if i.suit == Suit::Dragon || i.suit == Suit::Wind || !i.isterminal {
                 return false;
             }
         }
         !(self.sequences().len() == 0)
+    }
+    pub fn is_honroutou(&self) -> bool {
+        if self.sequences().len() != 0 {
+            return false;
+        }
+        let mut has_terminal: bool = false;
+        let mut has_honor: bool = false;
+        for i in self.groups.clone() {
+            if i.isterminal {
+                has_terminal = true;
+            } else if i.suit == Suit::Dragon || i.suit == Suit::Wind {
+                has_honor = true;
+            } else {
+                return false;
+            }
+        }
+        has_terminal && has_honor
     }
 }
 

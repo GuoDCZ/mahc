@@ -134,6 +134,55 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn yaku_honroutou() {
+        let out = lib::Hand::new(
+            vec![
+                "999s".to_string(),
+                "111p".to_string(),
+                "SSSw".to_string(),
+                "EEEw".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_honroutou(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "999s".to_string(),
+                "123p".to_string(),
+                "SSSw".to_string(),
+                "EEEw".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_honroutou(), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "999s".to_string(),
+                "111p".to_string(),
+                "111s".to_string(),
+                "999m".to_string(),
+                "99p".to_string(),
+            ],
+            "9p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_honroutou(), false);
+    }
+
     #[test]
     fn yaku_junchantaiyao() {
         let out = lib::Hand::new(
