@@ -299,18 +299,12 @@ impl Hand {
             return false;
         }
         seqs.dedup();
-        if seqs.len() != 2 {
-            return false;
-        }
-        return true;
+        seqs.len() == 2
     }
     pub fn is_iipeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
         seqs.dedup();
-        if self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou() {
-            return false;
-        }
-        return true;
+        !(self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou())
     }
     pub fn is_yakuhai(&self) -> u16 {
         // i do it like this because a single group can have multiple yakuhai
@@ -340,10 +334,7 @@ impl Hand {
         return count;
     }
     pub fn is_toitoi(&self) -> bool {
-        if self.triplets().len() + self.kans().len() == 4 && self.is_open() {
-            return true;
-        }
-        return false;
+        self.triplets().len() + self.kans().len() == 4 && self.is_open()
     }
     pub fn is_sanankou(&self, tsumo: bool) -> bool {
         let mut closed_triplet_count = 0;
@@ -359,10 +350,7 @@ impl Hand {
                 closed_triplet_count += 1;
             }
         }
-        if closed_triplet_count == 3 {
-            return true;
-        }
-        return false;
+        closed_triplet_count == 3
     }
     pub fn is_sanshokudoujun(&self) -> bool {
         if self.sequences().len() < 3 {
