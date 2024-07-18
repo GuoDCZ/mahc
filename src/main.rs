@@ -135,6 +135,39 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+
+    fn yaku_shousangen() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "wwwwd".to_string(),
+                "rrd".to_string(),
+                "gggd".to_string(),
+            ],
+            "gd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_shousangen(), true);
+         let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "222p".to_string(),
+                "wwwwd".to_string(),
+                "rrd".to_string(),
+                "234p".to_string(),
+            ],
+            "rd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+       assert_eq!(out.is_shousangen(), false);
+    }
+
+
     fn yaku_honitsu() {
         let out = lib::Hand::new(
             vec![

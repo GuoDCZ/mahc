@@ -411,6 +411,15 @@ impl Hand {
 
         return true;
     }
+    pub fn is_shousangen(&self) -> bool {
+        let dragon_count = self
+            .triplets()
+            .iter()
+            .chain(self.kans().iter())
+            .filter(|i| i.suit == Suit::Dragon)
+            .count();
+        dragon_count == 2 && self.pairs()[0].suit == Suit::Dragon
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
