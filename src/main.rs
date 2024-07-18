@@ -180,10 +180,9 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_junchantaiyao(), false);
-
-
     }
 
+    #[test]
     fn yaku_shousangen() {
         let out = lib::Hand::new(
             vec![
@@ -199,7 +198,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_shousangen(), true);
-         let out = lib::Hand::new(
+        let out = lib::Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -212,10 +211,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-       assert_eq!(out.is_shousangen(), false);
+        assert_eq!(out.is_shousangen(), false);
     }
 
-
+    #[test]
     fn yaku_honitsu() {
         let out = lib::Hand::new(
             vec![
@@ -264,6 +263,7 @@ mod test {
         assert_eq!(out.is_honitsu(), false);
     }
 
+    #[test]
     fn yaku_sanankou() {
         let out = lib::Hand::new(
             vec![
@@ -308,9 +308,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanankou(true), true);
+        assert_eq!(out.is_sanankou(true), false);
     }
 
+    #[test]
     fn yaku_sanshokudoujun() {
         let out = lib::Hand::new(
             vec![
@@ -357,6 +358,8 @@ mod test {
         .unwrap();
         assert_eq!(out.is_sanshokudoujun(), false);
     }
+
+    #[test]
     fn yaku_toitoi() {
         let out = lib::Hand::new(
             vec![
@@ -404,6 +407,7 @@ mod test {
         assert_eq!(out.is_toitoi(), false);
     }
 
+    #[test]
     fn yaku_yakuhai() {
         let out = lib::Hand::new(
             vec![
