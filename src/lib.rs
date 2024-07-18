@@ -313,6 +313,7 @@ impl Hand {
         return true;
     }
     pub fn is_yakuhai(&self) -> u16 {
+        // i do it like this because a single group can have multiple yakuhai
         let mut count = 0;
         for i in self.triplets() {
             if i.value == self.prev_tile.value {
@@ -326,10 +327,13 @@ impl Hand {
             }
         }
         for i in self.kans() {
-            if i.value == self.prev_tile.value
-                || i.value == self.seat_tile.value
-                || i.suit == Suit::Dragon
-            {
+            if i.value == self.prev_tile.value {
+                count += 1;
+            }
+            if i.value == self.seat_tile.value {
+                count += 1;
+            }
+            if i.suit == Suit::Dragon {
                 count += 1;
             }
         }
