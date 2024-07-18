@@ -348,7 +348,7 @@ impl Hand {
                 closed_triplet_count += 1;
             }
         }
-        if tsumo && self.groups.last().unwrap().group_type == GroupType::Triplet {
+        if !tsumo && self.groups.last().unwrap().group_type == GroupType::Triplet {
             closed_triplet_count -= 1;
         }
 
@@ -438,6 +438,9 @@ impl Hand {
             }
         }
         has_terminal && has_honor
+    }
+    pub fn is_sankantsu(&self) -> bool {
+        self.kans().len() == 3
     }
 }
 

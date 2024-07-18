@@ -92,7 +92,7 @@ Fu:
 - [ ] Chantaiyao
 - [x] Sanankou
 - [ ] SanshokuDoukou
-- [ ] Sankantsu
+- [x] Sankantsu
 - [x] Honroutou
 - [x] Shousangen
 - [ ] Chiitoitsu

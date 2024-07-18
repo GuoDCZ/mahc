@@ -136,6 +136,39 @@ mod test {
     use super::*;
 
     #[test]
+    fn yaku_sankantsu() {
+        let out = lib::Hand::new(
+            vec![
+                "9999so".to_string(),
+                "123p".to_string(),
+                "SSSSw".to_string(),
+                "EEEEw".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sankantsu(), true);
+         let out = lib::Hand::new(
+            vec![
+                "9999so".to_string(),
+                "123p".to_string(),
+                "SSSw".to_string(),
+                "EEEEw".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sankantsu(), false);
+   }
+
+
+    #[test]
     fn yaku_honroutou() {
         let out = lib::Hand::new(
             vec![
