@@ -346,9 +346,7 @@ impl Hand {
         for i in self.triplets() {
             if !i.isopen {
                 if tsumo || i.value != self.win_tile.value {
-                    {
-                        closed_triplet_count += 1;
-                    }
+                    closed_triplet_count += 1;
                 }
             }
         }
