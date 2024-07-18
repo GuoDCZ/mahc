@@ -89,7 +89,13 @@ impl Yaku {
                 }
                 return "Honitsu: 3".to_string();
             }
-            Yaku::JunchanTaiyao => "JunchanTaiyao: 3".to_string(),
+            Yaku::JunchanTaiyao => {
+                if is_open {
+                    "JunchanTaiyao: 2".to_string()
+                } else {
+                    "JunchanTaiyao: 3".to_string()
+                }
+            }
             Yaku::Ryanpeikou => "Ryanpeikou: 3".to_string(),
 
             Yaku::Chinitsu => "Chinitsu: 6".to_string(),
@@ -149,7 +155,12 @@ impl Yaku {
                 }
                 return 3;
             }
-            Yaku::JunchanTaiyao => 3,
+            Yaku::JunchanTaiyao => {
+                if is_open {
+                    return 2;
+                }
+                return 3;
+            }
             Yaku::Ryanpeikou => 3,
 
             Yaku::Chinitsu => 6,

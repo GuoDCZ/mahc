@@ -412,6 +412,14 @@ impl Hand {
             .count();
         dragon_count == 2 && self.pairs()[0].suit == Suit::Dragon
     }
+    pub fn is_junchantaiyao(&self) -> bool {
+        for i in self.groups.clone(){
+            if i.suit == Suit::Dragon || i.suit == Suit::Wind || !i.isterminal{
+                return false;
+            }
+        }
+        !(self.sequences().len() == 0)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

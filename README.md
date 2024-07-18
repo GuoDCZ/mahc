@@ -99,7 +99,7 @@ Fu:
 
 ###### Three Han Yaku
 - [x] Honitsu
-- [ ] JunchanTaiyao
+- [x] JunchanTaiyao
 - [x] Ryanpeikou 
 
 ###### Six Han Yaku

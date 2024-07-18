@@ -135,6 +135,54 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_junchantaiyao() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "123p".to_string(),
+                "999m".to_string(),
+                "789s".to_string(),
+                "11s".to_string(),
+            ],
+            "1d".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_junchantaiyao(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "123p".to_string(),
+                "999m".to_string(),
+                "789s".to_string(),
+                "ggd".to_string(),
+            ],
+            "gd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_junchantaiyao(), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "111m".to_string(),
+                "999m".to_string(),
+                "999s".to_string(),
+                "11p".to_string(),
+            ],
+            "1p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_junchantaiyao(), false);
+
+
+    }
 
     fn yaku_shousangen() {
         let out = lib::Hand::new(
