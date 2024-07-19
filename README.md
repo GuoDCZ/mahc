@@ -95,7 +95,7 @@ Fu:
 - [x] Sankantsu
 - [x] Honroutou
 - [x] Shousangen
-- [ ] Chiitoitsu
+- [x] Chiitoitsu
 
 ###### Three Han Yaku
 - [x] Honitsu

@@ -91,7 +91,7 @@ impl Hand {
             }
         }
 
-        if !(tripcount + seqcount + kancount == 4 && paircount == 1) {
+        if !(tripcount + seqcount + kancount == 4 && paircount == 1) && paircount != 7 {
             return Err(HandErr::InvalidShape);
         }
 
@@ -459,9 +459,8 @@ impl Hand {
     }
     pub fn is_chantaiyao(&self) -> bool {
         if self.sequences().len() == 0 {
-            return false
+            return false;
         }
-
         let mut has_terminal: bool = false;
         let mut has_honor: bool = false;
         for i in self.groups.clone() {
@@ -474,6 +473,9 @@ impl Hand {
             }
         }
         has_terminal && has_honor
+    }
+    pub fn is_chiitoitsu(&self) -> bool {
+        self.pairs().len() == 7
     }
 }
 
