@@ -136,6 +136,66 @@ mod test {
     use super::*;
 
     #[test]
+    fn yaku_ittsuu() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "456p".to_string(),
+                "789p".to_string(),
+                "rrrdo".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ittsuu(), true);
+        let out = lib::Hand::new(
+            vec![
+                "789m".to_string(),
+                "456m".to_string(),
+                "123m".to_string(),
+                "234m".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ittsuu(), true);
+        let out = lib::Hand::new(
+            vec![
+                "123s".to_string(),
+                "789s".to_string(),
+                "456s".to_string(),
+                "234m".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ittsuu(), true);
+        let out = lib::Hand::new(
+            vec![
+                "123m".to_string(),
+                "456m".to_string(),
+                "678m".to_string(),
+                "234m".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ittsuu(), false);
+    }
+
+    #[test]
     fn yaku_sankantsu() {
         let out = lib::Hand::new(
             vec![
@@ -151,7 +211,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_sankantsu(), true);
-         let out = lib::Hand::new(
+        let out = lib::Hand::new(
             vec![
                 "9999so".to_string(),
                 "123p".to_string(),
@@ -165,8 +225,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_sankantsu(), false);
-   }
-
+    }
 
     #[test]
     fn yaku_honroutou() {

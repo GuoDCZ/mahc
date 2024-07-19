@@ -442,6 +442,21 @@ impl Hand {
     pub fn is_sankantsu(&self) -> bool {
         self.kans().len() == 3
     }
+    pub fn is_ittsuu(&self) -> bool {
+        //there has GOTTO be a better way to do this
+        let suits = [Suit::Pinzu, Suit::Manzu, Suit::Souzu];
+        suits.iter().any(|suit| {
+            let values: Vec<String> = self
+                .sequences()
+                .iter()
+                .filter(|&x| x.suit == *suit)
+                .map(|x| x.value.clone())
+                .collect();
+            values.contains(&"1".to_string())
+                && values.contains(&"4".to_string())
+                && values.contains(&"7".to_string())
+        })
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -540,7 +555,7 @@ impl GroupType {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Hash, Eq)]
 pub enum Suit {
     Manzu,
     Pinzu,

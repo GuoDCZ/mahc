@@ -67,7 +67,12 @@ impl Yaku {
 
             Yaku::DoubleRiichi => "DoubleRiichi: 2".to_string(),
             Yaku::Toitoi => "Toitoi: 2".to_string(),
-            Yaku::Ittsuu => "Ittsuu: 2".to_string(),
+            Yaku::Ittsuu => {
+                if is_open {
+                    return "Ittsuu: 1".to_string();
+                }
+                return "Ittsuu: 2".to_string();
+            }
             Yaku::SanshokuDoujun => {
                 if is_open {
                     "Sanshoku Doujun: 1".to_string()
@@ -133,13 +138,17 @@ impl Yaku {
 
             Yaku::DoubleRiichi => 2,
             Yaku::Toitoi => 2,
-            Yaku::Ittsuu => 2,
+            Yaku::Ittsuu => {
+                if is_open {
+                    return 1;
+                }
+                return 2;
+            }
             Yaku::SanshokuDoujun => {
                 if is_open {
-                    1
-                } else {
-                    2
+                    return 1;
                 }
+                return 2;
             }
             Yaku::Chantaiyao => 2,
             Yaku::Sanankou => 2,
