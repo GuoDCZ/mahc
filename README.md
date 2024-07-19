@@ -89,7 +89,7 @@ Fu:
 - [x] Toitoi
 - [x] Ittsuu
 - [x] SanshokuDoujun
-- [ ] Chantaiyao
+- [x] Chantaiyao
 - [x] Sanankou
 - [ ] SanshokuDoukou
 - [x] Sankantsu
