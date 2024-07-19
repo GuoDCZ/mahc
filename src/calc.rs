@@ -28,9 +28,16 @@ pub fn get_hand_score(
     honba: u16,
 ) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
-    let fu = hand.calculate_fu(tsumo);
     let yaku = get_yaku_han(&hand, riichi, tsumo);
-    let han_and_fu = vec![yaku.0 + dora, fu.0];
+    let mut han_and_fu: Vec<u16> = vec![];
+    let fu: (u16, Vec<mahc::Fu>);
+    //fuck you chiitoiistu, why u gota be different
+    if yaku.1.contains(&Yaku::Chiitoitsu) {
+        fu = (25, vec![mahc::Fu::BasePointsChitoi]);
+    } else {
+        fu = hand.calculate_fu(tsumo);
+    }
+    han_and_fu = vec![yaku.0 + dora, fu.0];
     let scores = calculate(&han_and_fu, honba).unwrap();
     return (scores, yaku.1, fu.1, han_and_fu, hand.is_open());
 }

@@ -25,6 +25,7 @@ pub enum HandErr {
 #[derive(Debug, PartialEq)]
 pub enum Fu {
     BasePoints,
+    BasePointsChitoi,
     ClosedRon,
     Tsumo,
     NonSimpleClosedTriplet,
@@ -43,6 +44,7 @@ impl Fu {
     pub fn to_string(&self) -> String {
         match self {
             Fu::BasePoints => "BasePoints: 20".to_string(),
+            Fu::BasePointsChitoi => "BasePoints: 25".to_string(),
             Fu::ClosedRon => "ClosedRon: 10".to_string(),
             Fu::Tsumo => "Tsumo: 2".to_string(),
             Fu::NonSimpleClosedTriplet => "NonSimpleClosedTriplet: 8".to_string(),
