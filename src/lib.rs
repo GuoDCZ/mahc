@@ -457,6 +457,24 @@ impl Hand {
                 && values.contains(&"7".to_string())
         })
     }
+    pub fn is_chantaiyao(&self) -> bool {
+        if self.sequences().len() == 0 {
+            return false
+        }
+
+        let mut has_terminal: bool = false;
+        let mut has_honor: bool = false;
+        for i in self.groups.clone() {
+            if i.isterminal {
+                has_terminal = true;
+            } else if i.suit == Suit::Dragon || i.suit == Suit::Wind {
+                has_honor = true;
+            } else {
+                return false;
+            }
+        }
+        has_terminal && has_honor
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

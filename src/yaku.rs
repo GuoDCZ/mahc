@@ -80,7 +80,12 @@ impl Yaku {
                     "Sanshoku Doujun: 2".to_string()
                 }
             }
-            Yaku::Chantaiyao => "Chantaiyao: 2".to_string(),
+            Yaku::Chantaiyao => {
+                if is_open {
+                    return "Chantaiyao: 1".to_string()
+                }
+                    return "Chantaiyao: 2".to_string()
+            }
             Yaku::Sanankou => "Sanankou: 2".to_string(),
             Yaku::SanshokuDoukou => "SanshokuDoukou: 2".to_string(),
             Yaku::Sankantsu => "Sankantsu: 2".to_string(),

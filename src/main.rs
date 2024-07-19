@@ -134,6 +134,51 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+    #[test]
+    fn yaku_chantaiyao() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "999p".to_string(),
+                "111p".to_string(),
+                "rrrdo".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chantaiyao(), true);
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "999p".to_string(),
+                "111p".to_string(),
+                "999m".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chantaiyao(), false);
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "999p".to_string(),
+                "111p".to_string(),
+                "999m".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chantaiyao(), false);
+    }
 
     #[test]
     fn yaku_ittsuu() {
@@ -151,6 +196,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_ittsuu(), true);
+
         let out = lib::Hand::new(
             vec![
                 "789m".to_string(),
