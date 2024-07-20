@@ -77,15 +77,14 @@ Fu:
 - [x] Yakuhai 
 - [x] MenzenTsumo
 - [x] Pinfu
-- [ ] Riichi
-- [ ] Ippatsu
-- [ ] HaiteiRaoyue
-- [ ] HouteiRaoyui
-- [ ] RinshanKaihou
-- [ ] Chankan
+- [x] Riichi
+- [x] Ippatsu
+- [x] Haitei
+- [x] RinshanKaihou
+- [x] Chankan
 
 ###### Two Han Yaku
-- [ ] DoubleRiichi
+- [x] DoubleRiichi
 - [x] Toitoi
 - [x] Ittsuu
 - [x] SanshokuDoujun

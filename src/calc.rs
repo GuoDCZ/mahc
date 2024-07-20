@@ -25,13 +25,19 @@ pub fn get_hand_score(
     prev: String,
     tsumo: bool,
     riichi: bool,
+    doubleriichi: bool,
+    ippatsu: bool,
+    haitei: bool,
+    rinshan: bool,
+    chankan: bool,
     honba: u16,
 ) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
-    let yaku = get_yaku_han(&hand, riichi, tsumo);
+    let yaku = get_yaku_han(&hand, riichi, doubleriichi, ippatsu, haitei, rinshan, chankan, tsumo);
     let mut han_and_fu: Vec<u16> = vec![];
     let fu: (u16, Vec<mahc::Fu>);
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
+    //i can move this to calculatefu method maybe?
     if yaku.1.contains(&Yaku::Chiitoitsu) {
         fu = (25, vec![mahc::Fu::BasePointsChitoi]);
     } else {
@@ -49,10 +55,24 @@ pub fn get_hand_score(
     let scores = calculate(&han_and_fu, honba).unwrap();
     return (scores, yaku.1, fu.1, han_and_fu, hand.is_open());
 }
-pub fn get_yaku_han(hand: &mahc::Hand, riichi: bool, tsumo: bool) -> (u16, Vec<Yaku>) {
+pub fn get_yaku_han(
+    hand: &mahc::Hand,
+    riichi: bool,
+    doubleriichi: bool,
+    ippatsu: bool,
+    haitei: bool,
+    rinshan: bool,
+    chankan: bool,
+    tsumo: bool,
+) -> (u16, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];
     let conditions = [
         (riichi, Yaku::Riichi),
+        (doubleriichi, Yaku::DoubleRiichi),
+        (ippatsu, Yaku::Ippatsu),
+        (haitei, Yaku::Haitei),
+        (rinshan, Yaku::RinshanKaihou),
+        (chankan, Yaku::Chankan),
         (hand.is_tanyao(), Yaku::Tanyao),
         (hand.is_iipeikou(), Yaku::Iipeikou),
         (hand.is_ryanpeikou(), Yaku::Ryanpeikou),

@@ -8,8 +8,7 @@ pub enum Yaku {
     Pinfu,
     Riichi,  //(bascially done by default)
     Ippatsu, //(bascially done by default)
-    HaiteiRaoyue,
-    HouteiRaoyui,
+    Haitei,
     RinshanKaihou,
     Chankan,
 
@@ -60,8 +59,7 @@ impl Yaku {
             Yaku::Pinfu => "Pinfu: 1".to_string(),
             Yaku::Riichi => "Riichi: 1".to_string(),
             Yaku::Ippatsu => "Ippatsu: 1".to_string(),
-            Yaku::HaiteiRaoyue => "HaiteiRaoyue: 1".to_string(),
-            Yaku::HouteiRaoyui => "HouteiRaoyui: 1".to_string(),
+            Yaku::Haitei => "Haitei: 1".to_string(),
             Yaku::RinshanKaihou => "RinshanKaihou: 1".to_string(),
             Yaku::Chankan => "Chankan: 1".to_string(),
 
@@ -82,9 +80,9 @@ impl Yaku {
             }
             Yaku::Chantaiyao => {
                 if is_open {
-                    return "Chantaiyao: 1".to_string()
+                    return "Chantaiyao: 1".to_string();
                 }
-                    return "Chantaiyao: 2".to_string()
+                return "Chantaiyao: 2".to_string();
             }
             Yaku::Sanankou => "Sanankou: 2".to_string(),
             Yaku::SanshokuDoukou => "SanshokuDoukou: 2".to_string(),
@@ -136,8 +134,7 @@ impl Yaku {
             Yaku::Pinfu => 1,
             Yaku::Riichi => 1,
             Yaku::Ippatsu => 1,
-            Yaku::HaiteiRaoyue => 1,
-            Yaku::HouteiRaoyui => 1,
+            Yaku::Haitei => 1,
             Yaku::RinshanKaihou => 1,
             Yaku::Chankan => 1,
 

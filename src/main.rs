@@ -36,6 +36,27 @@ pub struct Args {
     #[arg(short, long, default_value_t = false)]
     riichi: bool,
 
+    /// is double riichi 
+    #[arg(short, long, default_value_t = false)]
+    friichi: bool,
+    
+    /// is ippatsu 
+    #[arg(short, long, default_value_t = false)]
+    ippatsu: bool,
+
+    /// is haitei 
+    #[arg(long, default_value_t = false)]
+    haitei: bool,
+    
+    /// is rinshan 
+    #[arg(long, default_value_t = false)]
+    rinshan: bool,
+
+    /// is chankan 
+    #[arg(long, default_value_t = false)]
+    chankan: bool,
+
+
     /// honba count
     #[arg(short, long, default_value_t = 0)]
     ba: u16,
@@ -74,6 +95,11 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
         args.prev.clone(),
         args.tsumo,
         args.riichi,
+        args.friichi,
+        args.ippatsu,
+        args.haitei,
+        args.rinshan,
+        args.chankan,
         args.ba,
     );
 
