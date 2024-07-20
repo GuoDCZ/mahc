@@ -76,7 +76,7 @@ Fu:
 - [x] Iipeikou 
 - [x] Yakuhai 
 - [x] MenzenTsumo
-- [ ] Pinfu
+- [x] Pinfu
 - [ ] Riichi
 - [ ] Ippatsu
 - [ ] HaiteiRaoyue

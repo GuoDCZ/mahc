@@ -135,6 +135,66 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_pinfu() {
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "678p".to_string(),
+                "345s".to_string(),
+                "11s".to_string(),
+                "456m".to_string(),
+            ],
+            "6m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_pinfu(), true);
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "678po".to_string(),
+                "345s".to_string(),
+                "11s".to_string(),
+                "456m".to_string(),
+            ],
+            "5m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_pinfu(), false);
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "678p".to_string(),
+                "345s".to_string(),
+                "11s".to_string(),
+                "456m".to_string(),
+            ],
+            "5m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_pinfu(), false);
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "678p".to_string(),
+                "345s".to_string(),
+                "11s".to_string(),
+                "rrrd".to_string(),
+            ],
+            "rd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_pinfu(), false);
+    }
+
+    #[test]
     fn yaku_menzentsumo() {
         let out = lib::Hand::new(
             vec![

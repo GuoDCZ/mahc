@@ -482,6 +482,19 @@ impl Hand {
     pub fn is_menzentsumo(&self, tsumo: bool) -> bool {
         !self.isopen && tsumo
     }
+    pub fn is_pinfu(&self) -> bool {
+        if self.isopen {
+            return false;
+        }
+        let fu = self.calculate_fu(false);
+        for i in fu.1 {
+            if i != Fu::ClosedRon && i != Fu::BasePoints {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

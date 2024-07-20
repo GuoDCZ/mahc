@@ -31,11 +31,19 @@ pub fn get_hand_score(
     let yaku = get_yaku_han(&hand, riichi, tsumo);
     let mut han_and_fu: Vec<u16> = vec![];
     let fu: (u16, Vec<mahc::Fu>);
-    //fuck you chiitoiistu, why u gota be different
+    //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
     if yaku.1.contains(&Yaku::Chiitoitsu) {
         fu = (25, vec![mahc::Fu::BasePointsChitoi]);
     } else {
-        fu = hand.calculate_fu(tsumo);
+        if yaku.1.contains(&Yaku::Pinfu) {
+            if tsumo {
+                fu = (20, vec![mahc::Fu::BasePoints]);
+            } else {
+                fu = (30, vec![mahc::Fu::BasePoints, mahc::Fu::ClosedRon]);
+            }
+        } else {
+            fu = hand.calculate_fu(tsumo);
+        }
     }
     han_and_fu = vec![yaku.0 + dora, fu.0];
     let scores = calculate(&han_and_fu, honba).unwrap();
@@ -60,6 +68,7 @@ pub fn get_yaku_han(hand: &mahc::Hand, riichi: bool, tsumo: bool) -> (u16, Vec<Y
         (hand.is_chantaiyao(), Yaku::Chantaiyao),
         (hand.is_chiitoitsu(), Yaku::Chiitoitsu),
         (hand.is_menzentsumo(tsumo), Yaku::MenzenTsumo),
+        (hand.is_pinfu(), Yaku::Pinfu),
     ];
 
     for (condition, yaku_type) in conditions {
