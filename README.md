@@ -7,21 +7,22 @@ Options
 ===============
 
 ```
---help
---tiles   tiles                (default: none)
--w --win     winning tile         (default: last tile in hand)
--d --dora    dora (and ura) tiles (default: none)
--s --seat    seat wind            (default: East)
--p --prev    prevelant wind       (default: East)
--t --tsumo   tsumo                (default: false)
--r --riichi  riichi               (default: false)
--m --manual  calc mode            (default: false)
--b --ba      honba count          (default: 0)
-.
-.
-.
-.
-and so on and so on 
+      --tiles <TILES>...          Hand tiles
+  -w, --win <WIN>                 Winning tile
+  -d, --dora <DORA>               Han from dora [default: 0]
+  -s, --seat <SEAT>               seat wind [default: Ew]
+  -p, --prev <PREV>               prevelant wind [default: Ew]
+  -t, --tsumo                     is tsumo
+  -r, --riichi                    is riichi
+  -f, --friichi                   is double riichi
+  -i, --ippatsu                   is ippatsu
+      --haitei                    is haitei
+      --rinshan                   is rinshan
+      --chankan                   is chankan
+  -b, --ba <BA>                   honba count [default: 0]
+  -m, --manual <MANUAL> <MANUAL>  calculator mode
+  -h, --help                      Print help
+  -V, --version                   Print version
 ```
 
 Notation
