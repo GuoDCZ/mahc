@@ -37,8 +37,8 @@ pub struct Args {
     riichi: bool,
 
     /// is double riichi 
-    #[arg(short, long, default_value_t = false)]
-    friichi: bool,
+    #[arg(long, default_value_t = false)]
+    doubleriichi: bool,
     
     /// is ippatsu 
     #[arg(short, long, default_value_t = false)]
@@ -95,7 +95,7 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
         args.prev.clone(),
         args.tsumo,
         args.riichi,
-        args.friichi,
+        args.doubleriichi,
         args.ippatsu,
         args.haitei,
         args.rinshan,

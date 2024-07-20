@@ -14,7 +14,7 @@ Options
   -p, --prev <PREV>               prevelant wind [default: Ew]
   -t, --tsumo                     is tsumo
   -r, --riichi                    is riichi
-  -f, --friichi                   is double riichi
+      --doubleriichi              is double riichi
   -i, --ippatsu                   is ippatsu
       --haitei                    is haitei
       --rinshan                   is rinshan
