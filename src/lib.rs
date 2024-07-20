@@ -479,6 +479,9 @@ impl Hand {
     pub fn is_chiitoitsu(&self) -> bool {
         self.pairs().len() == 7
     }
+    pub fn is_menzentsumo(&self, tsumo: bool) -> bool {
+        !self.isopen && tsumo
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

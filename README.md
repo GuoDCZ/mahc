@@ -75,7 +75,7 @@ Fu:
 - [x] Tanyao
 - [x] Iipeikou 
 - [x] Yakuhai 
-- [ ] MenzenTsumo
+- [x] MenzenTsumo
 - [ ] Pinfu
 - [ ] Riichi
 - [ ] Ippatsu

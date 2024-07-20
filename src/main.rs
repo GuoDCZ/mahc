@@ -135,6 +135,58 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_menzentsumo() {
+        let out = lib::Hand::new(
+            vec![
+                "11s".to_string(),
+                "22p".to_string(),
+                "33p".to_string(),
+                "44p".to_string(),
+                "55p".to_string(),
+                "66p".to_string(),
+                "77p".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_menzentsumo(true), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "11s".to_string(),
+                "22p".to_string(),
+                "33p".to_string(),
+                "44p".to_string(),
+                "55p".to_string(),
+                "66p".to_string(),
+                "77p".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_menzentsumo(false), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "123p".to_string(),
+                "999p".to_string(),
+                "111p".to_string(),
+                "rrrdo".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_menzentsumo(false), false);
+    }
+
+    #[test]
     fn yaku_chiitoitsu() {
         let out = lib::Hand::new(
             vec![
