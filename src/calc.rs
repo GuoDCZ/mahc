@@ -99,6 +99,7 @@ pub fn get_yaku_han(
         (hand.is_menzentsumo(tsumo), Yaku::MenzenTsumo),
         (hand.is_pinfu(), Yaku::Pinfu),
         (hand.is_sanshokudoukou(), Yaku::SanshokuDoukou),
+        (hand.is_chinitsu(), Yaku::Chinitsu),
     ];
 
     for (condition, yaku_type) in conditions {

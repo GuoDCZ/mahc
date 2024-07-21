@@ -159,6 +159,37 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+    #[test]
+    fn yaku_chinitsu() {
+        let out = lib::Hand::new(
+            vec![
+                "222p".to_string(),
+                "123p".to_string(),
+                "345p".to_string(),
+                "88p".to_string(),
+                "567p".to_string(),
+            ],
+            "6p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chinitsu(), true);
+        let out = lib::Hand::new(
+            vec![
+                "222p".to_string(),
+                "123p".to_string(),
+                "345p".to_string(),
+                "88s".to_string(),
+                "567p".to_string(),
+            ],
+            "6p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chinitsu(), false);
+    }
 
     #[test]
     fn yaku_sanshokudoukou() {

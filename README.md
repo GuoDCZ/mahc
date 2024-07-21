@@ -118,7 +118,7 @@ Fu:
 - [x] Ryanpeikou 
 
 ##### Six Han Yaku
-- [ ] Chinitsu
+- [x] Chinitsu
 
 ##### Yakuman 
 - [ ] KazoeYakuman

@@ -516,6 +516,12 @@ impl Hand {
         }
         return false;
     }
+    pub fn is_chinitsu(&self) -> bool {
+        let mut suits: Vec<Suit> = self.groups.iter().map(|x| x.suit.clone()).collect();
+        println!("{:?}", suits);
+        suits.dedup();
+        suits.len() == 1
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

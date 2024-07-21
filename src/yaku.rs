@@ -106,7 +106,13 @@ impl Yaku {
             }
             Yaku::Ryanpeikou => "Ryanpeikou: 3".to_string(),
 
-            Yaku::Chinitsu => "Chinitsu: 6".to_string(),
+            Yaku::Chinitsu => {
+                if is_open {
+                    "Chinitsu: 5".to_string()
+                } else {
+                    "Chinitsu: 6".to_string()
+                }
+            }
 
             //TODO gota be a better way of doing this
             Yaku::KazoeYakuman => "KazoeYakuman: ".to_string(),
@@ -174,7 +180,12 @@ impl Yaku {
             }
             Yaku::Ryanpeikou => 3,
 
-            Yaku::Chinitsu => 6,
+            Yaku::Chinitsu => {
+                if is_open {
+                    return 5;
+                }
+                return 6;
+            }
 
             //TODO gota be a better way of doing this
             Yaku::KazoeYakuman => 0,
