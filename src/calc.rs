@@ -61,9 +61,21 @@ pub fn get_hand_score(
         }
     }
     han_and_fu = vec![yaku.0 + dora, fu.0];
-    let scores = calculate(&han_and_fu, honba).unwrap();
+    let mut has_yakuman = false;
+    for i in &yaku.1 {
+        if i.is_yakuman() {
+            has_yakuman = true;
+        }
+    }
+    let mut scores: Vec<u16> = vec![];
+    if has_yakuman {
+        scores = calculate_yakuman(&yaku.1).unwrap();
+    } else {
+        scores = calculate(&han_and_fu, honba).unwrap();
+    }
     return (scores, yaku.1, fu.1, han_and_fu, hand.is_open());
 }
+
 pub fn get_yaku_han(
     hand: &mahc::Hand,
     riichi: bool,
@@ -101,6 +113,19 @@ pub fn get_yaku_han(
         (hand.is_sanshokudoukou(), Yaku::SanshokuDoukou),
         (hand.is_chinitsu(), Yaku::Chinitsu),
     ];
+    //check if there are many yakuman, if so return only yakuman
+    //this is so unbelievably jank but it works
+    let mut yakuman: Vec<Yaku> = vec![];
+    let yakumanconditions = [(hand.is_daisangen(), Yaku::Daisangen)];
+
+    for (condition, yaku_type) in yakumanconditions {
+        if condition {
+            yakuman.push(yaku_type);
+        }
+    }
+    if yakuman.len() != 0 {
+        return (yakuman.len() as u16, yakuman);
+    }
 
     for (condition, yaku_type) in conditions {
         if condition {
@@ -115,6 +140,26 @@ pub fn get_yaku_han(
         yaku_han += y.get_han(hand.is_open());
     }
     return (yaku_han, yaku);
+}
+
+pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u16>, CalculatorErrors> {
+    let mut total = 0;
+    for y in yaku {
+        if y.is_yakuman() {
+            total += y.get_han(false);
+        }
+    }
+    if total == 0 {
+        return Err(CalculatorErrors::NoYaku);
+    }
+    let scores = vec![
+        48000 * total,
+        16000 * total,
+        32000 * total,
+        8000 * total,
+        16000 * total,
+    ];
+    Ok(scores)
 }
 
 pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u16>, CalculatorErrors> {

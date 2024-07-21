@@ -518,9 +518,19 @@ impl Hand {
     }
     pub fn is_chinitsu(&self) -> bool {
         let mut suits: Vec<Suit> = self.groups.iter().map(|x| x.suit.clone()).collect();
-        println!("{:?}", suits);
         suits.dedup();
         suits.len() == 1
+    }
+    pub fn is_daisangen(&self) -> bool {
+        let trips: Vec<String> = self
+            .triplets()
+            .iter()
+            .chain(self.kans().iter())
+            .map(|x| x.value.clone())
+            .collect();
+        trips.contains(&"r".to_string())
+            && trips.contains(&"g".to_string())
+            && trips.contains(&"w".to_string())
     }
 }
 

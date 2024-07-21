@@ -160,6 +160,52 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_daisangen() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "gggd".to_string(),
+                "wwwwd".to_string(),
+                "88p".to_string(),
+                "567p".to_string(),
+            ],
+            "6p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_daisangen(), true);
+        let out = lib::Hand::new(
+            vec![
+                "rrrrd".to_string(),
+                "ggggd".to_string(),
+                "wwwwd".to_string(),
+                "88p".to_string(),
+                "567p".to_string(),
+            ],
+            "6p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_daisangen(), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrrd".to_string(),
+                "gggd".to_string(),
+                "wwd".to_string(),
+                "888p".to_string(),
+                "567p".to_string(),
+            ],
+            "6p".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_daisangen(), false);
+    }
+    #[test]
     fn yaku_chinitsu() {
         let out = lib::Hand::new(
             vec![

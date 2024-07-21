@@ -121,10 +121,10 @@ Fu:
 - [x] Chinitsu
 
 ##### Yakuman 
-- [ ] KazoeYakuman
+- [x] KazoeYakuman
 - [ ] KokushiMusou
 - [ ] Suuankou
-- [ ] Daisangen
+- [x] Daisangen
 - [ ] Shousuushii
 - [ ] Daisuushii
 - [ ] Tsuuiisou
