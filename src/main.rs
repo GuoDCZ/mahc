@@ -36,26 +36,25 @@ pub struct Args {
     #[arg(short, long, default_value_t = false)]
     riichi: bool,
 
-    /// is double riichi 
+    /// is double riichi
     #[arg(long, default_value_t = false)]
     doubleriichi: bool,
-    
-    /// is ippatsu 
+
+    /// is ippatsu
     #[arg(short, long, default_value_t = false)]
     ippatsu: bool,
 
-    /// is haitei 
+    /// is haitei
     #[arg(long, default_value_t = false)]
     haitei: bool,
-    
-    /// is rinshan 
+
+    /// is rinshan
     #[arg(long, default_value_t = false)]
     rinshan: bool,
 
-    /// is chankan 
+    /// is chankan
     #[arg(long, default_value_t = false)]
     chankan: bool,
-
 
     /// honba count
     #[arg(short, long, default_value_t = 0)]
@@ -160,6 +159,53 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn yaku_sanshokudoukou() {
+        let out = lib::Hand::new(
+            vec![
+                "222p".to_string(),
+                "222m".to_string(),
+                "222s".to_string(),
+                "11s".to_string(),
+                "456m".to_string(),
+            ],
+            "6m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanshokudoukou(), true);
+        let out = lib::Hand::new(
+            vec![
+                "222p".to_string(),
+                "2222m".to_string(),
+                "222s".to_string(),
+                "11s".to_string(),
+                "3333s".to_string(),
+            ],
+            "6m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanshokudoukou(), true);
+        let out = lib::Hand::new(
+            vec![
+                "222p".to_string(),
+                "333m".to_string(),
+                "222s".to_string(),
+                "11s".to_string(),
+                "333s".to_string(),
+            ],
+            "6m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_sanshokudoukou(), false);
+    }
+
     #[test]
     fn yaku_pinfu() {
         let out = lib::Hand::new(
@@ -176,6 +222,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_pinfu(), true);
+
         let out = lib::Hand::new(
             vec![
                 "123p".to_string(),

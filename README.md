@@ -106,7 +106,7 @@ Fu:
 - [x] SanshokuDoujun
 - [x] Chantaiyao
 - [x] Sanankou
-- [ ] SanshokuDoukou
+- [x] SanshokuDoukou
 - [x] Sankantsu
 - [x] Honroutou
 - [x] Shousangen

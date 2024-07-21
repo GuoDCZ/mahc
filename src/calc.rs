@@ -33,7 +33,16 @@ pub fn get_hand_score(
     honba: u16,
 ) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
-    let yaku = get_yaku_han(&hand, riichi, doubleriichi, ippatsu, haitei, rinshan, chankan, tsumo);
+    let yaku = get_yaku_han(
+        &hand,
+        riichi,
+        doubleriichi,
+        ippatsu,
+        haitei,
+        rinshan,
+        chankan,
+        tsumo,
+    );
     let mut han_and_fu: Vec<u16> = vec![];
     let fu: (u16, Vec<mahc::Fu>);
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
@@ -89,6 +98,7 @@ pub fn get_yaku_han(
         (hand.is_chiitoitsu(), Yaku::Chiitoitsu),
         (hand.is_menzentsumo(tsumo), Yaku::MenzenTsumo),
         (hand.is_pinfu(), Yaku::Pinfu),
+        (hand.is_sanshokudoukou(), Yaku::SanshokuDoukou),
     ];
 
     for (condition, yaku_type) in conditions {
