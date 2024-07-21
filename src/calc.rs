@@ -31,7 +31,7 @@ pub fn get_hand_score(
     rinshan: bool,
     chankan: bool,
     honba: u16,
-) -> (Vec<u16>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
+) -> (Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
     let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
     let yaku = get_yaku_han(
         &hand,
@@ -67,11 +67,12 @@ pub fn get_hand_score(
             has_yakuman = true;
         }
     }
-    let mut scores: Vec<u16> = vec![];
+    let mut scores: Vec<u32> = vec![];
     if has_yakuman {
         scores = calculate_yakuman(&yaku.1).unwrap();
     } else {
         scores = calculate(&han_and_fu, honba).unwrap();
+
     }
     return (scores, yaku.1, fu.1, han_and_fu, hand.is_open());
 }
@@ -116,7 +117,11 @@ pub fn get_yaku_han(
     //check if there are many yakuman, if so return only yakuman
     //this is so unbelievably jank but it works
     let mut yakuman: Vec<Yaku> = vec![];
-    let yakumanconditions = [(hand.is_daisangen(), Yaku::Daisangen)];
+    let yakumanconditions = [
+        (hand.is_daisangen(), Yaku::Daisangen),
+        (hand.is_suuankou(tsumo), Yaku::Suuankou),
+        (hand.is_suuankoutankiwait(), Yaku::SuuankouTankiWait),
+    ];
 
     for (condition, yaku_type) in yakumanconditions {
         if condition {
@@ -142,7 +147,7 @@ pub fn get_yaku_han(
     return (yaku_han, yaku);
 }
 
-pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u16>, CalculatorErrors> {
+pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, CalculatorErrors> {
     let mut total = 0;
     for y in yaku {
         if y.is_yakuman() {
@@ -152,17 +157,18 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u16>, CalculatorErrors>
     if total == 0 {
         return Err(CalculatorErrors::NoYaku);
     }
+    let basepoints: u32 = 8000 * total as u32;
     let scores = vec![
-        48000 * total,
-        16000 * total,
-        32000 * total,
-        8000 * total,
-        16000 * total,
+        basepoints * 6,
+        basepoints * 2,
+        basepoints * 4,
+        basepoints,
+        basepoints * 2,
     ];
     Ok(scores)
 }
 
-pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u16>, CalculatorErrors> {
+pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u32>, CalculatorErrors> {
     let han = args[0];
     let fu = args[1];
     if han == 0 {
@@ -180,7 +186,7 @@ pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u16>, CalculatorErro
             scores[2] = scores[2] + honba as u16 * 300;
             scores[3] = scores[3] + honba as u16 * 100;
             scores[4] = scores[4] + honba as u16 * 100;
-            return Ok(scores);
+            return Ok(scores.iter().map(|x| *x as u32).collect());
         }
         None => (),
     }
@@ -206,5 +212,5 @@ pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u16>, CalculatorErro
         non_dealer_tsumo_to_dealer,
     ];
 
-    return Ok(scores);
+    return Ok(scores.iter().map(|x| *x as u32).collect());
 }

@@ -123,7 +123,9 @@ Fu:
 ##### Yakuman 
 - [x] KazoeYakuman
 - [ ] KokushiMusou
-- [ ] Suuankou
+- [ ] KokushiMusou 13 sided wait
+- [x] Suuankou
+- [x] Suuankou tanki wait
 - [x] Daisangen
 - [ ] Shousuushii
 - [ ] Daisuushii
@@ -131,6 +133,7 @@ Fu:
 - [ ] Chinroutou
 - [ ] Ryuuiisou
 - [ ] ChuurenPoutou
+- [ ] ChuurenPoutou 9 sided wait
 - [ ] Suukantsu
 - [ ] Tenhou
 - [ ] Chiihou

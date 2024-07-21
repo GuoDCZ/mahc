@@ -521,6 +521,7 @@ impl Hand {
         suits.dedup();
         suits.len() == 1
     }
+    //yakuman
     pub fn is_daisangen(&self) -> bool {
         let trips: Vec<String> = self
             .triplets()
@@ -531,6 +532,39 @@ impl Hand {
         trips.contains(&"r".to_string())
             && trips.contains(&"g".to_string())
             && trips.contains(&"w".to_string())
+    }
+    pub fn is_suuankou(&self, tsumo: bool) -> bool {
+        let mut closed_triplet_count = 0;
+        for i in self.triplets().iter().chain(self.kans().iter()) {
+            if !i.isopen {
+                closed_triplet_count += 1;
+            }
+        }
+        if closed_triplet_count != 4 {
+            return false;
+        }
+
+        if !tsumo {
+            if self.groups.last().unwrap().group_type == GroupType::Triplet {
+                return false;
+            }
+        }
+        return true;
+    }
+    pub fn is_suuankoutankiwait(&self) -> bool {
+        let mut closed_triplet_count = 0;
+        for i in self.triplets().iter().chain(self.kans().iter()) {
+            if !i.isopen {
+                closed_triplet_count += 1;
+            }
+        }
+        if closed_triplet_count != 4 {
+            return false;
+        }
+        if self.groups.last().unwrap().group_type == GroupType::Pair {
+            return true;
+        }
+        return false;
     }
 }
 

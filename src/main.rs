@@ -105,15 +105,17 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
     //TODO VALIDATION (i dont care enough yet)
     let mut printout: String = String::new();
     if args.ba != 0 {
-        printout.push_str(
-            format!(
-                "\n{} Han/ {} Fu/ {} Honba",
-                result.3[0], result.3[1], args.ba
+        if !result.1[0].is_yakuman() {
+            printout.push_str(
+                format!(
+                    "\n{} Han/ {} Fu/ {} Honba",
+                    result.3[0], result.3[1], args.ba
+                )
+                .as_str(),
             )
-            .as_str(),
-        )
-    } else {
-        printout.push_str(format!("\n{} Han/ {} Fu", result.3[0], result.3[1]).as_str())
+        } else {
+            printout.push_str(format!("\n{} Han/ {} Fu", result.3[0], result.3[1]).as_str())
+        }
     }
 
     printout.push_str(
@@ -124,16 +126,20 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
         .as_str(),
     );
 
-    if args.dora != 0 {
-        printout.push_str(format!("\n\nDora: {}\n", args.dora).as_str());
+    if !result.1[0].is_yakuman() {
+        if args.dora != 0 {
+            printout.push_str(format!("\n\nDora: {}\n", args.dora).as_str());
+        }
     }
     printout.push_str("\nYaku: ");
-    for i in result.1 {
+    for i in &result.1 {
         printout.push_str(format!("\n  {}", i.to_string(result.4)).as_str());
     }
-    printout.push_str("\n\nFu: ");
-    for i in result.2 {
-        printout.push_str(format!("\n  {}", i.to_string()).as_str());
+    if !result.1[0].is_yakuman() {
+        printout.push_str("\n\nFu: ");
+        for i in result.2 {
+            printout.push_str(format!("\n  {}", i.to_string()).as_str());
+        }
     }
     Ok(printout)
 }
@@ -159,6 +165,85 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+    #[test]
+    fn yaku_suuankoutankiwait() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "888p".to_string(),
+                "777s".to_string(),
+                "111s".to_string(),
+                "11m".to_string(),
+            ],
+            "1m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_suuankoutankiwait(), true);
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "888p".to_string(),
+                "777s".to_string(),
+                "11m".to_string(),
+                "111s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_suuankoutankiwait(), false);
+    }
+
+    #[test]
+    fn yaku_suuankou() {
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "888p".to_string(),
+                "777s".to_string(),
+                "111s".to_string(),
+                "11m".to_string(),
+            ],
+            "1m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_suuankou(false), true);
+
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "888p".to_string(),
+                "777s".to_string(),
+                "11m".to_string(),
+                "111s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_suuankou(true), true);
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "888p".to_string(),
+                "777s".to_string(),
+                "11m".to_string(),
+                "111s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_suuankou(false), false);
+    }
+
     #[test]
     fn yaku_daisangen() {
         let out = lib::Hand::new(
