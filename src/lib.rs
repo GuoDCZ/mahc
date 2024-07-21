@@ -336,7 +336,7 @@ impl Hand {
         return count;
     }
     pub fn is_toitoi(&self) -> bool {
-        self.triplets().len() + self.kans().len() == 4 && self.is_open()
+        self.triplets().len() + self.kans().len() == 4
     }
     pub fn is_sanankou(&self, tsumo: bool) -> bool {
         let mut closed_triplet_count = 0;
