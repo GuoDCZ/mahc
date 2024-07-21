@@ -534,13 +534,7 @@ impl Hand {
             && trips.contains(&"w".to_string())
     }
     pub fn is_suuankou(&self, tsumo: bool) -> bool {
-        let mut closed_triplet_count = 0;
-        for i in self.triplets().iter().chain(self.kans().iter()) {
-            if !i.isopen {
-                closed_triplet_count += 1;
-            }
-        }
-        if closed_triplet_count != 4 {
+        if self.triplets().len() + self.kans().len() != 4 || self.isopen {
             return false;
         }
 
@@ -552,13 +546,7 @@ impl Hand {
         return true;
     }
     pub fn is_suuankoutankiwait(&self) -> bool {
-        let mut closed_triplet_count = 0;
-        for i in self.triplets().iter().chain(self.kans().iter()) {
-            if !i.isopen {
-                closed_triplet_count += 1;
-            }
-        }
-        if closed_triplet_count != 4 {
+        if self.triplets().len() + self.kans().len() != 4 || self.isopen {
             return false;
         }
         if self.groups.last().unwrap().group_type == GroupType::Pair {
