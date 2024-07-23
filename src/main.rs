@@ -166,6 +166,99 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_ryuuiisou() {
+        let out = lib::Hand::new(
+            vec![
+                "234s".to_string(),
+                "234s".to_string(),
+                "66s".to_string(),
+                "gggd".to_string(),
+                "888s".to_string(),
+            ],
+            "8s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ryuuiisou(), true);
+        let out = lib::Hand::new(
+            vec![
+                "345s".to_string(),
+                "234s".to_string(),
+                "66s".to_string(),
+                "gggd".to_string(),
+                "888s".to_string(),
+            ],
+            "8s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ryuuiisou(), false);
+
+        let out = lib::Hand::new(
+            vec![
+                "234s".to_string(),
+                "234s".to_string(),
+                "666s".to_string(),
+                "gggd".to_string(),
+                "99s".to_string(),
+            ],
+            "9s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_ryuuiisou(), false);
+    }
+
+    #[test]
+    fn yaku_chinroutou() {
+        let out = lib::Hand::new(
+            vec![
+                "111so".to_string(),
+                "1111m".to_string(),
+                "999s".to_string(),
+                "999p".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chinroutou(), true);
+        let out = lib::Hand::new(
+            vec![
+                "rrrd".to_string(),
+                "1111m".to_string(),
+                "999s".to_string(),
+                "999p".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chinroutou(), false);
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "1111m".to_string(),
+                "789s".to_string(),
+                "999p".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chinroutou(), false);
+    }
+
+    #[test]
     fn yaku_suuankoutankiwait() {
         let out = lib::Hand::new(
             vec![

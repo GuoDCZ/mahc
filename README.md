@@ -130,13 +130,13 @@ Fu:
 - [ ] Shousuushii
 - [ ] Daisuushii
 - [ ] Tsuuiisou
-- [ ] Chinroutou
-- [ ] Ryuuiisou
+- [x] Chinroutou
+- [x] Ryuuiisou
 - [ ] ChuurenPoutou
 - [ ] ChuurenPoutou 9 sided wait
 - [ ] Suukantsu
-- [ ] Tenhou
-- [ ] Chiihou
+- [ ] Tenhou NOT SURE WHAT TO DO WITH THIS
+- [ ] Chiihou NOT SURE WHAT TO DO WITH THIS
 
 # TODO
 - add all da yaku

@@ -554,6 +554,37 @@ impl Hand {
         }
         return false;
     }
+
+    pub fn is_chinroutou(&self) -> bool {
+        if self.kans().len() + self.triplets().len() != 4 {
+            return false;
+        }
+        for i in self.groups.clone() {
+            if !i.isterminal {
+                return false;
+            }
+        }
+        return true;
+    }
+    pub fn is_ryuuiisou(&self) -> bool {
+        for i in self
+            .triplets()
+            .iter()
+            .chain(self.kans().iter())
+            .chain(self.pairs().iter())
+        {
+            match i.value.as_str() {
+                "2" | "3" | "4" | "6" | "8" | "g" => continue,
+                _ => return false,
+            }
+        }
+        for i in self.sequences() {
+            if i.value != "2" {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -121,6 +121,8 @@ pub fn get_yaku_han(
         (hand.is_daisangen(), Yaku::Daisangen),
         (hand.is_suuankou(tsumo), Yaku::Suuankou),
         (hand.is_suuankoutankiwait(), Yaku::SuuankouTankiWait),
+        (hand.is_chinroutou(), Yaku::Chinroutou),
+        (hand.is_ryuuiisou(), Yaku::Ryuuiisou),
     ];
 
     for (condition, yaku_type) in yakumanconditions {
