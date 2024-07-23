@@ -78,7 +78,7 @@ impl Hand {
             tile_groups.push(tile);
         }
 
-        //TODO: standard hand ONLY CHECK MUST FIX FOR CHITOIT AND KOKUSHI
+        //TODO: standard hand ONLY CHECK MUST FIX FOR KOKUSHI
         //TODO: this can FORSURE be shorter
         let (mut tripcount, mut seqcount, mut paircount, mut kancount) = (0, 0, 0, 0);
         for i in &tile_groups {
@@ -105,6 +105,29 @@ impl Hand {
             group_type: GroupType::None,
             isterminal: "19ESWNrgw".contains(win.chars().nth(0).unwrap()),
         };
+
+        // check if last group contains the winning tile 
+        match tile_groups.last().unwrap().group_type {
+            GroupType::Sequence => {
+                if win_tile.suit != tile_groups.last().unwrap().suit {
+                    return Err(HandErr::InvalidShape);
+                }
+                let win_int = win_tile.value.parse::<u8>().unwrap();
+                let last_int = tile_groups.last().unwrap().value.parse::<u8>().unwrap();
+                if win_int != last_int && win_int != last_int + 1 && win_int != last_int + 2 {
+                    return Err(HandErr::InvalidShape);
+                }
+            }
+            GroupType::Triplet | GroupType::Kan | GroupType::Pair => {
+                if tile_groups.last().unwrap().value != win_tile.value
+                    || tile_groups.last().unwrap().suit != win_tile.suit
+                {
+                    return Err(HandErr::InvalidShape);
+                }
+            }
+
+            GroupType::None => todo!(),
+        }
 
         let seat_tile = TileGroup {
             value: seat.chars().nth(0).unwrap().to_string(),
@@ -582,6 +605,56 @@ impl Hand {
             if i.value != "2" {
                 return false;
             }
+        }
+        return true;
+    }
+    pub fn is_chuurenpoutou(&self) -> bool {
+        let suit: Suit = self.groups[0].suit.clone();
+        if self.triplets().len() != 2 || self.sequences().len() != 2 || self.pairs().len() != 1 {
+            return false;
+        }
+
+        for i in self.groups.clone() {
+            if i.suit != suit {
+                return false;
+            }
+        }
+        let mut has_1 = false;
+        let mut has_9 = false;
+        for i in self.triplets().clone() {
+            if i.value == "1" {
+                has_1 = true;
+            }
+            if i.value == "9" {
+                has_9 = true;
+            }
+        }
+        if !has_1 || !has_9 {
+            return false;
+        }
+        let mut vals: Vec<u8> = vec![];
+        for i in self.sequences() {
+            let int = i.value.parse::<u8>().unwrap();
+            vals.push(int);
+            vals.push(int + 1);
+            vals.push(int + 2);
+        }
+        for i in self.pairs() {
+            let int = i.value.parse::<u8>().unwrap();
+            vals.push(int);
+        }
+        vals.sort();
+        if vals != [2, 3, 4, 5, 6, 7, 8] {
+            return false;
+        }
+        return true;
+    }
+    pub fn is_chuurenpoutou9sided(&self) -> bool {
+        if !self.is_chuurenpoutou() {
+            return false;
+        }
+        if self.groups.last().unwrap().group_type != GroupType::Pair {
+            return false;
         }
         return true;
     }

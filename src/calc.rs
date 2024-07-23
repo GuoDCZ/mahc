@@ -123,6 +123,8 @@ pub fn get_yaku_han(
         (hand.is_suuankoutankiwait(), Yaku::SuuankouTankiWait),
         (hand.is_chinroutou(), Yaku::Chinroutou),
         (hand.is_ryuuiisou(), Yaku::Ryuuiisou),
+        (hand.is_chuurenpoutou(), Yaku::ChuurenPoutou),
+        (hand.is_chuurenpoutou9sided(), Yaku::ChuurenPoutou9SidedWait),
     ];
 
     for (condition, yaku_type) in yakumanconditions {

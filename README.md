@@ -132,8 +132,8 @@ Fu:
 - [ ] Tsuuiisou
 - [x] Chinroutou
 - [x] Ryuuiisou
-- [ ] ChuurenPoutou
-- [ ] ChuurenPoutou 9 sided wait
+- [x] ChuurenPoutou
+- [x] ChuurenPoutou 9 sided wait
 - [ ] Suukantsu
 - [ ] Tenhou NOT SURE WHAT TO DO WITH THIS
 - [ ] Chiihou NOT SURE WHAT TO DO WITH THIS
@@ -141,6 +141,8 @@ Fu:
 # TODO
 - add all da yaku
 - validation on if yaku is there 
+- validation a hand is possible (eg not having 20 east tiles :)
+- validate winning tile DONE DONE
 - propogate the errors up for a nice printout 
 - validate stuff like cant riichi and double riichi. all that haitei, chankan
 rinshan shizz

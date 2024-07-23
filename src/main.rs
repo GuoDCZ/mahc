@@ -166,6 +166,79 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_cuurenpoutou() {
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "234s".to_string(),
+                "55s".to_string(),
+                "678s".to_string(),
+                "999s".to_string(),
+            ],
+            "9s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chuurenpoutou(), true);
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "234s".to_string(),
+                "55m".to_string(),
+                "678s".to_string(),
+                "999s".to_string(),
+            ],
+            "9s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chuurenpoutou(), false);
+        let out = lib::Hand::new(
+            vec![
+                "123s".to_string(),
+                "234s".to_string(),
+                "555s".to_string(),
+                "678s".to_string(),
+                "99s".to_string(),
+            ],
+            "9s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chuurenpoutou(), false);
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "234s".to_string(),
+                "678s".to_string(),
+                "999s".to_string(),
+                "55s".to_string(),
+            ],
+            "5s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chuurenpoutou9sided(), true);
+        let out = lib::Hand::new(
+            vec![
+                "111s".to_string(),
+                "234s".to_string(),
+                "678s".to_string(),
+                "55s".to_string(),
+                "999s".to_string(),
+            ],
+            "9s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_chuurenpoutou9sided(), false);
+    }
+    #[test]
     fn yaku_ryuuiisou() {
         let out = lib::Hand::new(
             vec![
@@ -436,10 +509,10 @@ mod test {
                 "222p".to_string(),
                 "2222m".to_string(),
                 "222s".to_string(),
-                "11s".to_string(),
                 "3333s".to_string(),
+                "11s".to_string(),
             ],
-            "6m".to_string(),
+            "1s".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -453,7 +526,7 @@ mod test {
                 "11s".to_string(),
                 "333s".to_string(),
             ],
-            "6m".to_string(),
+            "3s".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -534,7 +607,7 @@ mod test {
                 "66p".to_string(),
                 "77p".to_string(),
             ],
-            "1s".to_string(),
+            "7p".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -551,7 +624,7 @@ mod test {
                 "66p".to_string(),
                 "77p".to_string(),
             ],
-            "1s".to_string(),
+            "7p".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -586,7 +659,7 @@ mod test {
                 "66p".to_string(),
                 "77p".to_string(),
             ],
-            "1s".to_string(),
+            "7p".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -806,7 +879,7 @@ mod test {
                 "789s".to_string(),
                 "11s".to_string(),
             ],
-            "1d".to_string(),
+            "1s".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -868,7 +941,7 @@ mod test {
                 "rrd".to_string(),
                 "234p".to_string(),
             ],
-            "rd".to_string(),
+            "4p".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -1093,7 +1166,7 @@ mod test {
                 "234m".to_string(),
                 "rrrd".to_string(),
             ],
-            "7m".to_string(),
+            "rd".to_string(),
             "Es".to_string(),
             "Ww".to_string(),
         )
@@ -1534,7 +1607,7 @@ mod test {
                 "SSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
@@ -1575,7 +1648,7 @@ mod test {
                 "SSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         );
@@ -1592,7 +1665,7 @@ mod test {
                 "SSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
@@ -1613,7 +1686,7 @@ mod test {
                 "SSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
@@ -1634,7 +1707,7 @@ mod test {
                 "rrrrd".to_string(),
                 "rrrrd".to_string(),
             ],
-            "3s".to_string(),
+            "rd".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
@@ -1655,7 +1728,7 @@ mod test {
                 "SSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
@@ -1676,7 +1749,7 @@ mod test {
                 "SSSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
@@ -1697,7 +1770,7 @@ mod test {
                 "SSSw".to_string(),
                 "SSSw".to_string(),
             ],
-            "3s".to_string(),
+            "Sw".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         )
