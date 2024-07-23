@@ -106,7 +106,7 @@ impl Hand {
             isterminal: "19ESWNrgw".contains(win.chars().nth(0).unwrap()),
         };
 
-        // check if last group contains the winning tile 
+        // check if last group contains the winning tile
         match tile_groups.last().unwrap().group_type {
             GroupType::Sequence => {
                 if win_tile.suit != tile_groups.last().unwrap().suit {
@@ -613,22 +613,13 @@ impl Hand {
         if self.triplets().len() != 2 || self.sequences().len() != 2 || self.pairs().len() != 1 {
             return false;
         }
-
         for i in self.groups.clone() {
             if i.suit != suit {
                 return false;
             }
         }
-        let mut has_1 = false;
-        let mut has_9 = false;
-        for i in self.triplets().clone() {
-            if i.value == "1" {
-                has_1 = true;
-            }
-            if i.value == "9" {
-                has_9 = true;
-            }
-        }
+        let has_1 = self.triplets().clone().iter().any(|i| i.value == "1");
+        let has_9 = self.triplets().clone().iter().any(|i| i.value == "9");
         if !has_1 || !has_9 {
             return false;
         }
