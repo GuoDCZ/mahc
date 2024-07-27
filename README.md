@@ -129,12 +129,13 @@ Fu:
 - [x] Daisangen
 - [ ] Shousuushii
 - [ ] Daisuushii
-- [ ] Tsuuiisou
+- [x] Tsuuiisou
+- [x] Daiichishin 
 - [x] Chinroutou
 - [x] Ryuuiisou
 - [x] ChuurenPoutou
 - [x] ChuurenPoutou 9 sided wait
-- [ ] Suukantsu
+- [x] Suukantsu
 - [ ] Tenhou NOT SURE WHAT TO DO WITH THIS
 - [ ] Chiihou NOT SURE WHAT TO DO WITH THIS
 

@@ -125,6 +125,9 @@ pub fn get_yaku_han(
         (hand.is_ryuuiisou(), Yaku::Ryuuiisou),
         (hand.is_chuurenpoutou(), Yaku::ChuurenPoutou),
         (hand.is_chuurenpoutou9sided(), Yaku::ChuurenPoutou9SidedWait),
+        (hand.is_tsuuiisou(), Yaku::Tsuuiisou),
+        (hand.is_daichiishin(), Yaku::Daichiishin),
+        (hand.is_suukantsu(), Yaku::Suukantsu),
     ];
 
     for (condition, yaku_type) in yakumanconditions {

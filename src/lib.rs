@@ -649,6 +649,20 @@ impl Hand {
         }
         return true;
     }
+    pub fn is_tsuuiisou(&self) -> bool {
+        for i in self.groups.clone() {
+            if i.suit != Suit::Dragon && i.suit != Suit::Wind {
+                return false;
+            }
+        }
+        return true;
+    }
+    pub fn is_daichiishin(&self) -> bool {
+        self.is_tsuuiisou() && self.pairs().len() == 7
+    }
+    pub fn is_suukantsu(&self) -> bool {
+        self.kans().len() == 4
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
