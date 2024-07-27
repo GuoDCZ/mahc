@@ -3,6 +3,7 @@ mod lib;
 pub mod yaku;
 
 use clap::Parser;
+use lib::HandErr;
 
 /// riichi mahjong calculator tool
 #[derive(Parser, Debug)]
@@ -85,7 +86,7 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
         Err(e) => Err(e),
     }
 }
-pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
+pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
     let result = calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
@@ -100,7 +101,7 @@ pub fn parse_hand(args: &Args) -> Result<String, calc::CalculatorErrors> {
         args.rinshan,
         args.chankan,
         args.ba,
-    );
+    )?;
 
     //TODO VALIDATION (i dont care enough yet)
     let mut printout: String = String::new();
@@ -153,12 +154,19 @@ fn main() {
                 println!("{}", o);
             }
             Err(e) => {
-                println!("Error: {:?}", e.to_string());
+                eprintln!("Error: {:?}", e.to_string());
             }
         }
     } else {
         let result = parse_hand(&args);
-        println!("{}", result.unwrap())
+        match result {
+            Ok(o) => {
+                println!("{}", o);
+            }
+            Err(e) => {
+                eprintln!("Error: {:?}", e.to_string());
+            }
+        }
     }
 }
 

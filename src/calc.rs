@@ -1,3 +1,5 @@
+use mahc::HandErr;
+
 use crate::yaku::Yaku;
 
 #[derive(Debug, PartialEq)]
@@ -31,8 +33,8 @@ pub fn get_hand_score(
     rinshan: bool,
     chankan: bool,
     honba: u16,
-) -> (Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool) {
-    let hand = mahc::Hand::new(tiles, win, seat, prev).unwrap();
+) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr>{
+    let hand = mahc::Hand::new(tiles, win, seat, prev)?;
     let yaku = get_yaku_han(
         &hand,
         riichi,
@@ -43,6 +45,9 @@ pub fn get_hand_score(
         chankan,
         tsumo,
     );
+    if yaku.0 == 0 {
+        return Err(HandErr::NoYaku);
+    }
     let mut han_and_fu: Vec<u16> = vec![];
     let fu: (u16, Vec<mahc::Fu>);
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
@@ -74,7 +79,7 @@ pub fn get_hand_score(
         scores = calculate(&han_and_fu, honba).unwrap();
 
     }
-    return (scores, yaku.1, fu.1, han_and_fu, hand.is_open());
+    return Ok((scores, yaku.1, fu.1, han_and_fu, hand.is_open()));
 }
 
 pub fn get_yaku_han(
