@@ -118,15 +118,16 @@ impl Hand {
                     return Err(HandErr::InvalidShape);
                 }
             }
-            GroupType::Triplet | GroupType::Kan | GroupType::Pair => {
+            GroupType::Triplet | GroupType::Pair => {
                 if tile_groups.last().unwrap().value != win_tile.value
                     || tile_groups.last().unwrap().suit != win_tile.suit
                 {
                     return Err(HandErr::InvalidShape);
                 }
             }
+            GroupType::Kan => return Err(HandErr::InvalidShape),
 
-            GroupType::None => todo!(),
+            GroupType::None => return Err(HandErr::InvalidShape),
         }
 
         let seat_tile = TileGroup {
