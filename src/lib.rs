@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 #[derive(Debug)]
 pub enum LimitHands {
     Mangan,
@@ -70,6 +72,7 @@ impl Hand {
     ) -> Result<Self, HandErr> {
         let mut tile_groups: Vec<TileGroup> = Vec::new();
         let mut ishandopen = false;
+
         for i in &tiles {
             let tile = TileGroup::new(i.to_string())?;
             if tile.isopen {
@@ -80,7 +83,7 @@ impl Hand {
 
         //TODO: standard hand ONLY CHECK MUST FIX FOR KOKUSHI
         //TODO: this can FORSURE be shorter
-        let (mut tripcount, mut seqcount, mut paircount, mut kancount) = (0, 0, 0, 0);
+        let (mut tripcount, mut seqcount, mut paircount, mut kancount, mut none) = (0, 0, 0, 0, 0);
         for i in &tile_groups {
             if i.group_type == GroupType::Triplet {
                 tripcount += 1;
@@ -90,10 +93,15 @@ impl Hand {
                 paircount += 1;
             } else if i.group_type == GroupType::Kan {
                 kancount += 1;
+            } else if i.group_type == GroupType::None {
+                none += 1;
             }
         }
 
-        if !(tripcount + seqcount + kancount == 4 && paircount == 1) && paircount != 7 {
+        if !(tripcount + seqcount + kancount == 4 && paircount == 1)
+            && paircount != 7
+            && (none != 12 && paircount == 1)
+        {
             return Err(HandErr::InvalidShape);
         }
 
@@ -107,27 +115,29 @@ impl Hand {
         };
 
         // check if last group contains the winning tile
-        match tile_groups.last().unwrap().group_type {
-            GroupType::Sequence => {
-                if win_tile.suit != tile_groups.last().unwrap().suit {
-                    return Err(HandErr::InvalidShape);
+        // FUCK handling kokuushi
+        if tiles.len() != 13 {
+            match tile_groups.last().unwrap().group_type {
+                GroupType::Sequence => {
+                    if win_tile.suit != tile_groups.last().unwrap().suit {
+                        return Err(HandErr::InvalidShape);
+                    }
+                    let win_int = win_tile.value.parse::<u8>().unwrap();
+                    let last_int = tile_groups.last().unwrap().value.parse::<u8>().unwrap();
+                    if win_int != last_int && win_int != last_int + 1 && win_int != last_int + 2 {
+                        return Err(HandErr::InvalidShape);
+                    }
                 }
-                let win_int = win_tile.value.parse::<u8>().unwrap();
-                let last_int = tile_groups.last().unwrap().value.parse::<u8>().unwrap();
-                if win_int != last_int && win_int != last_int + 1 && win_int != last_int + 2 {
-                    return Err(HandErr::InvalidShape);
+                GroupType::Triplet | GroupType::Pair => {
+                    if tile_groups.last().unwrap().value != win_tile.value
+                        || tile_groups.last().unwrap().suit != win_tile.suit
+                    {
+                        return Err(HandErr::InvalidShape);
+                    }
                 }
+                GroupType::Kan => return Err(HandErr::InvalidShape),
+                GroupType::None => return Err(HandErr::InvalidShape),
             }
-            GroupType::Triplet | GroupType::Pair => {
-                if tile_groups.last().unwrap().value != win_tile.value
-                    || tile_groups.last().unwrap().suit != win_tile.suit
-                {
-                    return Err(HandErr::InvalidShape);
-                }
-            }
-            GroupType::Kan => return Err(HandErr::InvalidShape),
-
-            GroupType::None => return Err(HandErr::InvalidShape),
         }
 
         let seat_tile = TileGroup {
@@ -297,6 +307,15 @@ impl Hand {
         }
         pairs
     }
+    pub fn singles(&self) -> Vec<TileGroup> {
+        let mut singles: Vec<TileGroup> = vec![];
+        for i in self.groups.clone() {
+            if i.group_type == GroupType::None {
+                singles.push(i);
+            }
+        }
+        singles
+    }
     pub fn win_tile(&self) -> TileGroup {
         self.win_tile.clone()
     }
@@ -312,6 +331,9 @@ impl Hand {
 
     //yaku validation
     pub fn is_tanyao(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         for i in self.groups.clone() {
             if i.isterminal || i.suit == Suit::Dragon || i.suit == Suit::Wind {
                 return false;
@@ -363,6 +385,9 @@ impl Hand {
         self.triplets().len() + self.kans().len() == 4
     }
     pub fn is_sanankou(&self, tsumo: bool) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         let mut closed_triplet_count = 0;
         for i in self.triplets() {
             if !i.isopen {
@@ -402,6 +427,9 @@ impl Hand {
         return false;
     }
     pub fn is_honitsu(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         let tile_groups = self.groups.clone();
         let mut has_honor = false;
         let mut has_normal = false;
@@ -441,6 +469,9 @@ impl Hand {
         dragon_count == 2 && self.pairs()[0].suit == Suit::Dragon
     }
     pub fn is_junchantaiyao(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         for i in self.groups.clone() {
             if i.suit == Suit::Dragon || i.suit == Suit::Wind || !i.isterminal {
                 return false;
@@ -449,6 +480,9 @@ impl Hand {
         !(self.sequences().len() == 0)
     }
     pub fn is_honroutou(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if self.sequences().len() != 0 {
             return false;
         }
@@ -484,6 +518,9 @@ impl Hand {
         })
     }
     pub fn is_chantaiyao(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if self.sequences().len() == 0 {
             return false;
         }
@@ -507,6 +544,9 @@ impl Hand {
         !self.isopen && tsumo
     }
     pub fn is_pinfu(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if self.isopen {
             return false;
         }
@@ -541,6 +581,9 @@ impl Hand {
         return false;
     }
     pub fn is_chinitsu(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         let mut suits: Vec<Suit> = self.groups.iter().map(|x| x.suit.clone()).collect();
         suits.dedup();
         suits.len() == 1
@@ -558,6 +601,9 @@ impl Hand {
             && trips.contains(&"w".to_string())
     }
     pub fn is_suuankou(&self, tsumo: bool) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if self.triplets().len() + self.kans().len() != 4 || self.isopen {
             return false;
         }
@@ -570,6 +616,9 @@ impl Hand {
         return true;
     }
     pub fn is_suuankoutankiwait(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if self.triplets().len() + self.kans().len() != 4 || self.isopen {
             return false;
         }
@@ -580,6 +629,9 @@ impl Hand {
     }
 
     pub fn is_chinroutou(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if self.kans().len() + self.triplets().len() != 4 {
             return false;
         }
@@ -591,6 +643,9 @@ impl Hand {
         return true;
     }
     pub fn is_ryuuiisou(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         for i in self
             .triplets()
             .iter()
@@ -610,6 +665,9 @@ impl Hand {
         return true;
     }
     pub fn is_chuurenpoutou(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         let suit: Suit = self.groups[0].suit.clone();
         if self.triplets().len() != 2 || self.sequences().len() != 2 || self.pairs().len() != 1 {
             return false;
@@ -642,6 +700,9 @@ impl Hand {
         return true;
     }
     pub fn is_chuurenpoutou9sided(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         if !self.is_chuurenpoutou() {
             return false;
         }
@@ -651,6 +712,9 @@ impl Hand {
         return true;
     }
     pub fn is_tsuuiisou(&self) -> bool {
+        if self.groups.len() == 13 {
+            return false;
+        }
         for i in self.groups.clone() {
             if i.suit != Suit::Dragon && i.suit != Suit::Wind {
                 return false;
@@ -665,7 +729,11 @@ impl Hand {
         self.kans().len() == 4
     }
     pub fn is_shousuushii(&self) -> bool {
-        self.groups.iter().filter(|i| i.suit == Suit::Wind).count() == 4
+        self.groups
+            .iter()
+            .filter(|i| i.suit == Suit::Wind && i.group_type != GroupType::None)
+            .count()
+            == 4
     }
     pub fn is_daisuushii(&self) -> bool {
         self.triplets()
@@ -674,6 +742,21 @@ impl Hand {
             .filter(|i| i.suit == Suit::Wind)
             .count()
             == 4
+    }
+    pub fn is_kokushi(&self) -> bool {
+        if self.singles().len() != 12 || self.pairs().len() != 1 {
+            return false;
+        }
+        let singles = self.groups.clone();
+        let mut vals: Vec<String> = vec![];
+        for i in singles {
+            vals.push(i.value.clone());
+        }
+        vals.dedup();
+        vals.len() == 13
+    }
+    pub fn is_kokushi13sided(&self) -> bool {
+        self.is_kokushi() && self.groups.last().unwrap().group_type == GroupType::Pair
     }
 }
 
@@ -768,6 +851,7 @@ impl GroupType {
                 }
             }
             4 => return Ok(GroupType::Kan),
+            1 => return Ok(GroupType::None),
             _ => return Err(HandErr::InvalidGroup),
         }
     }

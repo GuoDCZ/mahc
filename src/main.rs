@@ -166,6 +166,77 @@ fn main() {
 mod test {
     use super::*;
     #[test]
+    fn yaku_kokushi() {
+        let out = lib::Hand::new(
+            vec![
+                "1s".to_string(),
+                "9s".to_string(),
+                "1m".to_string(),
+                "9m".to_string(),
+                "1p".to_string(),
+                "9p".to_string(),
+                "Ew".to_string(),
+                "Sw".to_string(),
+                "Ww".to_string(),
+                "Nw".to_string(),
+                "gd".to_string(),
+                "rd".to_string(),
+                "wwd".to_string(),
+            ],
+            "wd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_kokushi(), true);
+        assert_eq!(out.is_kokushi13sided(), true);
+        let out = lib::Hand::new(
+            vec![
+                "1s".to_string(),
+                "9s".to_string(),
+                "1m".to_string(),
+                "9m".to_string(),
+                "1p".to_string(),
+                "9p".to_string(),
+                "Ew".to_string(),
+                "Sw".to_string(),
+                "Ww".to_string(),
+                "Nw".to_string(),
+                "gd".to_string(),
+                "wwd".to_string(),
+                "rd".to_string(),
+            ],
+            "rd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_kokushi(), true);
+        assert_eq!(out.is_kokushi13sided(), false);
+        let out = lib::Hand::new(
+            vec![
+                "9s".to_string(),
+                "9s".to_string(),
+                "1m".to_string(),
+                "9m".to_string(),
+                "1p".to_string(),
+                "9p".to_string(),
+                "Ew".to_string(),
+                "Sw".to_string(),
+                "Ww".to_string(),
+                "Nw".to_string(),
+                "gd".to_string(),
+                "rd".to_string(),
+                "wwd".to_string(),
+            ],
+            "wd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert_eq!(out.is_kokushi(), false);
+    }
+    #[test]
     fn yaku_daisuushii() {
         let out = lib::Hand::new(
             vec![
@@ -1717,7 +1788,7 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidGroup);
+        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidSuit);
     }
 
     #[test]
@@ -1741,7 +1812,7 @@ mod test {
     fn invalid_suit() {
         let out = lib::Hand::new(
             vec![
-                "hhho".to_string(),
+                "hhhjo".to_string(),
                 "SSSw".to_string(),
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -1862,7 +1933,7 @@ mod test {
                 "rrrrd".to_string(),
                 "SSw".to_string(),
                 "rrrrd".to_string(),
-                "rrrrd".to_string(),
+                "rrrd".to_string(),
             ],
             "rd".to_string(),
             "3s".to_string(),

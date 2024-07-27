@@ -130,6 +130,8 @@ pub fn get_yaku_han(
         (hand.is_suukantsu(), Yaku::Suukantsu),
         (hand.is_shousuushii(), Yaku::Shousuushii),
         (hand.is_daisuushii(), Yaku::Daisuushii),
+        (hand.is_kokushi(), Yaku::KokushiMusou),
+        (hand.is_kokushi13sided(), Yaku::KokushiMusou13SidedWait),
     ];
 
     for (condition, yaku_type) in yakumanconditions {

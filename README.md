@@ -122,8 +122,8 @@ Fu:
 
 ##### Yakuman 
 - [x] KazoeYakuman
-- [ ] KokushiMusou
-- [ ] KokushiMusou 13 sided wait
+- [x] KokushiMusou
+- [x] KokushiMusou 13 sided wait
 - [x] Suuankou
 - [x] Suuankou tanki wait
 - [x] Daisangen
