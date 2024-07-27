@@ -1,9 +1,7 @@
 mod calc;
 mod lib;
 pub mod yaku;
-
 use clap::Parser;
-use lib::HandErr;
 
 /// riichi mahjong calculator tool
 #[derive(Parser, Debug)]
