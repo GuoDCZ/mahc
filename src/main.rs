@@ -1867,7 +1867,6 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        println!("{:?}", out);
         assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
     }
     #[test]

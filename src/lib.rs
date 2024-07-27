@@ -22,13 +22,13 @@ pub enum HandErr {
     InvalidShape,
     NoYaku,
 }
-impl HandErr{
+impl HandErr {
     pub fn to_string(&self) -> String {
         match self {
-            HandErr::InvalidGroup =>"Invalid Group found!".to_string(),
+            HandErr::InvalidGroup => "Invalid Group found!".to_string(),
             HandErr::InvalidSuit => "Invalid Suit found!".to_string(),
-            HandErr::InvalidShape => "Invalud Hand Shape found!".to_string(),
-            HandErr::NoYaku=> "No Yaku!".to_string(),
+            HandErr::InvalidShape => "Invalid Hand Shape found!".to_string(),
+            HandErr::NoYaku => "No Yaku!".to_string(),
         }
     }
 }
@@ -109,7 +109,7 @@ impl Hand {
 
         if !(tripcount + seqcount + kancount == 4 && paircount == 1)
             && paircount != 7
-            && (none != 12 && paircount == 1)
+            && !(none == 12 && paircount == 1)
         {
             return Err(HandErr::InvalidShape);
         }
