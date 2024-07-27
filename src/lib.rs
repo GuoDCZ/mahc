@@ -663,6 +663,17 @@ impl Hand {
     pub fn is_suukantsu(&self) -> bool {
         self.kans().len() == 4
     }
+    pub fn is_shousuushii(&self) -> bool {
+        self.groups.iter().filter(|i| i.suit == Suit::Wind).count() == 4
+    }
+    pub fn is_daisuushii(&self) -> bool {
+        self.triplets()
+            .iter()
+            .chain(self.kans().iter())
+            .filter(|i| i.suit == Suit::Wind)
+            .count()
+            == 4
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

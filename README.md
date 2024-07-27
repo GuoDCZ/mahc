@@ -127,8 +127,8 @@ Fu:
 - [x] Suuankou
 - [x] Suuankou tanki wait
 - [x] Daisangen
-- [ ] Shousuushii
-- [ ] Daisuushii
+- [x] Shousuushii
+- [x] Daisuushii
 - [x] Tsuuiisou
 - [x] Daiichishin 
 - [x] Chinroutou
