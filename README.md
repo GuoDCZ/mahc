@@ -140,13 +140,13 @@ Fu:
 - [ ] Chiihou NOT SURE WHAT TO DO WITH THIS
 
 # TODO
-- add all da yaku
-- validation on if yaku is there 
-- validation a hand is possible (eg not having 20 east tiles :)
+- validation a hand is possible (eg not having 20 east tiles :) 
+- add all da yaku DONE
+- validation on if yaku is there DONE
 - validate winning tile DONE DONE
-- propogate the errors up for a nice printout 
-- validate stuff like cant riichi and double riichi. all that haitei, chankan
-rinshan shizz
+- propogate the errors up for a nice printout DONE
+- validate stuff like cant riichi and double riichi. all that haitei, chankan 
+rinshan shizz DONE
 
 # Contributing
 - If you spot a bug (which there probabably are many), put in an issue with how to reproduce it. 
