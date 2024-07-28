@@ -1,8 +1,16 @@
 [package]
 name = "mahc"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+authors =[  "Tharun <tharun1@hotmail.co.uk>" ]
+description = "cli riichi mahjong calculator, which spits out yaku and fu for a given hand"
+repository = "https://github.com/DrCheeseFace/rusty-mahjcalc"
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.9", features = ["derive"] }
 regex = "1.10.5"
+
+
+
