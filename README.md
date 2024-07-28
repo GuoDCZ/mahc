@@ -94,7 +94,7 @@ cd mahc/x86_64-unknown-linux-gnu/release
 
 ### Implemented hand validations as of yet
 
-#### One Han Yaku
+##### One Han Yaku
 - [x] Tanyao
 - [x] Iipeikou 
 - [x] Yakuhai 
