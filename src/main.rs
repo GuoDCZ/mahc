@@ -152,7 +152,7 @@ fn main() {
                 println!("{}", o);
             }
             Err(e) => {
-                eprintln!("Error: {:?}", e.to_string());
+                eprintln!("Error: {}", e.to_string());
             }
         }
     } else {
@@ -162,7 +162,7 @@ fn main() {
                 println!("{}", o);
             }
             Err(e) => {
-                eprintln!("Error: {:?}", e.to_string());
+                eprintln!("Error: {}", e.to_string());
             }
         }
     }
