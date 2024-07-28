@@ -156,6 +156,10 @@ fn main() {
             }
         }
     } else {
+        if args.tiles == None || args.win == None {
+            eprintln!("Error: Hand tiles and winning tile are required for normal mode");
+            return;
+        }
         let result = parse_hand(&args);
         match result {
             Ok(o) => {

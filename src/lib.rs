@@ -25,10 +25,10 @@ pub enum HandErr {
 impl HandErr {
     pub fn to_string(&self) -> String {
         match self {
-            HandErr::InvalidGroup => "Invalid Group found!".to_string(),
-            HandErr::InvalidSuit => "Invalid Suit found!".to_string(),
-            HandErr::InvalidShape => "Invalid Hand Shape found!".to_string(),
-            HandErr::NoYaku => "No Yaku!".to_string(),
+            HandErr::InvalidGroup => "Invalid Group found".to_string(),
+            HandErr::InvalidSuit => "Invalid Suit found".to_string(),
+            HandErr::InvalidShape => "Invalid Hand Shape found".to_string(),
+            HandErr::NoYaku => "No Yaku".to_string(),
         }
     }
 }
