@@ -1,67 +1,23 @@
 
 # Riichi Mahjong Calculator Via the Terminal
+CLI tool that calculates the score of a hand in riichi mahjong. <br>
+- Manual mode: given han and fu, calculates the score <br>
+- Normal mode: given a hand, calculates the score with included yaku and fu
 
 ![demo gif](demo.gif)
 
-### Notation 
 
-#### Suits
 
-| Suit  | Tiles                                      |
-|-------|--------------------------------------------|
-| Man (Characters) | 1m, 2m, 3m, 4m, 5m, 6m, 7m, 8m, 9m |
-| Pin (Circles)    | 1p, 2p, 3p, 4p, 5p, 6p, 7p, 8p, 9p |
-| Sou (Bamboos)    | 1s, 2s, 3s, 4s, 5s, 6s, 7s, 8s, 9s |
+## Examples
 
-#### Honors
-
-| Type  | Notation          |
-|-------|-------------------|
-| Winds | Ew, Sw, Ww, Nw    |
-| Dragons | rd, gd, wd      |
-
-#### Special Notation
-
-| Description     | Example           |
-|-----------------|-------------------|
-| Open Sets       | 234po (an open sequence of 2, 3, 4 in Pin suit) |
-
-- eg: EEEw (triplet of east wind)
-- eg: 234m (sequence of 2 3 4 Man)
-- eg: rrrrdo (open quad of red dragon)
-- eg: 11s (pair of 1 sou)
-- eg: 8m (8 man tile)
-
-## Arguments
-```
-      --tiles <TILES>...          Hand tiles
-  -w, --win <WIN>                 Winning tile
-  -d, --dora <DORA>               Han from dora [default: 0]
-  -s, --seat <SEAT>               seat wind [default: Ew]
-  -p, --prev <PREV>               prevelant wind [default: Ew]
-  -t, --tsumo                     is tsumo
-  -r, --riichi                    is riichi
-      --doubleriichi              is double riichi
-  -i, --ippatsu                   is ippatsu
-      --haitei                    is haitei
-      --rinshan                   is rinshan
-      --chankan                   is chankan
-  -b, --ba <BA>                   honba count [default: 0]
-  -m, --manual <MANUAL> <MANUAL>  calculator mode
-  -h, --help                      Print help
-  -V, --version                   Print version
-```
-
-### Examples
-
-#### Calculator Mode
+### Calculator Mode
 ```
 ~/$ mahc -m 4 30 --ba 3
 > Dealer:    12500 (4200) 
   non-dealer: 8600 (2300/ 4200)
 ```
 
-#### Normal Mode *not fully yet implemented (some yaku missing)*
+### Normal Mode *not fully yet implemented (some yaku missing)*
 note: the winning group has to go last (this is to calculate fu correctly)
 ``` 
 ~/$ mahc --tiles rrrd EEEw 234p 234p 11p -w 1p -p Ew -s Ew
@@ -84,10 +40,61 @@ Fu:
   SingleWait: 2
 
 ```
----
-#### Implemented hand validations as of yet
 
-##### One Han Yaku
+## Notation 
+
+### Suits
+
+| Suit  | Tiles                                      |
+|-------|--------------------------------------------|
+| Man (Characters) | 1m, 2m, 3m, 4m, 5m, 6m, 7m, 8m, 9m |
+| Pin (Circles)    | 1p, 2p, 3p, 4p, 5p, 6p, 7p, 8p, 9p |
+| Sou (Bamboos)    | 1s, 2s, 3s, 4s, 5s, 6s, 7s, 8s, 9s |
+
+### Honors
+
+| Type  | Notation          |
+|-------|-------------------|
+| Winds | Ew, Sw, Ww, Nw    |
+| Dragons | rd, gd, wd      |
+
+### Special Notation
+
+| Description     | Example           |
+|-----------------|-------------------|
+| Open Sets       | 234po (an open sequence of 2, 3, 4 in Pin suit) |
+
+- eg: EEEw (triplet of east wind)
+- eg: 234m (sequence of 2 3 4 Man)
+- eg: rrrrdo (open quad of red dragon)
+- eg: 11s (pair of 1 sou)
+- eg: 8m (8 man tile)
+
+## Installation
+
+#### *using <a href="https://doc.rust-lang.org/cargo/getting-started/installation.html"> cargo</a>*
+```
+cargo install mahc
+mahc --version
+```
+#### *build from source*
+```
+git clone https://github.com/DrCheeseFace/rusty-riichi-mahjong-calculator
+cd rusty-riichi-mahjong-calculator
+cargo build
+./target/debug/mahc --version
+```
+#### *from latest release*
+```
+curl -s https://api.github.com/repos/DrCheeseFace/rusty-riichi-mahjong-calculator/releases/latest | grep "browser_download_url" | cut -d '"' -f 4 | wget -i -
+unzip mahc-v1.1.0-x86_64-unknown-linux-gnu.zip -d mahc
+cd mahc/x86_64-unknown-linux-gnu/release
+./mahc --version
+```
+
+### Implemented hand validations as of yet
+
+#### One Han Yaku
 - [x] Tanyao
 - [x] Iipeikou 
 - [x] Yakuhai 
@@ -139,7 +146,7 @@ Fu:
 - [ ] Tenhou NOT SURE WHAT TO DO WITH THIS
 - [ ] Chiihou NOT SURE WHAT TO DO WITH THIS
 
-# TODO
+## TODO
 - validation a hand is possible (eg not having 20 east tiles :) 
 - add all da yaku DONE
 - validation on if yaku is there DONE
@@ -148,7 +155,7 @@ Fu:
 - validate stuff like cant riichi and double riichi. all that haitei, chankan 
 rinshan shizz DONE
 
-# Contributing
+## Contributing
 - If you spot a bug (which there probabably are many), put in an issue with how to reproduce it. 
 - keep in mind, we pretty far from finishing it currently. so FUCK validation (for the time being) 
 
