@@ -17,7 +17,7 @@ CLI tool that calculates the score of a hand in riichi mahjong. <br>
   non-dealer: 8600 (2300/ 4200)
 ```
 
-### Normal Mode *not fully yet implemented (some yaku missing)*
+### Normal Mode
 note: the winning group has to go last (this is to calculate fu correctly)
 ``` 
 ~/$ mahc --tiles rrrd EEEw 234p 234p 11p -w 1p -p Ew -s Ew
