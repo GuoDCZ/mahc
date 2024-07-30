@@ -23,7 +23,11 @@ pub enum HandErr {
     NoYaku,
     NoHandTiles,
     NoWinTile,
-
+    DuplicateRiichi,
+    IppatsuWithoutRiichi,
+    DoubleRiichiHaiteiIppatsu,
+    DoubleRiichiHaiteiChankan,
+    ChankanTsumo,
 }
 impl HandErr {
     pub fn to_string(&self) -> String {
@@ -32,8 +36,17 @@ impl HandErr {
             HandErr::InvalidSuit => "Invalid Suit found".to_string(),
             HandErr::InvalidShape => "Invalid Hand Shape found".to_string(),
             HandErr::NoYaku => "No Yaku".to_string(),
-            HandErr::NoHandTiles=> "No Hand Tiles given".to_string(),
-            HandErr::NoWinTile=> "No Win Tile given".to_string(),
+            HandErr::NoHandTiles => "No Hand Tiles given".to_string(),
+            HandErr::NoWinTile => "No Win Tile given".to_string(),
+            HandErr::DuplicateRiichi => "Cant Riichi and Double Riichi Simulatinously".to_string(),
+            HandErr::IppatsuWithoutRiichi => "Cant Ippatsu without Riichi".to_string(),
+            HandErr::ChankanTsumo=> "Cant Tsumo and Chankan".to_string(),
+            HandErr::DoubleRiichiHaiteiIppatsu => {
+                "Cant Double Riichi, Ippatsu and haitei".to_string()
+            }
+            HandErr::DoubleRiichiHaiteiChankan => {
+                "Cant Double Riichi, Ippatsu and haitei".to_string()
+            }
         }
     }
 }

@@ -85,9 +85,30 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
     }
 }
 pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
+    if args.tiles == None {
+        return Err(mahc::HandErr::NoHandTiles);
+    }
+    if args.win == None {
+        return Err(mahc::HandErr::NoWinTile);
+    }
+    if args.tsumo && args.chankan {
+        return Err(mahc::HandErr::ChankanTsumo);
+    }
+    if args.riichi && args.doubleriichi {
+        return Err(mahc::HandErr::DuplicateRiichi);
+    }
+    if args.ippatsu && !(args.riichi || args.doubleriichi){
+        return Err(mahc::HandErr::IppatsuWithoutRiichi);
+    }
+    if args.doubleriichi && args.ippatsu && args.haitei {
+        return Err(mahc::HandErr::DoubleRiichiHaiteiIppatsu);
+    }   
+    if args.doubleriichi && args.haitei && args.chankan{
+        return Err(mahc::HandErr::DoubleRiichiHaiteiChankan);
+    }
     let result = calc::get_hand_score(
-        args.tiles.clone().unwrap_or(return Err(mahc::HandErr::NoHandTiles)),
-        args.win.clone().unwrap_or(return Err(mahc::HandErr::NoWinTile)),
+        args.tiles.clone().unwrap(),
+        args.win.clone().unwrap(),
         args.dora.clone(),
         args.seat.clone(),
         args.prev.clone(),
