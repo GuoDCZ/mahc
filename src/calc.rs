@@ -32,6 +32,7 @@ pub fn get_hand_score(
     haitei: bool,
     rinshan: bool,
     chankan: bool,
+    tenhou: bool,
     honba: u16,
 ) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr> {
     let hand = mahc::Hand::new(tiles, win, seat, prev)?;
@@ -46,6 +47,7 @@ pub fn get_hand_score(
         haitei,
         rinshan,
         chankan,
+        tenhou,
         tsumo,
     );
     if yaku.0 == 0 {
@@ -92,6 +94,7 @@ pub fn get_yaku_han(
     haitei: bool,
     rinshan: bool,
     chankan: bool,
+    tenhou: bool,
     tsumo: bool,
 ) -> (u16, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];
@@ -139,6 +142,8 @@ pub fn get_yaku_han(
         (hand.is_daisuushii(), Yaku::Daisuushii),
         (hand.is_kokushi(), Yaku::KokushiMusou),
         (hand.is_kokushi13sided(), Yaku::KokushiMusou13SidedWait),
+        (hand.is_tenhou(tenhou), Yaku::Tenhou),
+        (hand.is_chiihou(tenhou), Yaku::Chiihou),
     ];
 
     for (condition, yaku_type) in yakumanconditions {

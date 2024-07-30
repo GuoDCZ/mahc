@@ -45,8 +45,8 @@ impl HandErr {
             HandErr::IppatsuWithoutRiichi => "Cant Ippatsu without Riichi".to_string(),
             HandErr::ChankanTsumo => "Cant Tsumo and Chankan".to_string(),
             HandErr::RinshanKanWithoutKan => "Cant Rinshan without Kan".to_string(),
-            HandErr::RinshanWithoutTsumo=> "Cant Rinshan without tsumo".to_string(),
-            HandErr::RinshanIppatsu=> "Cant Rinshan and Ippatsu".to_string(),
+            HandErr::RinshanWithoutTsumo => "Cant Rinshan without tsumo".to_string(),
+            HandErr::RinshanIppatsu => "Cant Rinshan and Ippatsu".to_string(),
             HandErr::DoubleRiichiHaiteiIppatsu => {
                 "Cant Double Riichi, Ippatsu and haitei".to_string()
             }
@@ -790,6 +790,18 @@ impl Hand {
     }
     pub fn is_kokushi13sided(&self) -> bool {
         self.is_kokushi() && self.groups.last().unwrap().group_type == GroupType::Pair
+    }
+    pub fn is_tenhou(&self, tenhou: bool) -> bool {
+        if tenhou && self.seat_tile().value == "E" {
+            return true;
+        }
+        return false;
+    }
+    pub fn is_chiihou(&self, tenhou: bool) -> bool {
+        if tenhou && !(self.seat_tile().value == "E") {
+            return true;
+        }
+        return false;
     }
 }
 

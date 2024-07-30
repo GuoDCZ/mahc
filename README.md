@@ -143,8 +143,8 @@ cd mahc/x86_64-unknown-linux-gnu/release
 - [x] ChuurenPoutou
 - [x] ChuurenPoutou 9 sided wait
 - [x] Suukantsu
-- [ ] Tenhou NOT SURE WHAT TO DO WITH THIS
-- [ ] Chiihou NOT SURE WHAT TO DO WITH THIS
+- [x] Tenhou 
+- [x] Chiihou 
 
 ## TODO
 - validation a hand is possible (eg not having 20 east tiles :) 

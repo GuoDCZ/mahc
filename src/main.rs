@@ -55,6 +55,10 @@ pub struct Args {
     #[arg(long, default_value_t = false)]
     chankan: bool,
 
+    /// is tenhou/chihou 
+    #[arg(long, default_value_t = false)]
+    tenhou: bool,
+
     /// honba count
     #[arg(short, long, default_value_t = 0)]
     ba: u16,
@@ -126,6 +130,7 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
         args.haitei,
         args.rinshan,
         args.chankan,
+        args.tenhou,
         args.ba,
     )?;
 
