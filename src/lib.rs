@@ -818,13 +818,11 @@ impl TileGroup {
     pub fn new(group: String) -> Result<Self, HandErr> {
         let isopen = group.chars().last().unwrap().to_string() == "o";
         let value = group.chars().nth(0).unwrap().to_string();
-        let mut suit: String = Default::default();
-
-        if !isopen {
-            suit = group.chars().last().unwrap().to_string();
+        let suit = if !isopen {
+            group.chars().last().unwrap().to_string()
         } else {
-            suit = group.chars().nth(group.len() - 2).unwrap().to_string();
-        }
+            group.chars().nth(group.len() - 2).unwrap().to_string()
+        };
 
         let suit = Suit::suit_from_string(suit)?;
         let group_type = GroupType::group_type_from_string(group.to_string())?;
@@ -862,19 +860,20 @@ pub enum GroupType {
 
 impl GroupType {
     pub fn group_type_from_string(group: String) -> Result<GroupType, HandErr> {
-        let mut count = 0;
-        if group.contains('o') {
-            count = group.len() - 2;
+        let count = if group.contains('o') {
+            group.len() - 2
         } else {
-            count = group.len() - 1;
-        }
+            group.len() - 1
+        };
 
-        for i in group.get(0..count).unwrap().chars() {
-            if "123456789ESWNrgw".contains(i) {
-                continue;
-            } else {
-                return Err(HandErr::InvalidGroup);
+        if let Some(sub_group) = group.get(0..count) {
+            for i in sub_group.chars() {
+                if !"123456789ESWNrgw".contains(i) {
+                    return Err(HandErr::InvalidGroup);
+                }
             }
+        } else {
+            return Err(HandErr::InvalidGroup);
         }
 
         match count {

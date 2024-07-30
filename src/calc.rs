@@ -53,7 +53,6 @@ pub fn get_hand_score(
     if yaku.0 == 0 {
         return Err(HandErr::NoYaku);
     }
-    let mut han_and_fu: Vec<u16> = vec![];
     let fu: (u16, Vec<mahc::Fu>);
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
     //i can move this to calculatefu method maybe?
@@ -70,20 +69,20 @@ pub fn get_hand_score(
             fu = hand.calculate_fu(tsumo);
         }
     }
-    han_and_fu = vec![yaku.0 + dora, fu.0];
+    let han_and_fu = vec![yaku.0 + dora, fu.0];
     let mut has_yakuman = false;
     for i in &yaku.1 {
         if i.is_yakuman() {
             has_yakuman = true;
         }
     }
-    let mut scores: Vec<u32> = vec![];
-    if has_yakuman {
-        scores = calculate_yakuman(&yaku.1).unwrap();
+    let scores = if has_yakuman {
+        calculate_yakuman(&yaku.1)?
     } else {
-        scores = calculate(&han_and_fu, honba).unwrap();
-    }
-    return Ok((scores, yaku.1, fu.1, han_and_fu, hand.is_open()));
+        //can unwrap here because check for yaku earlier
+        calculate(&han_and_fu, honba).unwrap()
+    };
+    Ok((scores, yaku.1, fu.1, han_and_fu, hand.is_open()))
 }
 
 pub fn get_yaku_han(
@@ -170,7 +169,7 @@ pub fn get_yaku_han(
     return (yaku_han, yaku);
 }
 
-pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, CalculatorErrors> {
+pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     let mut total = 0;
     for y in yaku {
         if y.is_yakuman() {
@@ -178,7 +177,7 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, CalculatorErrors>
         }
     }
     if total == 0 {
-        return Err(CalculatorErrors::NoYaku);
+        return Err(HandErr::NoYaku);
     }
     let basepoints: u32 = 8000 * total as u32;
     let scores = vec![
