@@ -86,8 +86,8 @@ pub fn parse_calculator(args: &Args) -> Result<String, calc::CalculatorErrors> {
 }
 pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
     let result = calc::get_hand_score(
-        args.tiles.clone().unwrap(),
-        args.win.clone().unwrap(),
+        args.tiles.clone().unwrap_or(return Err(mahc::HandErr::NoHandTiles)),
+        args.win.clone().unwrap_or(return Err(mahc::HandErr::NoWinTile)),
         args.dora.clone(),
         args.seat.clone(),
         args.prev.clone(),
@@ -156,10 +156,6 @@ fn main() {
             }
         }
     } else {
-        if args.tiles == None || args.win == None {
-            eprintln!("Error: Hand tiles and winning tile are required for normal mode");
-            return;
-        }
         let result = parse_hand(&args);
         match result {
             Ok(o) => {

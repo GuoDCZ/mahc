@@ -21,6 +21,9 @@ pub enum HandErr {
     InvalidSuit,
     InvalidShape,
     NoYaku,
+    NoHandTiles,
+    NoWinTile,
+
 }
 impl HandErr {
     pub fn to_string(&self) -> String {
@@ -29,6 +32,8 @@ impl HandErr {
             HandErr::InvalidSuit => "Invalid Suit found".to_string(),
             HandErr::InvalidShape => "Invalid Hand Shape found".to_string(),
             HandErr::NoYaku => "No Yaku".to_string(),
+            HandErr::NoHandTiles=> "No Hand Tiles given".to_string(),
+            HandErr::NoWinTile=> "No Win Tile given".to_string(),
         }
     }
 }
