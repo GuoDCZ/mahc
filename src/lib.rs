@@ -28,6 +28,7 @@ pub enum HandErr {
     DoubleRiichiHaiteiIppatsu,
     DoubleRiichiHaiteiChankan,
     ChankanTsumo,
+    RinshanKanWithoutKan,
 }
 impl HandErr {
     pub fn to_string(&self) -> String {
@@ -40,7 +41,8 @@ impl HandErr {
             HandErr::NoWinTile => "No Win Tile given".to_string(),
             HandErr::DuplicateRiichi => "Cant Riichi and Double Riichi Simulatinously".to_string(),
             HandErr::IppatsuWithoutRiichi => "Cant Ippatsu without Riichi".to_string(),
-            HandErr::ChankanTsumo=> "Cant Tsumo and Chankan".to_string(),
+            HandErr::ChankanTsumo => "Cant Tsumo and Chankan".to_string(),
+            HandErr::RinshanKanWithoutKan=> "Cant Rinshan without Kan".to_string(),
             HandErr::DoubleRiichiHaiteiIppatsu => {
                 "Cant Double Riichi, Ippatsu and haitei".to_string()
             }

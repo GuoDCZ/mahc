@@ -33,8 +33,11 @@ pub fn get_hand_score(
     rinshan: bool,
     chankan: bool,
     honba: u16,
-) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr>{
+) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr> {
     let hand = mahc::Hand::new(tiles, win, seat, prev)?;
+    if hand.kans().len() == 0 && rinshan {
+        return Err(HandErr::RinshanKanWithoutKan);
+    }
     let yaku = get_yaku_han(
         &hand,
         riichi,
@@ -77,7 +80,6 @@ pub fn get_hand_score(
         scores = calculate_yakuman(&yaku.1).unwrap();
     } else {
         scores = calculate(&han_and_fu, honba).unwrap();
-
     }
     return Ok((scores, yaku.1, fu.1, han_and_fu, hand.is_open()));
 }
