@@ -94,16 +94,23 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
     if args.tsumo && args.chankan {
         return Err(mahc::HandErr::ChankanTsumo);
     }
+    if args.rinshan && (!args.tsumo) {
+        return Err(mahc::HandErr::RinshanWithoutTsumo);
+    }
+    if args.rinshan && args.ippatsu {
+        return Err(mahc::HandErr::RinshanIppatsu);
+
+    }
     if args.riichi && args.doubleriichi {
         return Err(mahc::HandErr::DuplicateRiichi);
     }
-    if args.ippatsu && !(args.riichi || args.doubleriichi){
+    if args.ippatsu && !(args.riichi || args.doubleriichi) {
         return Err(mahc::HandErr::IppatsuWithoutRiichi);
     }
     if args.doubleriichi && args.ippatsu && args.haitei {
         return Err(mahc::HandErr::DoubleRiichiHaiteiIppatsu);
-    }   
-    if args.doubleriichi && args.haitei && args.chankan{
+    }
+    if args.doubleriichi && args.haitei && args.chankan {
         return Err(mahc::HandErr::DoubleRiichiHaiteiChankan);
     }
     let result = calc::get_hand_score(
