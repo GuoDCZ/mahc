@@ -21,29 +21,27 @@ CLI tool that calculates the score of a hand in riichi mahjong. <br>
 note: the winning group has to go last (this is to calculate fu correctly)
 ``` bash
 ~/$ mahc --tiles rrrd EEEw 234p 234p 11p -w 1p -p Ew -s Ew
-
-7 Han/ 50 Fu
-Dealer: 18000 (6000)
-Non-dealer: 12000 (3000/6000)
-Yaku:
-  Iipeikou: 1
-  Honitsu: 3
-  Yakuhai: 1
-  Yakuhai: 1
-  Yakuhai: 1
-
-Fu:
-  BasePoints: 20
-  ClosedRon: 10
-  NonSimpleClosedTriplet: 8
-  NonSimpleClosedTriplet: 8
-  SingleWait: 2
+> 7 Han/ 50 Fu
+  Dealer: 18000 (6000)
+  Non-dealer: 12000 (3000/6000)
+  Yaku:
+    Iipeikou: 1
+    Honitsu: 3
+    Yakuhai: 1
+    Yakuhai: 1
+    Yakuhai: 1
+  
+  Fu:
+    BasePoints: 20
+    ClosedRon: 10
+    NonSimpleClosedTriplet: 8
+    NonSimpleClosedTriplet: 8
+    SingleWait: 2
 
 ```
 ### Using file input
 ``` 
 # hands.txt
-
 --tiles EEw NNw SSw WWw rrd wwd ggd -w gd -p Ew -s Ew -d 2
 --tiles 123p 456p 789p rrrdo 99p -w 9p -p Ew -s Ew -d 2'
 -m 4 30 --ba 3
@@ -52,30 +50,29 @@ Fu:
 
 ```bash
 ~/$ mahc -f hands.txt
-
-Dealer: 144000 (48000)
-Non-dealer: 96000 (24000/48000)
-Yaku:
-  Tsuuiisou Yakuman
-  Daichiishin Yakuman
-  Shousuushii Yakuman
-
-4 Han/ 30 Fu/ 3 Honba
-Dealer: 12500 (4200)
-non-dealer: 8600 (2300/4200)
-
-6 Han/ 30 Fu
-Dealer: 18000 (6000)
-Non-dealer: 12000 (3000/6000)
-Dora: 2
-Yaku:
-  Honitsu: 2
-  Ittsuu: 1
-  Yakuhai: 1
-Fu:
-  BasePoints: 20
-  NonSimpleOpenTriplet: 4
-  SingleWait: 2
+> Dealer: 144000 (48000)
+  Non-dealer: 96000 (24000/48000)
+  Yaku:
+    Tsuuiisou Yakuman
+    Daichiishin Yakuman
+    Shousuushii Yakuman
+  
+  4 Han/ 30 Fu/ 3 Honba
+  Dealer: 12500 (4200)
+  non-dealer: 8600 (2300/4200)
+  
+  6 Han/ 30 Fu
+  Dealer: 18000 (6000)
+  Non-dealer: 12000 (3000/6000)
+  Dora: 2
+  Yaku:
+    Honitsu: 2
+    Ittsuu: 1
+    Yakuhai: 1
+  Fu:
+    BasePoints: 20
+    NonSimpleOpenTriplet: 4
+    SingleWait: 2
 ```
 
 ## Notation 
