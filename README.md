@@ -153,7 +153,7 @@ cd mahc/x86_64-unknown-linux-gnu/release
 - [x] validate winning tile DONE DONE
 - [x] propogate the errors up for a nice printout DONE
 - [x] validate stuff like cant riichi and double riichi. all that haitei, chankan rinshan shizz DONE
-- [ ] file stdIn
+- [x] file stdIn DONE?
 
 ## Contributing
 - If you spot a bug (which there probabably are many), put in an issue with how to reproduce it. 

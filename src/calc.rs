@@ -190,14 +190,14 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     Ok(scores)
 }
 
-pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u32>, CalculatorErrors> {
+pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
     let han = args[0];
     let fu = args[1];
     if han == 0 {
-        return Err(CalculatorErrors::NoHan);
+        return Err(HandErr::NoHan);
     }
     if fu == 0 {
-        return Err(CalculatorErrors::NoFu);
+        return Err(HandErr::NoFu);
     }
     let k = mahc::LimitHands::get_limit_hand(han, fu);
     match k {

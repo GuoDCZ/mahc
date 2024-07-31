@@ -31,6 +31,8 @@ pub enum HandErr {
     RinshanKanWithoutKan,
     RinshanWithoutTsumo,
     RinshanIppatsu,
+    NoHan,
+    NoFu,
 }
 impl HandErr {
     pub fn to_string(&self) -> String {
@@ -53,6 +55,8 @@ impl HandErr {
             HandErr::DoubleRiichiHaiteiChankan => {
                 "Cant Double Riichi, Ippatsu and haitei".to_string()
             }
+            HandErr::NoHan => "No han provided!".to_string(),
+            HandErr::NoFu => "No fu provided!".to_string(),
         }
     }
 }
