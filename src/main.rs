@@ -3,8 +3,11 @@ mod lib;
 
 pub mod yaku;
 use clap::Parser;
+use mahc::Fu;
+use serde_json::json;
 use std::ffi::OsString;
 use std::fs;
+use yaku::Yaku;
 
 /// riichi mahjong calculator tool
 #[derive(Parser, Debug)]
@@ -73,6 +76,10 @@ pub struct Args {
     /// file input
     #[arg(short, long, default_value = None)]
     file: Option<String>,
+
+    /// stdout as json
+    #[arg(long, default_value_t = false)]
+    json: bool,
 }
 
 pub fn parse_calculator(args: &Args) -> Result<String, mahc::HandErr> {
@@ -141,10 +148,49 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
     )?;
 
     //TODO VALIDATION (i dont care enough yet)
-    let mut printout: String = String::new();
+
+    let printout: String = if args.json {
+        json_hand_out(result, args)
+    } else {
+        default_hand_out(result, args)
+    };
+    Ok(printout)
+}
+pub fn json_hand_out(
+    result: (Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool),
+    args: &Args,
+) -> String {
+    let out = json!({
+        "han" : result.3[0],
+        "fu" : result.3[1],
+        "honba" : args.ba,
+        "dora" : args.dora,
+        "fuString" : result.2.iter().map(|x| x.to_string()).collect::<Vec<String>>(),
+        "yakuString" : result.1.iter().map(|x| x.to_string(result.4)).collect::<Vec<String>>(),
+        "scores" : {
+            "dealer" : {
+                "ron" : result.0[0],
+                "tsumo" : result.0[1]
+            },
+            "non-dealer" : {
+                "ron" : result.0[2],
+                "tsumo" : {
+                "dealer" : result.0[4],
+                "non-dealer" : result.0[3]
+                }
+            }
+        }
+    });
+    out.to_string()
+}
+pub fn default_hand_out(
+    result: (Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool),
+    args: &Args,
+) -> String {
+    let mut out: String = String::new();
     if !result.1[0].is_yakuman() {
         if args.ba != 0 {
-            printout.push_str(
+            out.push_str(
                 format!(
                     "\n{} Han/ {} Fu/ {} Honba",
                     result.3[0], result.3[1], args.ba
@@ -152,11 +198,11 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
                 .as_str(),
             )
         } else {
-            printout.push_str(format!("\n{} Han/ {} Fu", result.3[0], result.3[1]).as_str())
+            out.push_str(format!("\n{} Han/ {} Fu", result.3[0], result.3[1]).as_str())
         }
     }
 
-    printout.push_str(
+    out.push_str(
         format!(
             "\nDealer: {} ({})\nNon-dealer: {} ({}/{})",
             result.0[0], result.0[1], result.0[2], result.0[3], result.0[4]
@@ -166,20 +212,20 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
 
     if !result.1[0].is_yakuman() {
         if args.dora != 0 {
-            printout.push_str(format!("\nDora: {}", args.dora).as_str());
+            out.push_str(format!("\nDora: {}", args.dora).as_str());
         }
     }
-    printout.push_str("\nYaku: ");
+    out.push_str("\nYaku: ");
     for i in &result.1 {
-        printout.push_str(format!("\n  {}", i.to_string(result.4)).as_str());
+        out.push_str(format!("\n  {}", i.to_string(result.4)).as_str());
     }
     if !result.1[0].is_yakuman() {
-        printout.push_str("\nFu: ");
+        out.push_str("\nFu: ");
         for i in result.2 {
-            printout.push_str(format!("\n  {}", i.to_string()).as_str());
+            out.push_str(format!("\n  {}", i.to_string()).as_str());
         }
     }
-    Ok(printout)
+    out
 }
 pub fn parse_file(args: &Args) {
     let string = fs::read_to_string(args.file.as_ref().unwrap());
