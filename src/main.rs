@@ -3,6 +3,7 @@ mod lib;
 
 pub mod yaku;
 use clap::Parser;
+use lib::HandErr;
 use mahc::Fu;
 use serde_json::json;
 use std::ffi::OsString;
@@ -85,22 +86,14 @@ pub struct Args {
 pub fn parse_calculator(args: &Args) -> Result<String, mahc::HandErr> {
     let honba = args.ba;
     let hanandfu = args.manual.clone().unwrap();
-    let scores = calc::calculate(&hanandfu, honba);
-    match scores {
-        Ok(o) => {
-            if honba != 0 {
-                return Ok(format!(
-                    "\n{} Han/ {} Fu/ {} Honba\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-                    hanandfu[0], hanandfu[1], honba, o[0], o[1], o[2], o[3], o[4]
-                ));
-            }
-            Ok(format!(
-                "\n{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-                hanandfu[0], hanandfu[1], o[0], o[1], o[2], o[3], o[4]
-            ))
-        }
-        Err(e) => Err(e),
-    }
+    let scores = calc::calculate(&hanandfu, honba); 
+    let printout: Result<String, mahc::HandErr> = if args.json {
+        Ok(json_calc_out(scores?, honba, hanandfu))
+    } else {
+        Ok(default_calc_out(scores?, honba, hanandfu))
+    };
+    return printout
+
 }
 pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
     if args.tiles == None {
@@ -155,6 +148,39 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
         default_hand_out(result, args)
     };
     Ok(printout)
+}
+pub fn json_calc_out(result: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String {
+    let out = json!({
+    "han" : hanandfu[0], 
+    "fu" : hanandfu[1], 
+    "honba" : honba,
+        "scores" : {
+            "dealer" : {
+                "ron" : result[0],
+                "tsumo" : result[1]
+            },
+            "non-dealer" : {
+                "ron" : result[2],
+                "tsumo" : {
+                    "dealer" : result[4],
+                    "non-dealer" : result[3]
+                }
+            }
+        }
+    });
+    out.to_string()
+}
+pub fn default_calc_out(score: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String {
+            if honba != 0 {
+                return format!(
+                    "\n{} Han/ {} Fu/ {} Honba\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+                    hanandfu[0], hanandfu[1], honba, score[0], score[1], score[2], score[3], score[4]
+                );
+            }
+            format!(
+                "\n{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+                hanandfu[0], hanandfu[1], score[0], score[1], score[2], score[3], score[4]
+            )
 }
 pub fn json_hand_out(
     result: (Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool),
