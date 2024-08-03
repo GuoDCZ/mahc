@@ -74,6 +74,25 @@ note: the winning group has to go last (this is to calculate fu correctly)
     NonSimpleOpenTriplet: 4
     SingleWait: 2
 ```
+### Json out
+```bash
+~/$ mahc --tiles 123p 456p 789p rrrdo 99p -w 9p -p Ew -s Ew -d 2 --json
+```
+yields
+```json
+{
+    "dora":2,
+    "fu":30,
+    "fuString":["BasePoints: 20","NonSimpleOpenTriplet: 4","SingleWait: 2"],
+    "han":6,
+    "honba":0,
+    "scores":{
+        "dealer":{"ron":18000,"tsumo":6000},
+        "non-dealer":{"ron":12000,"tsumo":{"dealer":6000,"non-dealer":3000}}
+    },
+    "yakuString":["Honitsu: 2","Ittsuu: 1","Yakuhai: 1"]
+}
+```
 
 ## Notation 
 
