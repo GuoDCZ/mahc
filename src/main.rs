@@ -86,11 +86,11 @@ pub struct Args {
 pub fn parse_calculator(args: &Args) -> Result<String, mahc::HandErr> {
     let honba = args.ba;
     let hanandfu = args.manual.clone().unwrap();
-    let scores = calc::calculate(&hanandfu, honba); 
+    let scores = calc::calculate(&hanandfu, honba)?;
     let printout: Result<String, mahc::HandErr> = if args.json {
-        Ok(json_calc_out(scores?, honba, hanandfu))
+        Ok(json_calc_out(scores, honba, hanandfu))
     } else {
-        Ok(default_calc_out(scores?, honba, hanandfu))
+        Ok(default_calc_out(scores, honba, hanandfu))
     };
     return printout
 
