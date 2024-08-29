@@ -132,8 +132,8 @@ mahc --version
 ```
 #### *build from source*
 ```
-git clone https://github.com/DrCheeseFace/rusty-riichi-mahjong-calculator
-cd rusty-riichi-mahjong-calculator
+git clone https://github.com/DrCheeseFace/mahc
+cd mahc
 cargo build
 ./target/debug/mahc --version
 ```
