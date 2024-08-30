@@ -75,6 +75,7 @@ note: the winning group has to go last (this is to calculate fu correctly)
     SingleWait: 2
 ```
 ### Json out
+in ***normal mode***
 ```bash
 ~/$ mahc --tiles 123p 456p 789p rrrdo 99p -w 9p -p Ew -s Ew -d 2 --json
 ```
@@ -91,6 +92,23 @@ yields
         "non-dealer":{"ron":12000,"tsumo":{"dealer":6000,"non-dealer":3000}}
     },
     "yakuString":["Honitsu: 2","Ittsuu: 1","Yakuhai: 1"]
+}
+```
+and in ***calculator mode***
+```bash
+~/$ mahc -m 4 30 --ba 3 --json
+```
+yields
+```json
+{
+    "fu":30,
+    "han":4,
+    "honba":3,
+    "scores":{
+        "dealer":{ "ron":12500, "tsumo":4200 },
+        "non-dealer":{ "ron":8600, "tsumo":{ "dealer":4200, "non-dealer":2300 }
+        }
+    }
 }
 ```
 
