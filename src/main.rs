@@ -1,9 +1,7 @@
 mod calc;
-mod lib;
 
 pub mod yaku;
 use clap::Parser;
-use lib::HandErr;
 use mahc::Fu;
 use serde_json::json;
 use std::ffi::OsString;
@@ -92,14 +90,13 @@ pub fn parse_calculator(args: &Args) -> Result<String, mahc::HandErr> {
     } else {
         Ok(default_calc_out(scores, honba, hanandfu))
     };
-    return printout
-
+    printout
 }
 pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
-    if args.tiles == None {
+    if args.tiles.is_none() {
         return Err(mahc::HandErr::NoHandTiles);
     }
-    if args.win == None {
+    if args.win.is_none() {
         return Err(mahc::HandErr::NoWinTile);
     }
     if args.tsumo && args.chankan {
@@ -126,7 +123,7 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
     let result = calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
-        args.dora.clone(),
+        args.dora,
         args.seat.clone(),
         args.prev.clone(),
         args.tsumo,
@@ -151,8 +148,8 @@ pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
 }
 pub fn json_calc_out(result: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String {
     let out = json!({
-    "han" : hanandfu[0], 
-    "fu" : hanandfu[1], 
+    "han" : hanandfu[0],
+    "fu" : hanandfu[1],
     "honba" : honba,
         "scores" : {
             "dealer" : {
@@ -171,16 +168,16 @@ pub fn json_calc_out(result: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String
     out.to_string()
 }
 pub fn default_calc_out(score: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String {
-            if honba != 0 {
-                return format!(
-                    "\n{} Han/ {} Fu/ {} Honba\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-                    hanandfu[0], hanandfu[1], honba, score[0], score[1], score[2], score[3], score[4]
-                );
-            }
-            format!(
-                "\n{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-                hanandfu[0], hanandfu[1], score[0], score[1], score[2], score[3], score[4]
-            )
+    if honba != 0 {
+        return format!(
+            "\n{} Han/ {} Fu/ {} Honba\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+            hanandfu[0], hanandfu[1], honba, score[0], score[1], score[2], score[3], score[4]
+        );
+    }
+    format!(
+        "\n{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
+        hanandfu[0], hanandfu[1], score[0], score[1], score[2], score[3], score[4]
+    )
 }
 pub fn json_hand_out(
     result: (Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool),
@@ -236,10 +233,8 @@ pub fn default_hand_out(
         .as_str(),
     );
 
-    if !result.1[0].is_yakuman() {
-        if args.dora != 0 {
-            out.push_str(format!("\nDora: {}", args.dora).as_str());
-        }
+    if !result.1[0].is_yakuman() && args.dora != 0 {
+        out.push_str(format!("\nDora: {}", args.dora).as_str());
     }
     out.push_str("\nYaku: ");
     for i in &result.1 {
@@ -248,7 +243,7 @@ pub fn default_hand_out(
     if !result.1[0].is_yakuman() {
         out.push_str("\nFu: ");
         for i in result.2 {
-            out.push_str(format!("\n  {}", i.to_string()).as_str());
+            out.push_str(format!("\n  {}", i).as_str());
         }
     }
     out
@@ -270,9 +265,9 @@ pub fn parse_file(args: &Args) {
             current_line_args.push(arg.into());
         }
         let args = Args::parse_from(&current_line_args);
-        if args.file != None {
+        if args.file.is_some() {
             parse_file(&args);
-        } else if args.manual != None {
+        } else if args.manual.is_some() {
             let result = parse_calculator(&args);
             printout(result);
         } else {
@@ -287,16 +282,16 @@ pub fn printout(result: Result<String, mahc::HandErr>) {
             println!("{}", o);
         }
         Err(e) => {
-            eprintln!("Error: {}", e.to_string());
+            eprintln!("Error: {}", e);
         }
     }
 }
 
 fn main() {
     let args = Args::parse();
-    if args.file != None {
+    if args.file.is_some() {
         parse_file(&args);
-    } else if args.manual != None {
+    } else if args.manual.is_some() {
         let result = parse_calculator(&args);
         printout(result);
     } else {
@@ -307,10 +302,12 @@ fn main() {
 
 #[cfg(test)]
 mod test {
+    use mahc::{GroupType, Hand, HandErr, Suit};
+
     use super::*;
     #[test]
     fn yaku_kokushi() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "1s".to_string(),
                 "9s".to_string(),
@@ -331,9 +328,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_kokushi(), true);
-        assert_eq!(out.is_kokushi13sided(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_kokushi());
+        assert!(out.is_kokushi13sided());
+        let out = Hand::new(
             vec![
                 "1s".to_string(),
                 "9s".to_string(),
@@ -354,9 +351,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_kokushi(), true);
-        assert_eq!(out.is_kokushi13sided(), false);
-        let out = lib::Hand::new(
+        assert!(out.is_kokushi());
+        assert!(!out.is_kokushi13sided());
+        let out = Hand::new(
             vec![
                 "9s".to_string(),
                 "9s".to_string(),
@@ -377,11 +374,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_kokushi(), false);
+        assert!(!out.is_kokushi());
     }
     #[test]
     fn yaku_daisuushii() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "EEEEw".to_string(),
                 "SSSw".to_string(),
@@ -394,8 +391,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daisuushii(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_daisuushii());
+        let out = Hand::new(
             vec![
                 "EEEEw".to_string(),
                 "SSw".to_string(),
@@ -408,11 +405,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daisuushii(), false);
+        assert!(!out.is_daisuushii());
     }
     #[test]
     fn yaku_shousuushi() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "EEEEw".to_string(),
                 "SSw".to_string(),
@@ -425,8 +422,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_shousuushii(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_shousuushii());
+        let out = Hand::new(
             vec![
                 "EEEEw".to_string(),
                 "22s".to_string(),
@@ -439,11 +436,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_shousuushii(), false);
+        assert!(!out.is_shousuushii());
     }
     #[test]
     fn yaku_suukantsu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "EEEEw".to_string(),
                 "2222p".to_string(),
@@ -456,8 +453,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suukantsu(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_suukantsu());
+        let out = Hand::new(
             vec![
                 "EEEw".to_string(),
                 "2222p".to_string(),
@@ -470,11 +467,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suukantsu(), false);
+        assert!(!out.is_suukantsu());
     }
     #[test]
     fn yaku_daichiishin() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSw".to_string(),
                 "rrd".to_string(),
@@ -489,8 +486,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daichiishin(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_daichiishin());
+        let out = Hand::new(
             vec![
                 "WWw".to_string(),
                 "NNNw".to_string(),
@@ -503,11 +500,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daichiishin(), false);
+        assert!(!out.is_daichiishin());
     }
     #[test]
     fn yaku_tsuuiisou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSw".to_string(),
                 "NNNw".to_string(),
@@ -520,8 +517,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_tsuuiisou(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_tsuuiisou());
+        let out = Hand::new(
             vec![
                 "11s".to_string(),
                 "NNNw".to_string(),
@@ -534,11 +531,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_tsuuiisou(), false);
+        assert!(!out.is_tsuuiisou());
     }
     #[test]
     fn yaku_cuurenpoutou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -551,8 +548,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chuurenpoutou(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_chuurenpoutou());
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -565,8 +562,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chuurenpoutou(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_chuurenpoutou());
+        let out = Hand::new(
             vec![
                 "123s".to_string(),
                 "234s".to_string(),
@@ -579,8 +576,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chuurenpoutou(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_chuurenpoutou());
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -593,8 +590,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chuurenpoutou9sided(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_chuurenpoutou9sided());
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -607,11 +604,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chuurenpoutou9sided(), false);
+        assert!(!out.is_chuurenpoutou9sided());
     }
     #[test]
     fn yaku_ryuuiisou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "234s".to_string(),
                 "234s".to_string(),
@@ -624,8 +621,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ryuuiisou(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_ryuuiisou());
+        let out = Hand::new(
             vec![
                 "345s".to_string(),
                 "234s".to_string(),
@@ -638,9 +635,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ryuuiisou(), false);
+        assert!(!out.is_ryuuiisou());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "234s".to_string(),
                 "234s".to_string(),
@@ -653,12 +650,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ryuuiisou(), false);
+        assert!(!out.is_ryuuiisou());
     }
 
     #[test]
     fn yaku_chinroutou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "111so".to_string(),
                 "1111m".to_string(),
@@ -671,8 +668,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chinroutou(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_chinroutou());
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "1111m".to_string(),
@@ -685,8 +682,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chinroutou(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_chinroutou());
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "1111m".to_string(),
@@ -699,12 +696,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chinroutou(), false);
+        assert!(!out.is_chinroutou());
     }
 
     #[test]
     fn yaku_suuankoutankiwait() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -717,8 +714,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suuankoutankiwait(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_suuankoutankiwait());
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -731,12 +728,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suuankoutankiwait(), false);
+        assert!(!out.is_suuankoutankiwait());
     }
 
     #[test]
     fn yaku_suuankou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -749,9 +746,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suuankou(false), true);
+        assert!(out.is_suuankou(false));
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -764,8 +761,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suuankou(true), true);
-        let out = lib::Hand::new(
+        assert!(out.is_suuankou(true));
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -778,12 +775,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_suuankou(false), false);
+        assert!(!out.is_suuankou(false));
     }
 
     #[test]
     fn yaku_daisangen() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "gggd".to_string(),
@@ -796,8 +793,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daisangen(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_daisangen());
+        let out = Hand::new(
             vec![
                 "rrrrd".to_string(),
                 "ggggd".to_string(),
@@ -810,9 +807,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daisangen(), true);
+        assert!(out.is_daisangen());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrrd".to_string(),
                 "gggd".to_string(),
@@ -825,11 +822,11 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_daisangen(), false);
+        assert!(!out.is_daisangen());
     }
     #[test]
     fn yaku_chinitsu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "222p".to_string(),
                 "123p".to_string(),
@@ -842,8 +839,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chinitsu(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_chinitsu());
+        let out = Hand::new(
             vec![
                 "222p".to_string(),
                 "123p".to_string(),
@@ -856,12 +853,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chinitsu(), false);
+        assert!(!out.is_chinitsu());
     }
 
     #[test]
     fn yaku_sanshokudoukou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "222p".to_string(),
                 "222m".to_string(),
@@ -874,8 +871,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanshokudoukou(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_sanshokudoukou());
+        let out = Hand::new(
             vec![
                 "222p".to_string(),
                 "2222m".to_string(),
@@ -888,8 +885,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanshokudoukou(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_sanshokudoukou());
+        let out = Hand::new(
             vec![
                 "222p".to_string(),
                 "333m".to_string(),
@@ -902,12 +899,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanshokudoukou(), false);
+        assert!(!out.is_sanshokudoukou());
     }
 
     #[test]
     fn yaku_pinfu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "678p".to_string(),
@@ -920,9 +917,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_pinfu(), true);
+        assert!(out.is_pinfu());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "678po".to_string(),
@@ -935,8 +932,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_pinfu(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_pinfu());
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "678p".to_string(),
@@ -949,8 +946,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_pinfu(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_pinfu());
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "678p".to_string(),
@@ -963,12 +960,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_pinfu(), false);
+        assert!(!out.is_pinfu());
     }
 
     #[test]
     fn yaku_menzentsumo() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "11s".to_string(),
                 "22p".to_string(),
@@ -983,9 +980,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_menzentsumo(true), true);
+        assert!(out.is_menzentsumo(true));
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "11s".to_string(),
                 "22p".to_string(),
@@ -1000,9 +997,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_menzentsumo(false), false);
+        assert!(!out.is_menzentsumo(false));
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1015,12 +1012,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_menzentsumo(false), false);
+        assert!(!out.is_menzentsumo(false));
     }
 
     #[test]
     fn yaku_chiitoitsu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "11s".to_string(),
                 "22p".to_string(),
@@ -1035,8 +1032,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chiitoitsu(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_chiitoitsu());
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1049,12 +1046,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chiitoitsu(), false);
+        assert!(!out.is_chiitoitsu());
     }
 
     #[test]
     fn yaku_chantaiyao() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1067,9 +1064,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chantaiyao(), true);
+        assert!(out.is_chantaiyao());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1082,8 +1079,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chantaiyao(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_chantaiyao());
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "999p".to_string(),
@@ -1096,12 +1093,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_chantaiyao(), false);
+        assert!(!out.is_chantaiyao());
     }
 
     #[test]
     fn yaku_ittsuu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "456p".to_string(),
@@ -1114,9 +1111,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ittsuu(), true);
+        assert!(out.is_ittsuu());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "789m".to_string(),
                 "456m".to_string(),
@@ -1129,8 +1126,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ittsuu(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_ittsuu());
+        let out = Hand::new(
             vec![
                 "123s".to_string(),
                 "789s".to_string(),
@@ -1143,8 +1140,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ittsuu(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_ittsuu());
+        let out = Hand::new(
             vec![
                 "123m".to_string(),
                 "456m".to_string(),
@@ -1157,12 +1154,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_ittsuu(), false);
+        assert!(!out.is_ittsuu());
     }
 
     #[test]
     fn yaku_sankantsu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "9999so".to_string(),
                 "123p".to_string(),
@@ -1175,8 +1172,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sankantsu(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_sankantsu());
+        let out = Hand::new(
             vec![
                 "9999so".to_string(),
                 "123p".to_string(),
@@ -1189,12 +1186,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sankantsu(), false);
+        assert!(!out.is_sankantsu());
     }
 
     #[test]
     fn yaku_honroutou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "999s".to_string(),
                 "111p".to_string(),
@@ -1207,9 +1204,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_honroutou(), true);
+        assert!(out.is_honroutou());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "999s".to_string(),
                 "123p".to_string(),
@@ -1222,9 +1219,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_honroutou(), false);
+        assert!(!out.is_honroutou());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "999s".to_string(),
                 "111p".to_string(),
@@ -1237,12 +1234,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_honroutou(), false);
+        assert!(!out.is_honroutou());
     }
 
     #[test]
     fn yaku_junchantaiyao() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "123p".to_string(),
@@ -1255,9 +1252,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_junchantaiyao(), true);
+        assert!(out.is_junchantaiyao());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "123p".to_string(),
@@ -1270,9 +1267,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_junchantaiyao(), false);
+        assert!(!out.is_junchantaiyao());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "111s".to_string(),
                 "111m".to_string(),
@@ -1285,12 +1282,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_junchantaiyao(), false);
+        assert!(!out.is_junchantaiyao());
     }
 
     #[test]
     fn yaku_shousangen() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1303,8 +1300,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_shousangen(), true);
-        let out = lib::Hand::new(
+        assert!(out.is_shousangen());
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1317,12 +1314,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_shousangen(), false);
+        assert!(!out.is_shousangen());
     }
 
     #[test]
     fn yaku_honitsu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1335,9 +1332,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_honitsu(), true);
+        assert!(out.is_honitsu());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1350,9 +1347,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_honitsu(), false);
+        assert!(!out.is_honitsu());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1366,12 +1363,12 @@ mod test {
         )
         .unwrap();
         //should be chinitsu not honitsu
-        assert_eq!(out.is_honitsu(), false);
+        assert!(!out.is_honitsu());
     }
 
     #[test]
     fn yaku_sanankou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1384,9 +1381,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanankou(false), false);
+        assert!(!out.is_sanankou(false));
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -1399,9 +1396,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanankou(true), true);
+        assert!(out.is_sanankou(true));
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123p".to_string(),
                 "123s".to_string(),
@@ -1414,12 +1411,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanankou(true), false);
+        assert!(!out.is_sanankou(true));
     }
 
     #[test]
     fn yaku_sanshokudoujun() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "234p".to_string(),
@@ -1432,9 +1429,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanshokudoujun(), true);
+        assert!(out.is_sanshokudoujun());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "678s".to_string(),
                 "234p".to_string(),
@@ -1447,9 +1444,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanshokudoujun(), true);
+        assert!(out.is_sanshokudoujun());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "111p".to_string(),
                 "234p".to_string(),
@@ -1462,12 +1459,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_sanshokudoujun(), false);
+        assert!(!out.is_sanshokudoujun());
     }
 
     #[test]
     fn yaku_toitoi() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "EEEw".to_string(),
@@ -1480,9 +1477,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_toitoi(), true);
+        assert!(out.is_toitoi());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "2222m".to_string(),
@@ -1495,9 +1492,9 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_toitoi(), true);
+        assert!(out.is_toitoi());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "2222m".to_string(),
@@ -1510,12 +1507,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_toitoi(), false);
+        assert!(!out.is_toitoi());
     }
 
     #[test]
     fn yaku_yakuhai() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "234m".to_string(),
@@ -1529,7 +1526,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_yakuhai(), 1);
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "EEEEwo".to_string(),
                 "234m".to_string(),
@@ -1543,7 +1540,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_yakuhai(), 2);
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "3333mo".to_string(),
                 "WWWm".to_string(),
@@ -1557,7 +1554,7 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.is_yakuhai(), 1);
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "3333mo".to_string(),
                 "222m".to_string(),
@@ -1574,7 +1571,7 @@ mod test {
     }
     #[test]
     fn yaku_ryanpeikou() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123s".to_string(),
                 "123s".to_string(),
@@ -1588,9 +1585,9 @@ mod test {
         )
         .unwrap();
         //is open
-        assert_eq!(out.is_ryanpeikou(), true);
+        assert!(out.is_ryanpeikou());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123s".to_string(),
                 "123s".to_string(),
@@ -1604,12 +1601,12 @@ mod test {
         )
         .unwrap();
         //is open
-        assert_eq!(out.is_ryanpeikou(), false);
+        assert!(!out.is_ryanpeikou());
     }
 
     #[test]
     fn yaku_iipeko() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123s".to_string(),
                 "123s".to_string(),
@@ -1623,9 +1620,9 @@ mod test {
         )
         .unwrap();
         //is open
-        assert_eq!(out.is_iipeikou(), false);
+        assert!(!out.is_iipeikou());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "234m".to_string(),
@@ -1639,9 +1636,9 @@ mod test {
         )
         .unwrap();
         //is open
-        assert_eq!(out.is_iipeikou(), false);
+        assert!(!out.is_iipeikou());
 
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrd".to_string(),
                 "234m".to_string(),
@@ -1654,12 +1651,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_iipeikou(), true);
+        assert!(out.is_iipeikou());
     }
 
     #[test]
     fn yaku_tanyao() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "5555mo".to_string(),
@@ -1672,8 +1669,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_tanyao(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_tanyao());
+        let out = Hand::new(
             vec![
                 "333mo".to_string(),
                 "5555mo".to_string(),
@@ -1686,8 +1683,8 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_tanyao(), false);
-        let out = lib::Hand::new(
+        assert!(!out.is_tanyao());
+        let out = Hand::new(
             vec![
                 "555mo".to_string(),
                 "678p".to_string(),
@@ -1700,12 +1697,12 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.is_tanyao(), true);
+        assert!(out.is_tanyao());
     }
 
     #[test]
     fn fu_calc_simpleopenkan_simpleclosedkan() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "5555mo".to_string(),
@@ -1722,19 +1719,19 @@ mod test {
         assert_eq!(
             out.calculate_fu(true).1,
             [
-                lib::Fu::BasePoints,
-                lib::Fu::Tsumo,
-                lib::Fu::NonSimpleOpenTriplet,
-                lib::Fu::SimpleOpenKan,
-                lib::Fu::SimpleClosedKan,
-                lib::Fu::SingleWait,
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::NonSimpleOpenTriplet,
+                Fu::SimpleOpenKan,
+                Fu::SimpleClosedKan,
+                Fu::SingleWait,
             ]
         );
     }
 
     #[test]
     fn fu_calc_edge_wait() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "555po".to_string(),
                 "234m".to_string(),
@@ -1751,18 +1748,18 @@ mod test {
         assert_eq!(
             out.calculate_fu(true).1,
             [
-                lib::Fu::BasePoints,
-                lib::Fu::Tsumo,
-                lib::Fu::SimpleOpenTriplet,
-                lib::Fu::NonSimpleOpenTriplet,
-                lib::Fu::SingleWait,
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::SimpleOpenTriplet,
+                Fu::NonSimpleOpenTriplet,
+                Fu::SingleWait,
             ]
         );
     }
 
     #[test]
     fn random_fu() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrdo".to_string(),
                 "567m".to_string(),
@@ -1778,17 +1775,13 @@ mod test {
         assert_eq!(out.calculate_fu(true).0, 30);
         assert_eq!(
             out.calculate_fu(true).1,
-            [
-                lib::Fu::BasePoints,
-                lib::Fu::Tsumo,
-                lib::Fu::NonSimpleOpenTriplet,
-            ]
+            [Fu::BasePoints, Fu::Tsumo, Fu::NonSimpleOpenTriplet,]
         );
     }
 
     #[test]
     fn fu_cal_middle_wait() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123mo".to_string(),
                 "rrrrdo".to_string(),
@@ -1805,19 +1798,19 @@ mod test {
         assert_eq!(
             out.calculate_fu(true).1,
             [
-                lib::Fu::BasePoints,
-                lib::Fu::Tsumo,
-                lib::Fu::NonSimpleOpenKan,
-                lib::Fu::NonSimpleClosedKan,
-                lib::Fu::Toitsu,
-                lib::Fu::SingleWait,
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::NonSimpleOpenKan,
+                Fu::NonSimpleClosedKan,
+                Fu::Toitsu,
+                Fu::SingleWait,
             ]
         );
     }
 
     #[test]
     fn fu_cal_kans_seat_wind() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "123mo".to_string(),
                 "rrrrdo".to_string(),
@@ -1834,19 +1827,19 @@ mod test {
         assert_eq!(
             out.calculate_fu(true).1,
             [
-                lib::Fu::BasePoints,
-                lib::Fu::Tsumo,
-                lib::Fu::NonSimpleOpenKan,
-                lib::Fu::NonSimpleClosedKan,
-                lib::Fu::Toitsu,
-                lib::Fu::SingleWait,
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::NonSimpleOpenKan,
+                Fu::NonSimpleClosedKan,
+                Fu::Toitsu,
+                Fu::SingleWait,
             ]
         );
     }
 
     #[test]
     fn fu_cal_nontimple_closed_trip() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "111mo".to_string(),
                 "rrrd".to_string(),
@@ -1863,17 +1856,17 @@ mod test {
         assert_eq!(
             out.calculate_fu(false).1,
             [
-                lib::Fu::BasePoints,
-                lib::Fu::NonSimpleOpenTriplet,
-                lib::Fu::NonSimpleClosedTriplet,
-                lib::Fu::NonSimpleOpenTriplet
+                Fu::BasePoints,
+                Fu::NonSimpleOpenTriplet,
+                Fu::NonSimpleClosedTriplet,
+                Fu::NonSimpleOpenTriplet
             ]
         );
     }
 
     #[test]
     fn fu_cal_tsu_singlewait_simple_trip_closed_simple_trip_closed_nonsimple_kan() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "444m".to_string(),
                 "789p".to_string(),
@@ -1890,19 +1883,19 @@ mod test {
         assert_eq!(
             out.calculate_fu(true).1,
             [
-                lib::Fu::BasePoints,
-                lib::Fu::Tsumo,
-                lib::Fu::SimpleClosedTriplet,
-                lib::Fu::SimpleOpenTriplet,
-                lib::Fu::NonSimpleClosedKan,
-                lib::Fu::SingleWait,
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::SimpleClosedTriplet,
+                Fu::SimpleOpenTriplet,
+                Fu::NonSimpleClosedKan,
+                Fu::SingleWait,
             ]
         );
     }
 
     #[test]
     fn invalid_group_sequence_not_in_order() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "135m".to_string(),
                 "SSSw".to_string(),
@@ -1914,12 +1907,12 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidGroup);
+        assert_eq!(out.unwrap_err(), HandErr::InvalidGroup);
     }
 
     #[test]
     fn invalid_group_size_too_small() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -1931,12 +1924,12 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidSuit);
+        assert_eq!(out.unwrap_err(), HandErr::InvalidSuit);
     }
 
     #[test]
     fn invalid_group_size_too_big() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSSSSw".to_string(),
                 "SSSw".to_string(),
@@ -1948,12 +1941,12 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidGroup);
+        assert_eq!(out.unwrap_err(), HandErr::InvalidGroup);
     }
 
     #[test]
     fn invalid_suit() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "hhhjo".to_string(),
                 "SSSw".to_string(),
@@ -1965,12 +1958,12 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidSuit);
+        assert_eq!(out.unwrap_err(), HandErr::InvalidSuit);
     }
 
     #[test]
     fn identify_pair() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -1984,31 +1977,31 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.pairs()[0].value, "S");
-        assert_eq!(out.pairs()[0].group_type, lib::GroupType::Pair);
-        assert_eq!(out.pairs()[0].suit, lib::Suit::Wind);
-        assert_eq!(out.pairs()[0].isopen, false);
+        assert_eq!(out.pairs()[0].group_type, GroupType::Pair);
+        assert_eq!(out.pairs()[0].suit, Suit::Wind);
+        assert!(!out.pairs()[0].isopen);
     }
 
     #[test]
     fn hand_too_small() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec!["SSSw".to_string()],
             "3s".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
-        let out = lib::Hand::new(
+        assert_eq!(out.unwrap_err(), HandErr::InvalidShape);
+        let out = Hand::new(
             vec!["SSSw".to_string()],
             "3s".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
+        assert_eq!(out.unwrap_err(), HandErr::InvalidShape);
     }
     #[test]
     fn hand_too_big() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -2022,12 +2015,13 @@ mod test {
             "3s".to_string(),
             "3s".to_string(),
         );
-        assert_eq!(out.unwrap_err(), lib::HandErr::InvalidShape);
+        assert_eq!(out.unwrap_err(), HandErr::InvalidShape);
     }
 
     #[test]
+    #[allow(non_snake_case)]
     fn identify_tilegroup_closed_wind_trip_SSS() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -2041,14 +2035,15 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.triplets()[0].value, "S");
-        assert_eq!(out.triplets()[0].group_type, lib::GroupType::Triplet);
-        assert_eq!(out.triplets()[0].suit, lib::Suit::Wind);
-        assert_eq!(out.triplets()[0].isopen, false);
+        assert_eq!(out.triplets()[0].group_type, GroupType::Triplet);
+        assert_eq!(out.triplets()[0].suit, Suit::Wind);
+        assert!(!out.triplets()[0].isopen);
     }
 
     #[test]
+    #[allow(non_snake_case)]
     fn identify_tilegroup_open_wind_kan_EEEE() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "EEEEwo".to_string(),
                 "SSSw".to_string(),
@@ -2062,14 +2057,15 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.kans()[0].value, "E");
-        assert_eq!(out.kans()[0].group_type, lib::GroupType::Kan);
-        assert_eq!(out.kans()[0].suit, lib::Suit::Wind);
-        assert_eq!(out.kans()[0].isopen, true);
+        assert_eq!(out.kans()[0].group_type, GroupType::Kan);
+        assert_eq!(out.kans()[0].suit, Suit::Wind);
+        assert!(out.kans()[0].isopen);
     }
 
     #[test]
+    #[allow(non_snake_case)]
     fn identify_tilegroup_closed_dragon_kan_RRRR() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "rrrrd".to_string(),
                 "rrrrd".to_string(),
@@ -2083,14 +2079,14 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.kans()[0].value, "r");
-        assert_eq!(out.kans()[0].group_type, lib::GroupType::Kan);
-        assert_eq!(out.kans()[0].suit, lib::Suit::Dragon);
-        assert_eq!(out.kans()[0].isopen, false);
+        assert_eq!(out.kans()[0].group_type, GroupType::Kan);
+        assert_eq!(out.kans()[0].suit, Suit::Dragon);
+        assert!(!out.kans()[0].isopen);
     }
 
     #[test]
     fn identify_tilegroup_closed_manzu_trip_111() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "111m".to_string(),
                 "SSSw".to_string(),
@@ -2104,14 +2100,14 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.triplets()[0].value, "1");
-        assert_eq!(out.triplets()[0].group_type, lib::GroupType::Triplet);
-        assert_eq!(out.triplets()[0].suit, lib::Suit::Manzu);
-        assert_eq!(out.triplets()[0].isopen, false);
+        assert_eq!(out.triplets()[0].group_type, GroupType::Triplet);
+        assert_eq!(out.triplets()[0].suit, Suit::Manzu);
+        assert!(!out.triplets()[0].isopen);
     }
 
     #[test]
     fn identify_tilegroup_closed_souzu_seq_789() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "789s".to_string(),
                 "SSSw".to_string(),
@@ -2125,14 +2121,14 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.sequences()[0].value, "7");
-        assert_eq!(out.sequences()[0].group_type, lib::GroupType::Sequence);
-        assert_eq!(out.sequences()[0].suit, lib::Suit::Souzu);
-        assert_eq!(out.sequences()[0].isopen, false);
+        assert_eq!(out.sequences()[0].group_type, GroupType::Sequence);
+        assert_eq!(out.sequences()[0].suit, Suit::Souzu);
+        assert!(!out.sequences()[0].isopen);
     }
 
     #[test]
     fn identify_tilegroup_open_pinzu_234() {
-        let out = lib::Hand::new(
+        let out = Hand::new(
             vec![
                 "234po".to_string(),
                 "SSSw".to_string(),
@@ -2146,28 +2142,28 @@ mod test {
         )
         .unwrap();
         assert_eq!(out.sequences()[0].value, "2");
-        assert_eq!(out.sequences()[0].group_type, lib::GroupType::Sequence);
-        assert_eq!(out.sequences()[0].suit, lib::Suit::Pinzu);
-        assert_eq!(out.sequences()[0].isopen, true);
+        assert_eq!(out.sequences()[0].group_type, GroupType::Sequence);
+        assert_eq!(out.sequences()[0].suit, Suit::Pinzu);
+        assert!(out.sequences()[0].isopen);
     }
 
     #[test]
     fn no_han_for_calc() {
-        let args = Args::parse_from(&["", "--manual", "0", "30", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "0", "30", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(out.unwrap_err(), mahc::HandErr::NoHan);
     }
 
     #[test]
     fn no_fu_for_calc() {
-        let args = Args::parse_from(&["", "--manual", "4", "0", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "4", "0", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(out.unwrap_err(), mahc::HandErr::NoFu);
     }
 
     #[test]
     fn valid_calc_input() {
-        let args = Args::parse_from(&["", "--manual", "4", "30", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "4", "30", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2177,7 +2173,7 @@ mod test {
     }
     #[test]
     fn han_1_fu_30_calc() {
-        let args = Args::parse_from(&["", "--manual", "1", "30"]);
+        let args = Args::parse_from(["", "--manual", "1", "30"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2186,7 +2182,7 @@ mod test {
     }
     #[test]
     fn han_2_fu_80_calc() {
-        let args = Args::parse_from(&["", "--manual", "2", "80"]);
+        let args = Args::parse_from(["", "--manual", "2", "80"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2195,7 +2191,7 @@ mod test {
     }
     #[test]
     fn han_3_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "3", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "3", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2205,7 +2201,7 @@ mod test {
     }
     #[test]
     fn han_4_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "4", "60", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "4", "60", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2215,7 +2211,7 @@ mod test {
     }
     #[test]
     fn han_5_mangan_calc() {
-        let args = Args::parse_from(&["", "--manual", "5", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "5", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2225,14 +2221,14 @@ mod test {
     }
     #[test]
     fn haneman_calc() {
-        let args = Args::parse_from(&["", "--manual", "6", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "6", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("\n6 Han/ 70 Fu/ 3 Honba\nDealer: 18900 (6300)\nnon-dealer: 12900 (3300/6300)"
                 .to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "7", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "7", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2242,21 +2238,21 @@ mod test {
     }
     #[test]
     fn baiman_calc() {
-        let args = Args::parse_from(&["", "--manual", "8", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "8", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("\n8 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)"
                 .to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "9", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "9", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("\n9 Han/ 70 Fu/ 3 Honba\nDealer: 24900 (8300)\nnon-dealer: 16900 (4300/8300)"
                 .to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "10", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "10", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2266,14 +2262,14 @@ mod test {
     }
     #[test]
     fn sanbaiman_calc() {
-        let args = Args::parse_from(&["", "--manual", "11", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "11", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
             ("\n11 Han/ 70 Fu/ 3 Honba\nDealer: 36900 (12300)\nnon-dealer: 24900 (6300/12300)"
                 .to_string())
         );
-        let args = Args::parse_from(&["", "--manual", "12", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "12", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),
@@ -2283,7 +2279,7 @@ mod test {
     }
     #[test]
     fn kazoeyakuman_calc() {
-        let args = Args::parse_from(&["", "--manual", "13", "70", "--ba", "3"]);
+        let args = Args::parse_from(["", "--manual", "13", "70", "--ba", "3"]);
         let out = parse_calculator(&args);
         assert_eq!(
             out.unwrap(),

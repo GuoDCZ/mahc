@@ -9,12 +9,12 @@ pub enum CalculatorErrors {
     NoYaku,
 }
 
-impl CalculatorErrors {
-    pub fn to_string(&self) -> String {
+impl std::fmt::Display for CalculatorErrors {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CalculatorErrors::NoHan => "No han provided!".to_string(),
-            CalculatorErrors::NoFu => "No fu provided!".to_string(),
-            CalculatorErrors::NoYaku => "No Yaku!".to_string(),
+            CalculatorErrors::NoHan => write!(f, "No han provided!"),
+            CalculatorErrors::NoFu => write!(f, "No fu provided!"),
+            CalculatorErrors::NoYaku => write!(f, "No Yaku!"),
         }
     }
 }
@@ -36,7 +36,7 @@ pub fn get_hand_score(
     honba: u16,
 ) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr> {
     let hand = mahc::Hand::new(tiles, win, seat, prev)?;
-    if hand.kans().len() == 0 && rinshan {
+    if hand.kans().is_empty() && rinshan {
         return Err(HandErr::RinshanKanWithoutKan);
     }
     let yaku = get_yaku_han(
@@ -58,16 +58,14 @@ pub fn get_hand_score(
     //i can move this to calculatefu method maybe?
     if yaku.1.contains(&Yaku::Chiitoitsu) {
         fu = (25, vec![mahc::Fu::BasePointsChitoi]);
-    } else {
-        if yaku.1.contains(&Yaku::Pinfu) {
-            if tsumo {
-                fu = (20, vec![mahc::Fu::BasePoints]);
-            } else {
-                fu = (30, vec![mahc::Fu::BasePoints, mahc::Fu::ClosedRon]);
-            }
+    } else if yaku.1.contains(&Yaku::Pinfu) {
+        if tsumo {
+            fu = (20, vec![mahc::Fu::BasePoints]);
         } else {
-            fu = hand.calculate_fu(tsumo);
+            fu = (30, vec![mahc::Fu::BasePoints, mahc::Fu::ClosedRon]);
         }
+    } else {
+        fu = hand.calculate_fu(tsumo);
     }
     let han_and_fu = vec![yaku.0 + dora, fu.0];
     let mut has_yakuman = false;
@@ -150,7 +148,7 @@ pub fn get_yaku_han(
             yakuman.push(yaku_type);
         }
     }
-    if yakuman.len() != 0 {
+    if !yakuman.is_empty() {
         return (yakuman.len() as u16, yakuman);
     }
 
@@ -166,7 +164,7 @@ pub fn get_yaku_han(
     for y in &yaku {
         yaku_han += y.get_han(hand.is_open());
     }
-    return (yaku_han, yaku);
+    (yaku_han, yaku)
 }
 
 pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
@@ -190,7 +188,7 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     Ok(scores)
 }
 
-pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
+pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
     let han = args[0];
     let fu = args[1];
     if han == 0 {
@@ -200,31 +198,25 @@ pub fn calculate(args: &Vec<u16>, honba: u16) -> Result<Vec<u32>, mahc::HandErr>
         return Err(HandErr::NoFu);
     }
     let k = mahc::LimitHands::get_limit_hand(han, fu);
-    match k {
-        Some(limithand) => {
-            let mut scores = limithand.get_score();
-            scores[0] = scores[0] + honba as u16 * 300;
-            scores[1] = scores[1] + honba as u16 * 100;
-            scores[2] = scores[2] + honba as u16 * 300;
-            scores[3] = scores[3] + honba as u16 * 100;
-            scores[4] = scores[4] + honba as u16 * 100;
-            return Ok(scores.iter().map(|x| *x as u32).collect());
-        }
-        None => (),
+    if let Some(limithand) = k {
+        let mut scores = limithand.get_score();
+        scores[0] += honba * 300;
+        scores[1] += honba * 100;
+        scores[2] += honba * 300;
+        scores[3] += honba * 100;
+        scores[4] += honba * 100;
+        return Ok(scores.iter().map(|x| *x as u32).collect());
     }
 
     let basic_points = fu * 2u16.pow((han + 2) as u32);
 
-    let dealer_ron =
-        (((basic_points * 6 + honba as u16 * 300) as f64 / 100.0).ceil() * 100.0) as u16;
-    let dealer_tsumo =
-        (((basic_points * 2 + honba as u16 * 100) as f64 / 100.0).ceil() * 100.0) as u16;
-    let non_dealer_ron =
-        (((basic_points * 4 + honba as u16 * 300) as f64 / 100.0).ceil() * 100.0) as u16;
+    let dealer_ron = (((basic_points * 6 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u16;
+    let dealer_tsumo = (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+    let non_dealer_ron = (((basic_points * 4 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u16;
     let non_dealer_tsumo_to_dealer =
-        (((basic_points * 2 + honba as u16 * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+        (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
     let non_dealer_tsumo_to_non_dealer =
-        (((basic_points + honba as u16 * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
 
     let scores: Vec<u16> = vec![
         dealer_ron,
