@@ -1,3 +1,7 @@
+/// Characters that represent terminal or honor tiles.
+// Using a fixed array gets stored on the stack rather than a `String` which gets stored on the heap.
+const TERMINAL_CHARS: [char; 9] = ['1', '9', 'E', 'S', 'W', 'N', 'r', 'g', 'w'];
+
 #[derive(Debug)]
 pub enum LimitHands {
     Mangan,
@@ -143,7 +147,7 @@ impl Hand {
             suit: Suit::suit_from_string(win.chars().nth(1).unwrap().to_string())?,
             isopen: false,
             group_type: GroupType::None,
-            isterminal: "19ESWNrgw".contains(win.chars().nth(0).unwrap()),
+            isterminal: TERMINAL_CHARS.contains(&win.chars().nth(0).unwrap()),
         };
 
         // check if last group contains the winning tile
@@ -177,7 +181,7 @@ impl Hand {
             suit: Suit::suit_from_string(seat.chars().nth(1).unwrap().to_string())?,
             isopen: false,
             group_type: GroupType::None,
-            isterminal: "19ESWNrgw".contains(seat.chars().nth(0).unwrap()),
+            isterminal: TERMINAL_CHARS.contains(&seat.chars().nth(0).unwrap()),
         };
 
         let prev_tile = TileGroup {
@@ -185,7 +189,7 @@ impl Hand {
             suit: Suit::suit_from_string(prev.chars().nth(1).unwrap().to_string())?,
             isopen: false,
             group_type: GroupType::None,
-            isterminal: "19ESWNrgw".contains(prev.chars().nth(0).unwrap()),
+            isterminal: TERMINAL_CHARS.contains(&prev.chars().nth(0).unwrap()),
         };
 
         let hand = Hand {
