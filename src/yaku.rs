@@ -56,64 +56,64 @@ pub enum Yaku {
 impl Yaku {
     pub fn to_string(&self, is_open: bool) -> String {
         match self {
-            Yaku::Tanyao => "Tanyao: 1",
-            Yaku::Iipeikou => "Iipeikou: 1",
-            Yaku::Yakuhai => "Yakuhai: 1",
-            Yaku::MenzenTsumo => "MenzenTsumo: 1",
-            Yaku::Pinfu => "Pinfu: 1",
-            Yaku::Riichi => "Riichi: 1",
-            Yaku::Ippatsu => "Ippatsu: 1",
-            Yaku::Haitei => "Haitei: 1",
-            Yaku::RinshanKaihou => "RinshanKaihou: 1",
-            Yaku::Chankan => "Chankan: 1",
+            Self::Tanyao => "Tanyao: 1",
+            Self::Iipeikou => "Iipeikou: 1",
+            Self::Yakuhai => "Yakuhai: 1",
+            Self::MenzenTsumo => "MenzenTsumo: 1",
+            Self::Pinfu => "Pinfu: 1",
+            Self::Riichi => "Riichi: 1",
+            Self::Ippatsu => "Ippatsu: 1",
+            Self::Haitei => "Haitei: 1",
+            Self::RinshanKaihou => "RinshanKaihou: 1",
+            Self::Chankan => "Chankan: 1",
 
-            Yaku::DoubleRiichi => "DoubleRiichi: 2",
-            Yaku::Toitoi => "Toitoi: 2",
-            Yaku::Ittsuu => {
+            Self::DoubleRiichi => "DoubleRiichi: 2",
+            Self::Toitoi => "Toitoi: 2",
+            Self::Ittsuu => {
                 if is_open {
                     "Ittsuu: 1"
                 } else {
                     "Ittsuu: 2"
                 }
             }
-            Yaku::SanshokuDoujun => {
+            Self::SanshokuDoujun => {
                 if is_open {
                     "Sanshoku Doujun: 1"
                 } else {
                     "Sanshoku Doujun: 2"
                 }
             }
-            Yaku::Chantaiyao => {
+            Self::Chantaiyao => {
                 if is_open {
                     "Chantaiyao: 1"
                 } else {
                     "Chantaiyao: 2"
                 }
             }
-            Yaku::Sanankou => "Sanankou: 2",
-            Yaku::SanshokuDoukou => "SanshokuDoukou: 2",
-            Yaku::Sankantsu => "Sankantsu: 2",
-            Yaku::Honroutou => "Honroutou: 2",
-            Yaku::Shousangen => "Shousangen: 2",
-            Yaku::Chiitoitsu => "Chiitoitsu: 2",
+            Self::Sanankou => "Sanankou: 2",
+            Self::SanshokuDoukou => "SanshokuDoukou: 2",
+            Self::Sankantsu => "Sankantsu: 2",
+            Self::Honroutou => "Honroutou: 2",
+            Self::Shousangen => "Shousangen: 2",
+            Self::Chiitoitsu => "Chiitoitsu: 2",
 
-            Yaku::Honitsu => {
+            Self::Honitsu => {
                 if is_open {
                     "Honitsu: 2"
                 } else {
                     "Honitsu: 3"
                 }
             }
-            Yaku::JunchanTaiyao => {
+            Self::JunchanTaiyao => {
                 if is_open {
                     "JunchanTaiyao: 2"
                 } else {
                     "JunchanTaiyao: 3"
                 }
             }
-            Yaku::Ryanpeikou => "Ryanpeikou: 3",
+            Self::Ryanpeikou => "Ryanpeikou: 3",
 
-            Yaku::Chinitsu => {
+            Self::Chinitsu => {
                 if is_open {
                     "Chinitsu: 5"
                 } else {
@@ -122,23 +122,23 @@ impl Yaku {
             }
 
             //TODO gota be a better way of doing this
-            Yaku::KazoeYakuman => "Kazoe Yakuman ",
-            Yaku::KokushiMusou => "KokushiMusou Yakuman",
-            Yaku::KokushiMusou13SidedWait => "KokushiMusou Yakuman 13 sided wait",
-            Yaku::Suuankou => "Suuankou Yakuman",
-            Yaku::Daisangen => "Daisangen Yakuman",
-            Yaku::Shousuushii => "Shousuushii Yakuman",
-            Yaku::Daisuushii => "Daisuushii Yakuman",
-            Yaku::Tsuuiisou => "Tsuuiisou Yakuman",
-            Yaku::Chinroutou => "Chinroutou Yakuman",
-            Yaku::Ryuuiisou => "Ryuuiisou Yakuman",
-            Yaku::ChuurenPoutou => "ChuurenPoutou Yakuman",
-            Yaku::Suukantsu => "Suukantsu Yakuman",
-            Yaku::Tenhou => "Tenhou Yakuman",
-            Yaku::Chiihou => "Chiihou Yakuman",
-            Yaku::SuuankouTankiWait => "Suuankou Yakuman Tanki Wait ",
-            Yaku::Daichiishin => "Daichiishin Yakuman",
-            Yaku::ChuurenPoutou9SidedWait => "ChuurenPoutou Yakuman 9 sided wait ",
+            Self::KazoeYakuman => "Kazoe Yakuman ",
+            Self::KokushiMusou => "KokushiMusou Yakuman",
+            Self::KokushiMusou13SidedWait => "KokushiMusou Yakuman 13 sided wait",
+            Self::Suuankou => "Suuankou Yakuman",
+            Self::Daisangen => "Daisangen Yakuman",
+            Self::Shousuushii => "Shousuushii Yakuman",
+            Self::Daisuushii => "Daisuushii Yakuman",
+            Self::Tsuuiisou => "Tsuuiisou Yakuman",
+            Self::Chinroutou => "Chinroutou Yakuman",
+            Self::Ryuuiisou => "Ryuuiisou Yakuman",
+            Self::ChuurenPoutou => "ChuurenPoutou Yakuman",
+            Self::Suukantsu => "Suukantsu Yakuman",
+            Self::Tenhou => "Tenhou Yakuman",
+            Self::Chiihou => "Chiihou Yakuman",
+            Self::SuuankouTankiWait => "Suuankou Yakuman Tanki Wait ",
+            Self::Daichiishin => "Daichiishin Yakuman",
+            Self::ChuurenPoutou9SidedWait => "ChuurenPoutou Yakuman 9 sided wait ",
         }
         .to_string()
     }
@@ -146,54 +146,54 @@ impl Yaku {
     //TODO adjust for open or closed !!!!
     pub fn get_han(&self, is_open: bool) -> u16 {
         match self {
-            Yaku::Tanyao => 1,
-            Yaku::Iipeikou => 1,
-            Yaku::Yakuhai => 1,
-            Yaku::MenzenTsumo => 1,
-            Yaku::Pinfu => 1,
-            Yaku::Riichi => 1,
-            Yaku::Ippatsu => 1,
-            Yaku::Haitei => 1,
-            Yaku::RinshanKaihou => 1,
-            Yaku::Chankan => 1,
+            Self::Tanyao => 1,
+            Self::Iipeikou => 1,
+            Self::Yakuhai => 1,
+            Self::MenzenTsumo => 1,
+            Self::Pinfu => 1,
+            Self::Riichi => 1,
+            Self::Ippatsu => 1,
+            Self::Haitei => 1,
+            Self::RinshanKaihou => 1,
+            Self::Chankan => 1,
 
-            Yaku::DoubleRiichi => 2,
-            Yaku::Toitoi => 2,
-            Yaku::Ittsuu => {
+            Self::DoubleRiichi => 2,
+            Self::Toitoi => 2,
+            Self::Ittsuu => {
                 if is_open {
                     return 1;
                 }
                 2
             }
-            Yaku::SanshokuDoujun => {
+            Self::SanshokuDoujun => {
                 if is_open {
                     return 1;
                 }
                 2
             }
-            Yaku::Chantaiyao => 2,
-            Yaku::Sanankou => 2,
-            Yaku::SanshokuDoukou => 2,
-            Yaku::Sankantsu => 2,
-            Yaku::Honroutou => 2,
-            Yaku::Shousangen => 2,
-            Yaku::Chiitoitsu => 2,
+            Self::Chantaiyao => 2,
+            Self::Sanankou => 2,
+            Self::SanshokuDoukou => 2,
+            Self::Sankantsu => 2,
+            Self::Honroutou => 2,
+            Self::Shousangen => 2,
+            Self::Chiitoitsu => 2,
 
-            Yaku::Honitsu => {
+            Self::Honitsu => {
                 if is_open {
                     return 2;
                 }
                 3
             }
-            Yaku::JunchanTaiyao => {
+            Self::JunchanTaiyao => {
                 if is_open {
                     return 2;
                 }
                 3
             }
-            Yaku::Ryanpeikou => 3,
+            Self::Ryanpeikou => 3,
 
-            Yaku::Chinitsu => {
+            Self::Chinitsu => {
                 if is_open {
                     return 5;
                 }
@@ -201,45 +201,45 @@ impl Yaku {
             }
 
             //TODO gota be a better way of doing this
-            Yaku::KazoeYakuman => 1,
-            Yaku::KokushiMusou => 1,
-            Yaku::KokushiMusou13SidedWait => 1,
-            Yaku::Suuankou => 1,
-            Yaku::Daisangen => 1,
-            Yaku::Shousuushii => 1,
-            Yaku::Daisuushii => 1,
-            Yaku::Tsuuiisou => 1,
-            Yaku::Chinroutou => 1,
-            Yaku::Ryuuiisou => 1,
-            Yaku::ChuurenPoutou => 1,
-            Yaku::ChuurenPoutou9SidedWait => 1,
-            Yaku::Suukantsu => 1,
-            Yaku::Tenhou => 1,
-            Yaku::Chiihou => 1,
-            Yaku::SuuankouTankiWait => 1,
-            Yaku::Daichiishin => 1,
+            Self::KazoeYakuman => 1,
+            Self::KokushiMusou => 1,
+            Self::KokushiMusou13SidedWait => 1,
+            Self::Suuankou => 1,
+            Self::Daisangen => 1,
+            Self::Shousuushii => 1,
+            Self::Daisuushii => 1,
+            Self::Tsuuiisou => 1,
+            Self::Chinroutou => 1,
+            Self::Ryuuiisou => 1,
+            Self::ChuurenPoutou => 1,
+            Self::ChuurenPoutou9SidedWait => 1,
+            Self::Suukantsu => 1,
+            Self::Tenhou => 1,
+            Self::Chiihou => 1,
+            Self::SuuankouTankiWait => 1,
+            Self::Daichiishin => 1,
         }
     }
     pub fn is_yakuman(&self) -> bool {
         matches!(
             self,
-            Yaku::KazoeYakuman
-                | Yaku::KokushiMusou
-                | Yaku::KokushiMusou13SidedWait
-                | Yaku::Suuankou
-                | Yaku::SuuankouTankiWait
-                | Yaku::Daisangen
-                | Yaku::Shousuushii
-                | Yaku::Daisuushii
-                | Yaku::Tsuuiisou
-                | Yaku::Daichiishin
-                | Yaku::Chinroutou
-                | Yaku::Ryuuiisou
-                | Yaku::ChuurenPoutou
-                | Yaku::ChuurenPoutou9SidedWait
-                | Yaku::Suukantsu
-                | Yaku::Tenhou
-                | Yaku::Chiihou
+            Self::KazoeYakuman
+                | Self::KokushiMusou
+                | Self::KokushiMusou13SidedWait
+                | Self::Suuankou
+                | Self::SuuankouTankiWait
+                | Self::Daisangen
+                | Self::Shousuushii
+                | Self::Daisuushii
+                | Self::Tsuuiisou
+                | Self::Daichiishin
+                | Self::Chinroutou
+                | Self::Ryuuiisou
+                | Self::ChuurenPoutou
+                | Self::ChuurenPoutou9SidedWait
+                | Self::Suukantsu
+                | Self::Tenhou
+                | Self::Chiihou
         )
     }
 }

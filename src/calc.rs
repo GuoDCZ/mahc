@@ -12,9 +12,9 @@ pub enum CalculatorErrors {
 impl std::fmt::Display for CalculatorErrors {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CalculatorErrors::NoHan => write!(f, "No han provided!"),
-            CalculatorErrors::NoFu => write!(f, "No fu provided!"),
-            CalculatorErrors::NoYaku => write!(f, "No Yaku!"),
+            Self::NoHan => write!(f, "No han provided!"),
+            Self::NoFu => write!(f, "No fu provided!"),
+            Self::NoYaku => write!(f, "No Yaku!"),
         }
     }
 }

@@ -41,26 +41,26 @@ pub enum HandErr {
 impl std::fmt::Display for HandErr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            HandErr::InvalidGroup => write!(f, "Invalid Group found"),
-            HandErr::InvalidSuit => write!(f, "Invalid Suit found"),
-            HandErr::InvalidShape => write!(f, "Invalid Hand Shape found"),
-            HandErr::NoYaku => write!(f, "No Yaku"),
-            HandErr::NoHandTiles => write!(f, "No Hand Tiles given"),
-            HandErr::NoWinTile => write!(f, "No Win Tile given"),
-            HandErr::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simulatinously"),
-            HandErr::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
-            HandErr::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
-            HandErr::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
-            HandErr::RinshanWithoutTsumo => write!(f, "Cant Rinshan without tsumo"),
-            HandErr::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
-            HandErr::DoubleRiichiHaiteiIppatsu => {
+            Self::InvalidGroup => write!(f, "Invalid Group found"),
+            Self::InvalidSuit => write!(f, "Invalid Suit found"),
+            Self::InvalidShape => write!(f, "Invalid Hand Shape found"),
+            Self::NoYaku => write!(f, "No Yaku"),
+            Self::NoHandTiles => write!(f, "No Hand Tiles given"),
+            Self::NoWinTile => write!(f, "No Win Tile given"),
+            Self::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simulatinously"),
+            Self::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
+            Self::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
+            Self::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
+            Self::RinshanWithoutTsumo => write!(f, "Cant Rinshan without tsumo"),
+            Self::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
+            Self::DoubleRiichiHaiteiIppatsu => {
                 write!(f, "Cant Double Riichi, Ippatsu and haitei")
             }
-            HandErr::DoubleRiichiHaiteiChankan => {
+            Self::DoubleRiichiHaiteiChankan => {
                 write!(f, "Cant Double Riichi, Ippatsu and haitei")
             }
-            HandErr::NoHan => write!(f, "No han provided!"),
-            HandErr::NoFu => write!(f, "No fu provided!"),
+            Self::NoHan => write!(f, "No han provided!"),
+            Self::NoFu => write!(f, "No fu provided!"),
         }
     }
 }
@@ -86,20 +86,20 @@ pub enum Fu {
 impl std::fmt::Display for Fu {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Fu::BasePoints => write!(f, "BasePoints: 20"),
-            Fu::BasePointsChitoi => write!(f, "BasePoints: 25"),
-            Fu::ClosedRon => write!(f, "ClosedRon: 10"),
-            Fu::Tsumo => write!(f, "Tsumo: 2"),
-            Fu::NonSimpleClosedTriplet => write!(f, "NonSimpleClosedTriplet: 8"),
-            Fu::SimpleClosedTriplet => write!(f, "ClosedTriplet: 4"),
-            Fu::NonSimpleOpenTriplet => write!(f, "NonSimpleOpenTriplet: 4"),
-            Fu::SimpleOpenTriplet => write!(f, "OpenTriplet: 2"),
-            Fu::NonSimpleClosedKan => write!(f, "NonSimpleClosedKan: 32"),
-            Fu::SimpleClosedKan => write!(f, "ClosedKan: 16"),
-            Fu::NonSimpleOpenKan => write!(f, "NonSimpleOpenKan: 16"),
-            Fu::SimpleOpenKan => write!(f, "OpenKan: 8"),
-            Fu::Toitsu => write!(f, "Toitsu: 2"),
-            Fu::SingleWait => write!(f, "SingleWait: 2"),
+            Self::BasePoints => write!(f, "BasePoints: 20"),
+            Self::BasePointsChitoi => write!(f, "BasePoints: 25"),
+            Self::ClosedRon => write!(f, "ClosedRon: 10"),
+            Self::Tsumo => write!(f, "Tsumo: 2"),
+            Self::NonSimpleClosedTriplet => write!(f, "NonSimpleClosedTriplet: 8"),
+            Self::SimpleClosedTriplet => write!(f, "ClosedTriplet: 4"),
+            Self::NonSimpleOpenTriplet => write!(f, "NonSimpleOpenTriplet: 4"),
+            Self::SimpleOpenTriplet => write!(f, "OpenTriplet: 2"),
+            Self::NonSimpleClosedKan => write!(f, "NonSimpleClosedKan: 32"),
+            Self::SimpleClosedKan => write!(f, "ClosedKan: 16"),
+            Self::NonSimpleOpenKan => write!(f, "NonSimpleOpenKan: 16"),
+            Self::SimpleOpenKan => write!(f, "OpenKan: 8"),
+            Self::Toitsu => write!(f, "Toitsu: 2"),
+            Self::SingleWait => write!(f, "SingleWait: 2"),
         }
     }
 }
@@ -108,20 +108,20 @@ impl Fu {
     /// Get the minipoint value.
     pub fn value(&self) -> u16 {
         match self {
-            Fu::BasePoints => 20,
-            Fu::BasePointsChitoi => 25,
-            Fu::ClosedRon => 10,
-            Fu::Tsumo => 2,
-            Fu::NonSimpleClosedTriplet => 8,
-            Fu::SimpleClosedTriplet => 4,
-            Fu::NonSimpleOpenTriplet => 4,
-            Fu::SimpleOpenTriplet => 2,
-            Fu::NonSimpleClosedKan => 32,
-            Fu::SimpleClosedKan => 16,
-            Fu::NonSimpleOpenKan => 16,
-            Fu::SimpleOpenKan => 8,
-            Fu::Toitsu => 2,
-            Fu::SingleWait => 2,
+            Self::BasePoints => 20,
+            Self::BasePointsChitoi => 25,
+            Self::ClosedRon => 10,
+            Self::Tsumo => 2,
+            Self::NonSimpleClosedTriplet => 8,
+            Self::SimpleClosedTriplet => 4,
+            Self::NonSimpleOpenTriplet => 4,
+            Self::SimpleOpenTriplet => 2,
+            Self::NonSimpleClosedKan => 32,
+            Self::SimpleClosedKan => 16,
+            Self::NonSimpleOpenKan => 16,
+            Self::SimpleOpenKan => 8,
+            Self::Toitsu => 2,
+            Self::SingleWait => 2,
         }
     }
 }
@@ -219,7 +219,7 @@ impl Hand {
             isterminal: TERMINAL_CHARS.contains(&prev.chars().nth(0).unwrap()),
         };
 
-        let hand = Hand {
+        let hand = Self {
             groups: tile_groups,
             win_tile,
             seat_tile,
@@ -838,7 +838,7 @@ impl TileGroup {
         } else if value == "1" || value == "9" {
             isterminal = true;
         }
-        let tile = TileGroup {
+        let tile = Self {
             value,
             suit,
             isopen,
@@ -871,7 +871,7 @@ pub enum GroupType {
 }
 
 impl GroupType {
-    pub fn group_type_from_string(group: String) -> Result<GroupType, HandErr> {
+    pub fn group_type_from_string(group: String) -> Result<Self, HandErr> {
         let count = if group.contains('o') {
             group.len() - 2
         } else {
@@ -889,25 +889,25 @@ impl GroupType {
         }
 
         match count {
-            2 => Ok(GroupType::Pair),
+            2 => Ok(Self::Pair),
             3 => {
                 if group.chars().nth(0).unwrap() == group.chars().nth(1).unwrap()
                     && group.chars().nth(1).unwrap() == group.chars().nth(2).unwrap()
                 {
-                    Ok(GroupType::Triplet)
+                    Ok(Self::Triplet)
                 } else if ["123", "234", "345", "456", "567", "678", "789"]
                     .iter()
                     .cloned()
                     .collect::<std::collections::HashSet<&str>>()
                     .contains(group.get(0..count).unwrap())
                 {
-                    return Ok(GroupType::Sequence);
+                    return Ok(Self::Sequence);
                 } else {
                     return Err(HandErr::InvalidGroup);
                 }
             }
-            4 => Ok(GroupType::Kan),
-            1 => Ok(GroupType::None),
+            4 => Ok(Self::Kan),
+            1 => Ok(Self::None),
             _ => Err(HandErr::InvalidGroup),
         }
     }
@@ -923,13 +923,13 @@ pub enum Suit {
 }
 
 impl Suit {
-    pub fn suit_from_string(suit: String) -> Result<Suit, HandErr> {
+    pub fn suit_from_string(suit: String) -> Result<Self, HandErr> {
         match suit.as_str() {
-            "s" => Ok(Suit::Souzu),
-            "p" => Ok(Suit::Pinzu),
-            "m" => Ok(Suit::Manzu),
-            "w" => Ok(Suit::Wind),
-            "d" => Ok(Suit::Dragon),
+            "s" => Ok(Self::Souzu),
+            "p" => Ok(Self::Pinzu),
+            "m" => Ok(Self::Manzu),
+            "w" => Ok(Self::Wind),
+            "d" => Ok(Self::Dragon),
             _ => Err(HandErr::InvalidSuit),
         }
     }
@@ -951,29 +951,29 @@ pub fn is_limit_hand(han: u16, fu: u16) -> bool {
 
 impl LimitHands {
     //TODO: MOVE THIS INTO A SUITABLE STRUCT LATER
-    pub fn get_limit_hand(han: u16, fu: u16) -> Option<LimitHands> {
+    pub fn get_limit_hand(han: u16, fu: u16) -> Option<Self> {
         if !is_limit_hand(han, fu) {
             return None;
         }
         if han <= 5 {
-            Some(LimitHands::Mangan)
+            Some(Self::Mangan)
         } else if han <= 7 {
-            return Some(LimitHands::Haneman);
+            return Some(Self::Haneman);
         } else if han <= 10 {
-            return Some(LimitHands::Baiman);
+            return Some(Self::Baiman);
         } else if han <= 12 {
-            return Some(LimitHands::Sanbaiman);
+            return Some(Self::Sanbaiman);
         } else {
-            return Some(LimitHands::KazoeYakuman);
+            return Some(Self::KazoeYakuman);
         }
     }
     pub fn get_score(&self) -> Vec<u16> {
         match self {
-            LimitHands::Mangan => {
+            Self::Mangan => {
                 vec![12000, 4000, 8000, 2000, 4000]
             }
-            LimitHands::Haneman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::Haneman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     let j = i / 2;
@@ -981,24 +981,24 @@ impl LimitHands {
                 }
                 out
             }
-            LimitHands::Baiman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::Baiman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     out.push(i * 2)
                 }
                 out
             }
-            LimitHands::Sanbaiman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::Sanbaiman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     out.push(i * 3)
                 }
                 out
             }
-            LimitHands::KazoeYakuman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::KazoeYakuman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     out.push(i * 4)
