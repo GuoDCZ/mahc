@@ -119,25 +119,20 @@ impl Hand {
         }
 
         //TODO: standard hand ONLY CHECK MUST FIX FOR KOKUSHI
-        //TODO: this can FORSURE be shorter
-        let (mut tripcount, mut seqcount, mut paircount, mut kancount, mut none) = (0, 0, 0, 0, 0);
+        let mut full_shape_count = 0;
+        let mut pair_count = 0;
+        let mut no_shape_count = 0;
         for i in &tile_groups {
-            if i.group_type == GroupType::Triplet {
-                tripcount += 1;
-            } else if i.group_type == GroupType::Sequence {
-                seqcount += 1;
-            } else if i.group_type == GroupType::Pair {
-                paircount += 1;
-            } else if i.group_type == GroupType::Kan {
-                kancount += 1;
-            } else if i.group_type == GroupType::None {
-                none += 1;
+            match i.group_type {
+                GroupType::Triplet | GroupType::Sequence | GroupType::Kan => full_shape_count += 1,
+                GroupType::Pair => pair_count += 1,
+                GroupType::None => no_shape_count += 1,
             }
         }
 
-        if !(tripcount + seqcount + kancount == 4 && paircount == 1)
-            && paircount != 7
-            && !(none == 12 && paircount == 1)
+        if !(full_shape_count == 4 && pair_count == 1)
+            && pair_count != 7
+            && !(no_shape_count == 12 && pair_count == 1)
         {
             return Err(HandErr::InvalidShape);
         }
