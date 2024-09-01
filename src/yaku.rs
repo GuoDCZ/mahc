@@ -146,19 +146,17 @@ impl Yaku {
     //TODO adjust for open or closed !!!!
     pub fn get_han(&self, is_open: bool) -> u16 {
         match self {
-            Self::Tanyao => 1,
-            Self::Iipeikou => 1,
-            Self::Yakuhai => 1,
-            Self::MenzenTsumo => 1,
-            Self::Pinfu => 1,
-            Self::Riichi => 1,
-            Self::Ippatsu => 1,
-            Self::Haitei => 1,
-            Self::RinshanKaihou => 1,
-            Self::Chankan => 1,
+            Self::Tanyao
+            | Self::Iipeikou
+            | Self::Yakuhai
+            | Self::MenzenTsumo
+            | Self::Pinfu
+            | Self::Riichi
+            | Self::Ippatsu
+            | Self::Haitei
+            | Self::RinshanKaihou
+            | Self::Chankan => 1,
 
-            Self::DoubleRiichi => 2,
-            Self::Toitoi => 2,
             Self::Ittsuu => {
                 if is_open {
                     return 1;
@@ -171,13 +169,15 @@ impl Yaku {
                 }
                 2
             }
-            Self::Chantaiyao => 2,
-            Self::Sanankou => 2,
-            Self::SanshokuDoukou => 2,
-            Self::Sankantsu => 2,
-            Self::Honroutou => 2,
-            Self::Shousangen => 2,
-            Self::Chiitoitsu => 2,
+            Self::DoubleRiichi
+            | Self::Toitoi
+            | Self::Chantaiyao
+            | Self::Sanankou
+            | Self::SanshokuDoukou
+            | Self::Sankantsu
+            | Self::Honroutou
+            | Self::Shousangen
+            | Self::Chiitoitsu => 2,
 
             Self::Honitsu => {
                 if is_open {
@@ -200,24 +200,23 @@ impl Yaku {
                 6
             }
 
-            //TODO gota be a better way of doing this
-            Self::KazoeYakuman => 1,
-            Self::KokushiMusou => 1,
-            Self::KokushiMusou13SidedWait => 1,
-            Self::Suuankou => 1,
-            Self::Daisangen => 1,
-            Self::Shousuushii => 1,
-            Self::Daisuushii => 1,
-            Self::Tsuuiisou => 1,
-            Self::Chinroutou => 1,
-            Self::Ryuuiisou => 1,
-            Self::ChuurenPoutou => 1,
-            Self::ChuurenPoutou9SidedWait => 1,
-            Self::Suukantsu => 1,
-            Self::Tenhou => 1,
-            Self::Chiihou => 1,
-            Self::SuuankouTankiWait => 1,
-            Self::Daichiishin => 1,
+            Self::KazoeYakuman
+            | Self::KokushiMusou
+            | Self::KokushiMusou13SidedWait
+            | Self::Suuankou
+            | Self::Daisangen
+            | Self::Shousuushii
+            | Self::Daisuushii
+            | Self::Tsuuiisou
+            | Self::Chinroutou
+            | Self::Ryuuiisou
+            | Self::ChuurenPoutou
+            | Self::ChuurenPoutou9SidedWait
+            | Self::Suukantsu
+            | Self::Tenhou
+            | Self::Chiihou
+            | Self::SuuankouTankiWait
+            | Self::Daichiishin => 1,
         }
     }
     pub fn is_yakuman(&self) -> bool {
