@@ -1,4 +1,4 @@
-use mahc::HandErr;
+use mahc::{calculate_total_fu_value, Fu, HandErr};
 
 use crate::yaku::Yaku;
 
@@ -53,21 +53,21 @@ pub fn get_hand_score(
     if yaku.0 == 0 {
         return Err(HandErr::NoYaku);
     }
-    let fu: (u16, Vec<mahc::Fu>);
+    let fu: Vec<Fu>;
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
     //i can move this to calculatefu method maybe?
     if yaku.1.contains(&Yaku::Chiitoitsu) {
-        fu = (25, vec![mahc::Fu::BasePointsChitoi]);
+        fu = vec![Fu::BasePointsChitoi];
     } else if yaku.1.contains(&Yaku::Pinfu) {
         if tsumo {
-            fu = (20, vec![mahc::Fu::BasePoints]);
+            fu = vec![Fu::BasePoints];
         } else {
-            fu = (30, vec![mahc::Fu::BasePoints, mahc::Fu::ClosedRon]);
+            fu = vec![Fu::BasePoints, Fu::ClosedRon];
         }
     } else {
         fu = hand.calculate_fu(tsumo);
     }
-    let han_and_fu = vec![yaku.0 + dora, fu.0];
+    let han_and_fu = vec![yaku.0 + dora, calculate_total_fu_value(&fu)];
     let mut has_yakuman = false;
     for i in &yaku.1 {
         if i.is_yakuman() {
@@ -80,7 +80,7 @@ pub fn get_hand_score(
         //can unwrap here because check for yaku earlier
         calculate(&han_and_fu, honba).unwrap()
     };
-    Ok((scores, yaku.1, fu.1, han_and_fu, hand.is_open()))
+    Ok((scores, yaku.1, fu, han_and_fu, hand.is_open()))
 }
 
 pub fn get_yaku_han(

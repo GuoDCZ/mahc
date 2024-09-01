@@ -302,7 +302,7 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-    use mahc::{GroupType, Hand, HandErr, Suit};
+    use mahc::{calculate_total_fu_value, GroupType, Hand, HandErr, Suit};
 
     use super::*;
     #[test]
@@ -1715,9 +1715,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true).0, 60);
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 60);
         assert_eq!(
-            out.calculate_fu(true).1,
+            actual_fu,
             [
                 Fu::BasePoints,
                 Fu::Tsumo,
@@ -1744,9 +1745,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true).0, 30);
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 30);
         assert_eq!(
-            out.calculate_fu(true).1,
+            actual_fu,
             [
                 Fu::BasePoints,
                 Fu::Tsumo,
@@ -1772,9 +1774,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true).0, 30);
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 30);
         assert_eq!(
-            out.calculate_fu(true).1,
+            actual_fu,
             [Fu::BasePoints, Fu::Tsumo, Fu::NonSimpleOpenTriplet,]
         );
     }
@@ -1794,9 +1797,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true).0, 80);
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 80);
         assert_eq!(
-            out.calculate_fu(true).1,
+            actual_fu,
             [
                 Fu::BasePoints,
                 Fu::Tsumo,
@@ -1823,9 +1827,10 @@ mod test {
             "Ww".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true).0, 80);
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 80);
         assert_eq!(
-            out.calculate_fu(true).1,
+            actual_fu,
             [
                 Fu::BasePoints,
                 Fu::Tsumo,
@@ -1852,9 +1857,10 @@ mod test {
             "Ew".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(false).0, 40);
+        let actual_fu = out.calculate_fu(false);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 40);
         assert_eq!(
-            out.calculate_fu(false).1,
+            actual_fu,
             [
                 Fu::BasePoints,
                 Fu::NonSimpleOpenTriplet,
@@ -1879,9 +1885,10 @@ mod test {
             "Ew".to_string(),
         )
         .unwrap();
-        assert_eq!(out.calculate_fu(true).0, 70);
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 70);
         assert_eq!(
-            out.calculate_fu(true).1,
+            actual_fu,
             [
                 Fu::BasePoints,
                 Fu::Tsumo,

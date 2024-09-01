@@ -104,6 +104,32 @@ impl std::fmt::Display for Fu {
     }
 }
 
+impl Fu {
+    /// Get the minipoint value.
+    pub fn value(&self) -> u16 {
+        match self {
+            Fu::BasePoints => 20,
+            Fu::BasePointsChitoi => 25,
+            Fu::ClosedRon => 10,
+            Fu::Tsumo => 2,
+            Fu::NonSimpleClosedTriplet => 8,
+            Fu::SimpleClosedTriplet => 4,
+            Fu::NonSimpleOpenTriplet => 4,
+            Fu::SimpleOpenTriplet => 2,
+            Fu::NonSimpleClosedKan => 32,
+            Fu::SimpleClosedKan => 16,
+            Fu::NonSimpleOpenKan => 16,
+            Fu::SimpleOpenKan => 8,
+            Fu::Toitsu => 2,
+            Fu::SingleWait => 2,
+        }
+    }
+}
+
+pub fn calculate_total_fu_value(fu: &[Fu]) -> u16 {
+    ((fu.iter().map(|f| f.value()).sum::<u16>() + 9) / 10) * 10
+}
+
 impl Hand {
     pub fn new(
         tiles: Vec<String>,
@@ -114,6 +140,7 @@ impl Hand {
         let mut tile_groups: Vec<TileGroup> = Vec::new();
         let mut ishandopen = false;
 
+        // NOTE: Strings are complicated in Rust and needs evaluation about how to iterate over one. Because the string is expected to contain ASCII characters, `.chars()` should be okay.
         for i in &tiles {
             let tile = TileGroup::new(i.to_string())?;
             if tile.isopen {
@@ -203,17 +230,15 @@ impl Hand {
         Ok(hand)
     }
 
-    pub fn calculate_fu(&self, tsumo: bool) -> (u16, Vec<Fu>) {
+    pub fn calculate_fu(&self, tsumo: bool) -> Vec<Fu> {
         //TODO REMOVE THESE PRINTS (and make this calculation less fucky)
         let mut fu_types: Vec<Fu> = vec![];
-        let mut totalfu = 20;
         fu_types.push(Fu::BasePoints);
+
         if tsumo {
-            totalfu += 2;
             fu_types.push(Fu::Tsumo);
         }
         if !self.is_open() {
-            totalfu += 10;
             fu_types.push(Fu::ClosedRon);
         }
         //meld fu cal
@@ -222,52 +247,40 @@ impl Hand {
                 if tsumo {
                     if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
                         fu_types.push(Fu::NonSimpleClosedTriplet);
-                        totalfu += 8;
                     } else {
                         fu_types.push(Fu::SimpleClosedTriplet);
-                        totalfu += 4;
                     }
                 } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                    totalfu += 4;
                     fu_types.push(Fu::NonSimpleOpenTriplet);
                 } else {
-                    totalfu += 2;
                     fu_types.push(Fu::SimpleOpenTriplet);
                 }
                 continue;
             }
             if !(i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal) && i.isopen {
-                totalfu += 2;
                 fu_types.push(Fu::SimpleOpenTriplet);
             }
             if !i.isopen {
                 if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                    totalfu += 8;
                     fu_types.push(Fu::NonSimpleClosedTriplet);
                 } else {
-                    totalfu += 4;
                     fu_types.push(Fu::SimpleClosedTriplet);
                 }
             } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                totalfu += 4;
                 fu_types.push(Fu::NonSimpleOpenTriplet);
             }
         }
         for i in &self.kans() {
             if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
                 if !i.isopen {
-                    totalfu += 32;
                     fu_types.push(Fu::NonSimpleClosedKan);
                 } else {
                     fu_types.push(Fu::NonSimpleOpenKan);
-                    totalfu += 16;
                 }
             } else if !i.isopen {
                 fu_types.push(Fu::SimpleClosedKan);
-                totalfu += 16;
             } else {
                 fu_types.push(Fu::SimpleOpenKan);
-                totalfu += 8;
             }
         }
         for i in self.pairs() {
@@ -276,29 +289,25 @@ impl Hand {
                 || i.suit == Suit::Dragon
             {
                 fu_types.push(Fu::Toitsu);
-                totalfu += 2;
             }
         }
         //fu wait cal
         if self.groups.last().unwrap().group_type == GroupType::Pair {
             fu_types.push(Fu::SingleWait);
-            totalfu += 2;
         }
         if self.groups.last().unwrap().group_type == GroupType::Sequence {
             let midtile = self.groups.last().unwrap().value.parse::<u8>().unwrap() + 1;
             if self.win_tile().value == midtile.to_string() {
                 fu_types.push(Fu::SingleWait);
-                totalfu += 2;
             }
             if !(self.win_tile().value == "1" || self.win_tile().value == "9")
                 && self.groups.last().unwrap().isterminal
             {
                 fu_types.push(Fu::SingleWait);
-                totalfu += 2;
             }
         }
-        //works cuz ints
-        (((totalfu + 9) / 10) * 10, fu_types)
+
+        fu_types
     }
 
     pub fn sequences(&self) -> Vec<TileGroup> {
@@ -579,8 +588,8 @@ impl Hand {
             return false;
         }
         let fu = self.calculate_fu(false);
-        for i in fu.1 {
-            if i != Fu::ClosedRon && i != Fu::BasePoints {
+        for fu_type in fu {
+            if !matches!(fu_type, Fu::ClosedRon | Fu::BasePoints) {
                 return false;
             }
         }
