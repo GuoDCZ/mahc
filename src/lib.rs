@@ -242,42 +242,44 @@ impl Hand {
             fu_types.push(Fu::ClosedRon);
         }
         //meld fu cal
-        for i in &self.triplets() {
-            if i == self.groups.last().unwrap() {
+        for tile_group in &self.triplets() {
+            let group_is_terminal_or_honor = tile_group.honor() || tile_group.isterminal;
+            if tile_group == self.groups.last().unwrap() {
                 if tsumo {
-                    if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                    if group_is_terminal_or_honor {
                         fu_types.push(Fu::NonSimpleClosedTriplet);
                     } else {
                         fu_types.push(Fu::SimpleClosedTriplet);
                     }
-                } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                } else if group_is_terminal_or_honor {
                     fu_types.push(Fu::NonSimpleOpenTriplet);
                 } else {
                     fu_types.push(Fu::SimpleOpenTriplet);
                 }
                 continue;
             }
-            if !(i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal) && i.isopen {
+            if !group_is_terminal_or_honor && tile_group.isopen {
                 fu_types.push(Fu::SimpleOpenTriplet);
             }
-            if !i.isopen {
-                if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+            if !tile_group.isopen {
+                if group_is_terminal_or_honor {
                     fu_types.push(Fu::NonSimpleClosedTriplet);
                 } else {
                     fu_types.push(Fu::SimpleClosedTriplet);
                 }
-            } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+            } else if group_is_terminal_or_honor {
                 fu_types.push(Fu::NonSimpleOpenTriplet);
             }
         }
-        for i in &self.kans() {
-            if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                if !i.isopen {
+        for tile_group in &self.kans() {
+            let group_is_terminal_or_honor = tile_group.honor() || tile_group.isterminal;
+            if group_is_terminal_or_honor {
+                if !tile_group.isopen {
                     fu_types.push(Fu::NonSimpleClosedKan);
                 } else {
                     fu_types.push(Fu::NonSimpleOpenKan);
                 }
-            } else if !i.isopen {
+            } else if !tile_group.isopen {
                 fu_types.push(Fu::SimpleClosedKan);
             } else {
                 fu_types.push(Fu::SimpleOpenKan);
@@ -292,18 +294,20 @@ impl Hand {
             }
         }
         //fu wait cal
-        if self.groups.last().unwrap().group_type == GroupType::Pair {
-            fu_types.push(Fu::SingleWait);
-        }
-        if self.groups.last().unwrap().group_type == GroupType::Sequence {
-            let midtile = self.groups.last().unwrap().value.parse::<u8>().unwrap() + 1;
-            if self.win_tile().value == midtile.to_string() {
-                fu_types.push(Fu::SingleWait);
-            }
-            if !(self.win_tile().value == "1" || self.win_tile().value == "9")
-                && self.groups.last().unwrap().isterminal
-            {
-                fu_types.push(Fu::SingleWait);
+        if let Some(group) = self.groups.last() {
+            match group.group_type {
+                GroupType::Pair => fu_types.push(Fu::SingleWait),
+                GroupType::Sequence => {
+                    let mid_tile = group.into_u8().unwrap() + 1;
+                    if self.win_tile().into_u8().unwrap() == mid_tile {
+                        fu_types.push(Fu::SingleWait);
+                    }
+
+                    if !self.win_tile().isterminal && group.isterminal {
+                        fu_types.push(Fu::SingleWait);
+                    }
+                }
+                _ => {}
             }
         }
 
@@ -842,6 +846,16 @@ impl TileGroup {
             isterminal,
         };
         Ok(tile)
+    }
+
+    /// Check if the group is an honor.
+    pub fn honor(&self) -> bool {
+        matches!(self.suit, Suit::Wind | Suit::Dragon)
+    }
+
+    /// Parse the group value into an integer.
+    pub fn into_u8(&self) -> Result<u8, std::num::ParseIntError> {
+        self.value.parse()
     }
 }
 
