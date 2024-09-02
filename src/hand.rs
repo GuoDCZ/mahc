@@ -710,6 +710,12 @@ impl Hand {
             }
         }
 
+        for group in self.groups.clone() {
+            if group.suit != Suit::Souzu && group.suit != Suit::Dragon {
+                return false;
+            }
+        }
+
         true
     }
 
@@ -826,14 +832,34 @@ impl Hand {
             return false;
         }
 
-        let singles = self.groups.clone();
-        let mut vals: Vec<String> = vec![];
-        for i in singles {
-            vals.push(i.value.clone());
-        }
-        vals.dedup();
+        let mut orphans = vec![
+            ("1", Suit::Manzu),
+            ("9", Suit::Manzu),
+            ("1", Suit::Pinzu),
+            ("9", Suit::Pinzu),
+            ("1", Suit::Souzu),
+            ("9", Suit::Souzu),
+            ("E", Suit::Wind),
+            ("S", Suit::Wind),
+            ("W", Suit::Wind),
+            ("N", Suit::Wind),
+            ("r", Suit::Dragon),
+            ("g", Suit::Dragon),
+            ("w", Suit::Dragon),
+        ];
 
-        vals.len() == 13
+        for tile in self.groups.iter() {
+            if let Some(pos) = orphans
+                .iter()
+                .position(|(value, suit)| value == &tile.value && suit == &tile.suit)
+            {
+                orphans.remove(pos);
+            } else {
+                return false;
+            }
+        }
+
+        orphans.is_empty()
     }
 
     /// Check if the hand has one of each type of terminal and honor tile and one additional terminal or honor tile, on a 13-sided wait.
@@ -869,6 +895,50 @@ mod tests {
 
     #[test]
     fn yaku_kokushi() {
+        let out = Hand::new(
+            vec![
+                "1s".to_string(),
+                "2s".to_string(),
+                "1m".to_string(),
+                "9m".to_string(),
+                "1p".to_string(),
+                "9p".to_string(),
+                "Ew".to_string(),
+                "Sw".to_string(),
+                "Ww".to_string(),
+                "Nw".to_string(),
+                "gd".to_string(),
+                "rd".to_string(),
+                "wwd".to_string(),
+            ],
+            "wd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert!(!out.is_kokushi());
+        let out = Hand::new(
+            vec![
+                "1s".to_string(),
+                "1s".to_string(),
+                "1m".to_string(),
+                "9m".to_string(),
+                "1p".to_string(),
+                "9p".to_string(),
+                "Ew".to_string(),
+                "Sw".to_string(),
+                "Ww".to_string(),
+                "Nw".to_string(),
+                "gd".to_string(),
+                "rd".to_string(),
+                "wwd".to_string(),
+            ],
+            "wd".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert!(!out.is_kokushi());
         let out = Hand::new(
             vec![
                 "1s".to_string(),
@@ -1177,6 +1247,20 @@ mod tests {
 
     #[test]
     fn yaku_ryuuiisou() {
+        let out = Hand::new(
+            vec![
+                "234p".to_string(),
+                "234s".to_string(),
+                "66s".to_string(),
+                "gggd".to_string(),
+                "888s".to_string(),
+            ],
+            "8s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        assert!(!out.is_ryuuiisou());
         let out = Hand::new(
             vec![
                 "234s".to_string(),
