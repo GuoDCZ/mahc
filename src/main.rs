@@ -305,8 +305,8 @@ mod test {
     use mahc::fu::calculate_total_fu_value;
     use mahc::hand::error::HandErr;
     use mahc::hand::Hand;
+    use mahc::suit::Suit;
     use mahc::tile_group::GroupType;
-    use mahc::Suit;
 
     use super::*;
     #[test]
