@@ -1,6 +1,6 @@
-use mahc::{calculate_total_fu_value, Fu, Hand, HandErr};
-
+use crate::hand::Hand;
 use crate::yaku::Yaku;
+use crate::{calculate_total_fu_value, Fu, HandErr, LimitHands};
 
 #[derive(Debug, PartialEq)]
 pub enum CalculatorErrors {
@@ -221,7 +221,7 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
 /// Calculate the payment amounts from the han, fu, and number of honba (repeat counters).
 ///
 /// See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the returned `Vec`.
-pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
+pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, HandErr> {
     let han = args[0];
     let fu = args[1];
 
@@ -233,7 +233,7 @@ pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
         return Err(HandErr::NoFu);
     }
 
-    let k = mahc::LimitHands::get_limit_hand(han, fu);
+    let k = LimitHands::get_limit_hand(han, fu);
     if let Some(limithand) = k {
         let mut scores = limithand.get_score();
         scores[0] += honba * 300;

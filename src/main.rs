@@ -1,12 +1,11 @@
-mod calc;
-
-pub mod yaku;
-use clap::Parser;
-use mahc::Fu;
-use serde_json::json;
 use std::ffi::OsString;
 use std::fs;
-use yaku::Yaku;
+
+use clap::Parser;
+use mahc::calc;
+use mahc::yaku::Yaku;
+use mahc::Fu;
+use serde_json::json;
 
 /// riichi mahjong calculator tool
 #[derive(Parser, Debug)]
