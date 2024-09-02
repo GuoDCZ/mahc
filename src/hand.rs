@@ -1,6 +1,9 @@
 pub mod error;
 
-use crate::{Fu, GroupType, Suit, TileGroup, TERMINAL_CHARS};
+use crate::fu::Fu;
+use crate::suit::Suit;
+use crate::tile_group::{GroupType, TileGroup};
+use crate::TERMINAL_CHARS;
 use error::HandErr;
 
 #[derive(Debug)]

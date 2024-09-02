@@ -1,5 +1,5 @@
 use crate::hand::error::HandErr;
-use crate::Suit;
+use crate::suit::Suit;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TileGroup {
