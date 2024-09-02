@@ -86,8 +86,8 @@ pub fn get_hand_score(
     let han_and_fu = vec![yaku.0 + dora, calculate_total_fu_value(&fu)];
 
     let mut has_yakuman = false;
-    for i in &yaku.1 {
-        if i.is_yakuman() {
+    for y in &yaku.1 {
+        if y.is_yakuman() {
             has_yakuman = true;
         }
     }
