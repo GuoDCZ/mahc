@@ -67,20 +67,22 @@ pub fn get_hand_score(
     if yaku.0 == 0 {
         return Err(HandErr::NoYaku);
     }
-    let fu: Vec<Fu>;
+
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
     //i can move this to calculatefu method maybe?
-    if yaku.1.contains(&Yaku::Chiitoitsu) {
-        fu = vec![Fu::BasePointsChitoi];
-    } else if yaku.1.contains(&Yaku::Pinfu) {
-        if tsumo {
-            fu = vec![Fu::BasePoints];
+    let fu = {
+        if yaku.1.contains(&Yaku::Chiitoitsu) {
+            vec![Fu::BasePointsChitoi]
+        } else if yaku.1.contains(&Yaku::Pinfu) {
+            if tsumo {
+                vec![Fu::BasePoints]
+            } else {
+                vec![Fu::BasePoints, Fu::ClosedRon]
+            }
         } else {
-            fu = vec![Fu::BasePoints, Fu::ClosedRon];
+            hand.calculate_fu(tsumo)
         }
-    } else {
-        fu = hand.calculate_fu(tsumo);
-    }
+    };
     let han_and_fu = vec![yaku.0 + dora, calculate_total_fu_value(&fu)];
 
     let mut has_yakuman = false;
