@@ -34,29 +34,29 @@ pub enum HandErr {
     NoHan,
     NoFu,
 }
-impl HandErr {
-    pub fn to_string(&self) -> String {
+impl std::fmt::Display for HandErr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            HandErr::InvalidGroup => "Invalid Group found".to_string(),
-            HandErr::InvalidSuit => "Invalid Suit found".to_string(),
-            HandErr::InvalidShape => "Invalid Hand Shape found".to_string(),
-            HandErr::NoYaku => "No Yaku".to_string(),
-            HandErr::NoHandTiles => "No Hand Tiles given".to_string(),
-            HandErr::NoWinTile => "No Win Tile given".to_string(),
-            HandErr::DuplicateRiichi => "Cant Riichi and Double Riichi Simulatinously".to_string(),
-            HandErr::IppatsuWithoutRiichi => "Cant Ippatsu without Riichi".to_string(),
-            HandErr::ChankanTsumo => "Cant Tsumo and Chankan".to_string(),
-            HandErr::RinshanKanWithoutKan => "Cant Rinshan without Kan".to_string(),
-            HandErr::RinshanWithoutTsumo => "Cant Rinshan without tsumo".to_string(),
-            HandErr::RinshanIppatsu => "Cant Rinshan and Ippatsu".to_string(),
+            HandErr::InvalidGroup => write!(f, "Invalid Group found"),
+            HandErr::InvalidSuit => write!(f, "Invalid Suit found"),
+            HandErr::InvalidShape => write!(f, "Invalid Hand Shape found"),
+            HandErr::NoYaku => write!(f, "No Yaku"),
+            HandErr::NoHandTiles => write!(f, "No Hand Tiles given"),
+            HandErr::NoWinTile => write!(f, "No Win Tile given"),
+            HandErr::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simulatinously"),
+            HandErr::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
+            HandErr::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
+            HandErr::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
+            HandErr::RinshanWithoutTsumo => write!(f, "Cant Rinshan without tsumo"),
+            HandErr::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
             HandErr::DoubleRiichiHaiteiIppatsu => {
-                "Cant Double Riichi, Ippatsu and haitei".to_string()
+                write!(f, "Cant Double Riichi, Ippatsu and haitei")
             }
             HandErr::DoubleRiichiHaiteiChankan => {
-                "Cant Double Riichi, Ippatsu and haitei".to_string()
+                write!(f, "Cant Double Riichi, Ippatsu and haitei")
             }
-            HandErr::NoHan => "No han provided!".to_string(),
-            HandErr::NoFu => "No fu provided!".to_string(),
+            HandErr::NoHan => write!(f, "No han provided!"),
+            HandErr::NoFu => write!(f, "No fu provided!"),
         }
     }
 }
@@ -79,23 +79,23 @@ pub enum Fu {
     SingleWait,
 }
 
-impl Fu {
-    pub fn to_string(&self) -> String {
+impl std::fmt::Display for Fu {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Fu::BasePoints => "BasePoints: 20".to_string(),
-            Fu::BasePointsChitoi => "BasePoints: 25".to_string(),
-            Fu::ClosedRon => "ClosedRon: 10".to_string(),
-            Fu::Tsumo => "Tsumo: 2".to_string(),
-            Fu::NonSimpleClosedTriplet => "NonSimpleClosedTriplet: 8".to_string(),
-            Fu::SimpleClosedTriplet => "ClosedTriplet: 4".to_string(),
-            Fu::NonSimpleOpenTriplet => "NonSimpleOpenTriplet: 4".to_string(),
-            Fu::SimpleOpenTriplet => "OpenTriplet: 2".to_string(),
-            Fu::NonSimpleClosedKan => "NonSimpleClosedKan: 32".to_string(),
-            Fu::SimpleClosedKan => "ClosedKan: 16".to_string(),
-            Fu::NonSimpleOpenKan => "NonSimpleOpenKan: 16".to_string(),
-            Fu::SimpleOpenKan => "OpenKan: 8".to_string(),
-            Fu::Toitsu => "Toitsu: 2".to_string(),
-            Fu::SingleWait => "SingleWait: 2".to_string(),
+            Fu::BasePoints => write!(f, "BasePoints: 20"),
+            Fu::BasePointsChitoi => write!(f, "BasePoints: 25"),
+            Fu::ClosedRon => write!(f, "ClosedRon: 10"),
+            Fu::Tsumo => write!(f, "Tsumo: 2"),
+            Fu::NonSimpleClosedTriplet => write!(f, "NonSimpleClosedTriplet: 8"),
+            Fu::SimpleClosedTriplet => write!(f, "ClosedTriplet: 4"),
+            Fu::NonSimpleOpenTriplet => write!(f, "NonSimpleOpenTriplet: 4"),
+            Fu::SimpleOpenTriplet => write!(f, "OpenTriplet: 2"),
+            Fu::NonSimpleClosedKan => write!(f, "NonSimpleClosedKan: 32"),
+            Fu::SimpleClosedKan => write!(f, "ClosedKan: 16"),
+            Fu::NonSimpleOpenKan => write!(f, "NonSimpleOpenKan: 16"),
+            Fu::SimpleOpenKan => write!(f, "OpenKan: 8"),
+            Fu::Toitsu => write!(f, "Toitsu: 2"),
+            Fu::SingleWait => write!(f, "SingleWait: 2"),
         }
     }
 }
@@ -201,7 +201,7 @@ impl Hand {
             isopen: ishandopen,
         };
 
-        return Ok(hand);
+        Ok(hand)
     }
 
     pub fn calculate_fu(&self, tsumo: bool) -> (u16, Vec<Fu>) {
@@ -228,14 +228,12 @@ impl Hand {
                         fu_types.push(Fu::SimpleClosedTriplet);
                         totalfu += 4;
                     }
+                } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                    totalfu += 4;
+                    fu_types.push(Fu::NonSimpleOpenTriplet);
                 } else {
-                    if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                        totalfu += 4;
-                        fu_types.push(Fu::NonSimpleOpenTriplet);
-                    } else {
-                        totalfu += 2;
-                        fu_types.push(Fu::SimpleOpenTriplet);
-                    }
+                    totalfu += 2;
+                    fu_types.push(Fu::SimpleOpenTriplet);
                 }
                 continue;
             }
@@ -251,11 +249,9 @@ impl Hand {
                     totalfu += 4;
                     fu_types.push(Fu::SimpleClosedTriplet);
                 }
-            } else {
-                if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                    totalfu += 4;
-                    fu_types.push(Fu::NonSimpleOpenTriplet);
-                }
+            } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                totalfu += 4;
+                fu_types.push(Fu::NonSimpleOpenTriplet);
             }
         }
         for i in &self.kans() {
@@ -267,14 +263,12 @@ impl Hand {
                     fu_types.push(Fu::NonSimpleOpenKan);
                     totalfu += 16;
                 }
+            } else if !i.isopen {
+                fu_types.push(Fu::SimpleClosedKan);
+                totalfu += 16;
             } else {
-                if !i.isopen {
-                    fu_types.push(Fu::SimpleClosedKan);
-                    totalfu += 16;
-                } else {
-                    fu_types.push(Fu::SimpleOpenKan);
-                    totalfu += 8;
-                }
+                fu_types.push(Fu::SimpleOpenKan);
+                totalfu += 8;
             }
         }
         for i in self.pairs() {
@@ -305,7 +299,7 @@ impl Hand {
             }
         }
         //works cuz ints
-        return (((totalfu + 9) / 10) * 10, fu_types);
+        (((totalfu + 9) / 10) * 10, fu_types)
     }
 
     pub fn sequences(&self) -> Vec<TileGroup> {
@@ -376,7 +370,7 @@ impl Hand {
                 return false;
             }
         }
-        return true;
+        true
     }
     pub fn is_ryanpeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
@@ -416,7 +410,7 @@ impl Hand {
                 count += 1;
             }
         }
-        return count;
+        count
     }
     pub fn is_toitoi(&self) -> bool {
         self.triplets().len() + self.kans().len() == 4
@@ -456,12 +450,10 @@ impl Hand {
             if list_of_vals.len() == 1 {
                 return true;
             }
-        } else {
-            if list_of_vals.len() == 2 {
-                return true;
-            }
+        } else if list_of_vals.len() == 2 {
+            return true;
         }
-        return false;
+        false
     }
     pub fn is_honitsu(&self) -> bool {
         if self.groups.len() == 13 {
@@ -494,7 +486,7 @@ impl Hand {
             return false;
         }
 
-        return true;
+        true
     }
     pub fn is_shousangen(&self) -> bool {
         let dragon_count = self
@@ -514,13 +506,13 @@ impl Hand {
                 return false;
             }
         }
-        !(self.sequences().len() == 0)
+        !(self.sequences().is_empty())
     }
     pub fn is_honroutou(&self) -> bool {
         if self.groups.len() == 13 {
             return false;
         }
-        if self.sequences().len() != 0 {
+        if !self.sequences().is_empty() {
             return false;
         }
         let mut has_terminal: bool = false;
@@ -558,7 +550,7 @@ impl Hand {
         if self.groups.len() == 13 {
             return false;
         }
-        if self.sequences().len() == 0 {
+        if self.sequences().is_empty() {
             return false;
         }
         let mut has_terminal: bool = false;
@@ -594,7 +586,7 @@ impl Hand {
             }
         }
 
-        return true;
+        true
     }
     pub fn is_sanshokudoukou(&self) -> bool {
         if self.triplets().len() + self.kans().len() < 3 {
@@ -610,12 +602,10 @@ impl Hand {
             if list_of_vals.len() == 1 {
                 return true;
             }
-        } else {
-            if list_of_vals.len() == 2 {
-                return true;
-            }
+        } else if list_of_vals.len() == 2 {
+            return true;
         }
-        return false;
+        false
     }
     pub fn is_chinitsu(&self) -> bool {
         if self.groups.len() == 13 {
@@ -645,12 +635,10 @@ impl Hand {
             return false;
         }
 
-        if !tsumo {
-            if self.groups.last().unwrap().group_type == GroupType::Triplet {
-                return false;
-            }
+        if !tsumo && self.groups.last().unwrap().group_type == GroupType::Triplet {
+            return false;
         }
-        return true;
+        true
     }
     pub fn is_suuankoutankiwait(&self) -> bool {
         if self.groups.len() == 13 {
@@ -662,7 +650,7 @@ impl Hand {
         if self.groups.last().unwrap().group_type == GroupType::Pair {
             return true;
         }
-        return false;
+        false
     }
 
     pub fn is_chinroutou(&self) -> bool {
@@ -677,7 +665,7 @@ impl Hand {
                 return false;
             }
         }
-        return true;
+        true
     }
     pub fn is_ryuuiisou(&self) -> bool {
         if self.groups.len() == 13 {
@@ -699,7 +687,7 @@ impl Hand {
                 return false;
             }
         }
-        return true;
+        true
     }
     pub fn is_chuurenpoutou(&self) -> bool {
         if self.groups.len() == 13 {
@@ -734,7 +722,7 @@ impl Hand {
         if vals != [2, 3, 4, 5, 6, 7, 8] {
             return false;
         }
-        return true;
+        true
     }
     pub fn is_chuurenpoutou9sided(&self) -> bool {
         if self.groups.len() == 13 {
@@ -746,7 +734,7 @@ impl Hand {
         if self.groups.last().unwrap().group_type != GroupType::Pair {
             return false;
         }
-        return true;
+        true
     }
     pub fn is_tsuuiisou(&self) -> bool {
         if self.groups.len() == 13 {
@@ -757,7 +745,7 @@ impl Hand {
                 return false;
             }
         }
-        return true;
+        true
     }
     pub fn is_daichiishin(&self) -> bool {
         self.is_tsuuiisou() && self.pairs().len() == 7
@@ -799,13 +787,13 @@ impl Hand {
         if tenhou && self.seat_tile().value == "E" {
             return true;
         }
-        return false;
+        false
     }
     pub fn is_chiihou(&self, tenhou: bool) -> bool {
-        if tenhou && !(self.seat_tile().value == "E") {
+        if tenhou && self.seat_tile().value != "E" {
             return true;
         }
-        return false;
+        false
     }
 }
 
@@ -835,10 +823,8 @@ impl TileGroup {
             if value == "1" || value == "7" {
                 isterminal = true;
             }
-        } else {
-            if value == "1" || value == "9" {
-                isterminal = true;
-            }
+        } else if value == "1" || value == "9" {
+            isterminal = true;
         }
         let tile = TileGroup {
             value,
@@ -847,7 +833,7 @@ impl TileGroup {
             group_type,
             isterminal,
         };
-        return Ok(tile);
+        Ok(tile)
     }
 }
 
@@ -881,12 +867,12 @@ impl GroupType {
         }
 
         match count {
-            2 => return Ok(GroupType::Pair),
+            2 => Ok(GroupType::Pair),
             3 => {
                 if group.chars().nth(0).unwrap() == group.chars().nth(1).unwrap()
                     && group.chars().nth(1).unwrap() == group.chars().nth(2).unwrap()
                 {
-                    return Ok(GroupType::Triplet);
+                    Ok(GroupType::Triplet)
                 } else if ["123", "234", "345", "456", "567", "678", "789"]
                     .iter()
                     .cloned()
@@ -898,9 +884,9 @@ impl GroupType {
                     return Err(HandErr::InvalidGroup);
                 }
             }
-            4 => return Ok(GroupType::Kan),
-            1 => return Ok(GroupType::None),
-            _ => return Err(HandErr::InvalidGroup),
+            4 => Ok(GroupType::Kan),
+            1 => Ok(GroupType::None),
+            _ => Err(HandErr::InvalidGroup),
         }
     }
 }
@@ -917,12 +903,12 @@ pub enum Suit {
 impl Suit {
     pub fn suit_from_string(suit: String) -> Result<Suit, HandErr> {
         match suit.as_str() {
-            "s" => return Ok(Suit::Souzu),
-            "p" => return Ok(Suit::Pinzu),
-            "m" => return Ok(Suit::Manzu),
-            "w" => return Ok(Suit::Wind),
-            "d" => return Ok(Suit::Dragon),
-            _ => return Err(HandErr::InvalidSuit),
+            "s" => Ok(Suit::Souzu),
+            "p" => Ok(Suit::Pinzu),
+            "m" => Ok(Suit::Manzu),
+            "w" => Ok(Suit::Wind),
+            "d" => Ok(Suit::Dragon),
+            _ => Err(HandErr::InvalidSuit),
         }
     }
 }
@@ -938,7 +924,7 @@ pub fn is_limit_hand(han: u16, fu: u16) -> bool {
     if han == 3 && fu >= 70 {
         return true;
     }
-    return false;
+    false
 }
 
 impl LimitHands {
@@ -948,7 +934,7 @@ impl LimitHands {
             return None;
         }
         if han <= 5 {
-            return Some(LimitHands::Mangan);
+            Some(LimitHands::Mangan)
         } else if han <= 7 {
             return Some(LimitHands::Haneman);
         } else if han <= 10 {
