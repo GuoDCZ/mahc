@@ -26,7 +26,7 @@ impl std::fmt::Display for CalculatorErrors {
 /// The output is as follows:
 ///
 /// 1. Payment amounts
-///     - See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the `Vec`.
+///     - See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the `Vec`.
 /// 2. List of yaku
 /// 3. List of fu
 /// 4. Han and fu score
@@ -196,7 +196,7 @@ pub fn get_yaku_han(
 
 /// Calculate the payment amounts from the list of yakuman yaku.
 ///
-/// See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the returned `Vec`.
+/// See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the returned `Vec`.
 pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     let mut total = 0;
     for y in yaku {
@@ -222,7 +222,7 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
 
 /// Calculate the payment amounts from the han, fu, and number of honba (repeat counters).
 ///
-/// See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the returned `Vec`.
+/// See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the returned `Vec`.
 pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, HandErr> {
     let han = args[0];
     let fu = args[1];

@@ -1,7 +1,7 @@
 pub mod calc;
 pub mod fu;
 pub mod hand;
-pub(crate) mod limit_hand;
+pub mod limit_hand;
 pub mod suit;
 pub mod tile_group;
 pub mod yaku;
