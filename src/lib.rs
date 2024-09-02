@@ -886,6 +886,7 @@ pub enum HandErr {
     NoHan,
     NoFu,
 }
+
 impl std::fmt::Display for HandErr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -992,14 +993,16 @@ impl TileGroup {
     pub fn new(group: String) -> Result<Self, HandErr> {
         let isopen = group.chars().last().unwrap().to_string() == "o";
         let value = group.chars().nth(0).unwrap().to_string();
+
         let suit = if !isopen {
             group.chars().last().unwrap().to_string()
         } else {
             group.chars().nth(group.len() - 2).unwrap().to_string()
         };
-
         let suit = Suit::suit_from_string(suit)?;
+
         let group_type = GroupType::group_type_from_string(group.to_string())?;
+
         let mut isterminal = false;
         if group_type == GroupType::Sequence {
             if value == "1" || value == "7" {
@@ -1008,6 +1011,7 @@ impl TileGroup {
         } else if value == "1" || value == "9" {
             isterminal = true;
         }
+
         let tile = Self {
             value,
             suit,
@@ -1015,6 +1019,7 @@ impl TileGroup {
             group_type,
             isterminal,
         };
+
         Ok(tile)
     }
 

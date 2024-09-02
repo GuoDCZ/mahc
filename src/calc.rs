@@ -51,6 +51,7 @@ pub fn get_hand_score(
     if hand.kans().is_empty() && rinshan {
         return Err(HandErr::RinshanKanWithoutKan);
     }
+
     let yaku = get_yaku_han(
         &hand,
         riichi,
@@ -62,6 +63,7 @@ pub fn get_hand_score(
         tenhou,
         tsumo,
     );
+
     if yaku.0 == 0 {
         return Err(HandErr::NoYaku);
     }
@@ -80,18 +82,21 @@ pub fn get_hand_score(
         fu = hand.calculate_fu(tsumo);
     }
     let han_and_fu = vec![yaku.0 + dora, calculate_total_fu_value(&fu)];
+
     let mut has_yakuman = false;
     for i in &yaku.1 {
         if i.is_yakuman() {
             has_yakuman = true;
         }
     }
+
     let scores = if has_yakuman {
         calculate_yakuman(&yaku.1)?
     } else {
         //can unwrap here because check for yaku earlier
         calculate(&han_and_fu, honba).unwrap()
     };
+
     Ok((scores, yaku.1, fu, han_and_fu, hand.is_open()))
 }
 
@@ -108,6 +113,7 @@ pub fn get_yaku_han(
     tsumo: bool,
 ) -> (u16, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];
+
     let conditions = [
         (riichi, Yaku::Riichi),
         (doubleriichi, Yaku::DoubleRiichi),
@@ -134,6 +140,7 @@ pub fn get_yaku_han(
         (hand.is_sanshokudoukou(), Yaku::SanshokuDoukou),
         (hand.is_chinitsu(), Yaku::Chinitsu),
     ];
+
     //check if there are many yakuman, if so return only yakuman
     //this is so unbelievably jank but it works
     let mut yakuman: Vec<Yaku> = vec![];
@@ -204,6 +211,7 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
         basepoints,
         basepoints * 2,
     ];
+
     Ok(scores)
 }
 
@@ -213,12 +221,15 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
 pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
     let han = args[0];
     let fu = args[1];
+
     if han == 0 {
         return Err(HandErr::NoHan);
     }
+
     if fu == 0 {
         return Err(HandErr::NoFu);
     }
+
     let k = mahc::LimitHands::get_limit_hand(han, fu);
     if let Some(limithand) = k {
         let mut scores = limithand.get_score();
