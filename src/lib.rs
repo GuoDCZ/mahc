@@ -1,3 +1,7 @@
+/// Characters that represent terminal or honor tiles.
+// Using a fixed array gets stored on the stack rather than a `String` which gets stored on the heap.
+const TERMINAL_CHARS: [char; 9] = ['1', '9', 'E', 'S', 'W', 'N', 'r', 'g', 'w'];
+
 #[derive(Debug)]
 pub enum LimitHands {
     Mangan,
@@ -37,26 +41,26 @@ pub enum HandErr {
 impl std::fmt::Display for HandErr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            HandErr::InvalidGroup => write!(f, "Invalid Group found"),
-            HandErr::InvalidSuit => write!(f, "Invalid Suit found"),
-            HandErr::InvalidShape => write!(f, "Invalid Hand Shape found"),
-            HandErr::NoYaku => write!(f, "No Yaku"),
-            HandErr::NoHandTiles => write!(f, "No Hand Tiles given"),
-            HandErr::NoWinTile => write!(f, "No Win Tile given"),
-            HandErr::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simulatinously"),
-            HandErr::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
-            HandErr::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
-            HandErr::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
-            HandErr::RinshanWithoutTsumo => write!(f, "Cant Rinshan without tsumo"),
-            HandErr::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
-            HandErr::DoubleRiichiHaiteiIppatsu => {
+            Self::InvalidGroup => write!(f, "Invalid Group found"),
+            Self::InvalidSuit => write!(f, "Invalid Suit found"),
+            Self::InvalidShape => write!(f, "Invalid Hand Shape found"),
+            Self::NoYaku => write!(f, "No Yaku"),
+            Self::NoHandTiles => write!(f, "No Hand Tiles given"),
+            Self::NoWinTile => write!(f, "No Win Tile given"),
+            Self::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simulatinously"),
+            Self::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
+            Self::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
+            Self::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
+            Self::RinshanWithoutTsumo => write!(f, "Cant Rinshan without tsumo"),
+            Self::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
+            Self::DoubleRiichiHaiteiIppatsu => {
                 write!(f, "Cant Double Riichi, Ippatsu and haitei")
             }
-            HandErr::DoubleRiichiHaiteiChankan => {
+            Self::DoubleRiichiHaiteiChankan => {
                 write!(f, "Cant Double Riichi, Ippatsu and haitei")
             }
-            HandErr::NoHan => write!(f, "No han provided!"),
-            HandErr::NoFu => write!(f, "No fu provided!"),
+            Self::NoHan => write!(f, "No han provided!"),
+            Self::NoFu => write!(f, "No fu provided!"),
         }
     }
 }
@@ -82,22 +86,48 @@ pub enum Fu {
 impl std::fmt::Display for Fu {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Fu::BasePoints => write!(f, "BasePoints: 20"),
-            Fu::BasePointsChitoi => write!(f, "BasePoints: 25"),
-            Fu::ClosedRon => write!(f, "ClosedRon: 10"),
-            Fu::Tsumo => write!(f, "Tsumo: 2"),
-            Fu::NonSimpleClosedTriplet => write!(f, "NonSimpleClosedTriplet: 8"),
-            Fu::SimpleClosedTriplet => write!(f, "ClosedTriplet: 4"),
-            Fu::NonSimpleOpenTriplet => write!(f, "NonSimpleOpenTriplet: 4"),
-            Fu::SimpleOpenTriplet => write!(f, "OpenTriplet: 2"),
-            Fu::NonSimpleClosedKan => write!(f, "NonSimpleClosedKan: 32"),
-            Fu::SimpleClosedKan => write!(f, "ClosedKan: 16"),
-            Fu::NonSimpleOpenKan => write!(f, "NonSimpleOpenKan: 16"),
-            Fu::SimpleOpenKan => write!(f, "OpenKan: 8"),
-            Fu::Toitsu => write!(f, "Toitsu: 2"),
-            Fu::SingleWait => write!(f, "SingleWait: 2"),
+            Self::BasePoints => write!(f, "BasePoints: 20"),
+            Self::BasePointsChitoi => write!(f, "BasePoints: 25"),
+            Self::ClosedRon => write!(f, "ClosedRon: 10"),
+            Self::Tsumo => write!(f, "Tsumo: 2"),
+            Self::NonSimpleClosedTriplet => write!(f, "NonSimpleClosedTriplet: 8"),
+            Self::SimpleClosedTriplet => write!(f, "ClosedTriplet: 4"),
+            Self::NonSimpleOpenTriplet => write!(f, "NonSimpleOpenTriplet: 4"),
+            Self::SimpleOpenTriplet => write!(f, "OpenTriplet: 2"),
+            Self::NonSimpleClosedKan => write!(f, "NonSimpleClosedKan: 32"),
+            Self::SimpleClosedKan => write!(f, "ClosedKan: 16"),
+            Self::NonSimpleOpenKan => write!(f, "NonSimpleOpenKan: 16"),
+            Self::SimpleOpenKan => write!(f, "OpenKan: 8"),
+            Self::Toitsu => write!(f, "Toitsu: 2"),
+            Self::SingleWait => write!(f, "SingleWait: 2"),
         }
     }
+}
+
+impl Fu {
+    /// Get the minipoint value.
+    pub fn value(&self) -> u16 {
+        match self {
+            Self::BasePoints => 20,
+            Self::BasePointsChitoi => 25,
+            Self::ClosedRon => 10,
+            Self::Tsumo => 2,
+            Self::NonSimpleClosedTriplet => 8,
+            Self::SimpleClosedTriplet => 4,
+            Self::NonSimpleOpenTriplet => 4,
+            Self::SimpleOpenTriplet => 2,
+            Self::NonSimpleClosedKan => 32,
+            Self::SimpleClosedKan => 16,
+            Self::NonSimpleOpenKan => 16,
+            Self::SimpleOpenKan => 8,
+            Self::Toitsu => 2,
+            Self::SingleWait => 2,
+        }
+    }
+}
+
+pub fn calculate_total_fu_value(fu: &[Fu]) -> u16 {
+    ((fu.iter().map(|f| f.value()).sum::<u16>() + 9) / 10) * 10
 }
 
 impl Hand {
@@ -110,6 +140,7 @@ impl Hand {
         let mut tile_groups: Vec<TileGroup> = Vec::new();
         let mut ishandopen = false;
 
+        // NOTE: Strings are complicated in Rust and needs evaluation about how to iterate over one. Because the string is expected to contain ASCII characters, `.chars()` should be okay.
         for i in &tiles {
             let tile = TileGroup::new(i.to_string())?;
             if tile.isopen {
@@ -119,25 +150,20 @@ impl Hand {
         }
 
         //TODO: standard hand ONLY CHECK MUST FIX FOR KOKUSHI
-        //TODO: this can FORSURE be shorter
-        let (mut tripcount, mut seqcount, mut paircount, mut kancount, mut none) = (0, 0, 0, 0, 0);
+        let mut full_shape_count = 0;
+        let mut pair_count = 0;
+        let mut no_shape_count = 0;
         for i in &tile_groups {
-            if i.group_type == GroupType::Triplet {
-                tripcount += 1;
-            } else if i.group_type == GroupType::Sequence {
-                seqcount += 1;
-            } else if i.group_type == GroupType::Pair {
-                paircount += 1;
-            } else if i.group_type == GroupType::Kan {
-                kancount += 1;
-            } else if i.group_type == GroupType::None {
-                none += 1;
+            match i.group_type {
+                GroupType::Triplet | GroupType::Sequence | GroupType::Kan => full_shape_count += 1,
+                GroupType::Pair => pair_count += 1,
+                GroupType::None => no_shape_count += 1,
             }
         }
 
-        if !(tripcount + seqcount + kancount == 4 && paircount == 1)
-            && paircount != 7
-            && !(none == 12 && paircount == 1)
+        if !(full_shape_count == 4 && pair_count == 1)
+            && pair_count != 7
+            && !(no_shape_count == 12 && pair_count == 1)
         {
             return Err(HandErr::InvalidShape);
         }
@@ -148,7 +174,7 @@ impl Hand {
             suit: Suit::suit_from_string(win.chars().nth(1).unwrap().to_string())?,
             isopen: false,
             group_type: GroupType::None,
-            isterminal: "19ESWNrgw".contains(win.chars().nth(0).unwrap()),
+            isterminal: TERMINAL_CHARS.contains(&win.chars().nth(0).unwrap()),
         };
 
         // check if last group contains the winning tile
@@ -182,7 +208,7 @@ impl Hand {
             suit: Suit::suit_from_string(seat.chars().nth(1).unwrap().to_string())?,
             isopen: false,
             group_type: GroupType::None,
-            isterminal: "19ESWNrgw".contains(seat.chars().nth(0).unwrap()),
+            isterminal: TERMINAL_CHARS.contains(&seat.chars().nth(0).unwrap()),
         };
 
         let prev_tile = TileGroup {
@@ -190,10 +216,10 @@ impl Hand {
             suit: Suit::suit_from_string(prev.chars().nth(1).unwrap().to_string())?,
             isopen: false,
             group_type: GroupType::None,
-            isterminal: "19ESWNrgw".contains(prev.chars().nth(0).unwrap()),
+            isterminal: TERMINAL_CHARS.contains(&prev.chars().nth(0).unwrap()),
         };
 
-        let hand = Hand {
+        let hand = Self {
             groups: tile_groups,
             win_tile,
             seat_tile,
@@ -204,71 +230,59 @@ impl Hand {
         Ok(hand)
     }
 
-    pub fn calculate_fu(&self, tsumo: bool) -> (u16, Vec<Fu>) {
+    pub fn calculate_fu(&self, tsumo: bool) -> Vec<Fu> {
         //TODO REMOVE THESE PRINTS (and make this calculation less fucky)
         let mut fu_types: Vec<Fu> = vec![];
-        let mut totalfu = 20;
         fu_types.push(Fu::BasePoints);
+
         if tsumo {
-            totalfu += 2;
             fu_types.push(Fu::Tsumo);
         }
         if !self.is_open() {
-            totalfu += 10;
             fu_types.push(Fu::ClosedRon);
         }
         //meld fu cal
-        for i in &self.triplets() {
-            if i == self.groups.last().unwrap() {
+        for tile_group in &self.triplets() {
+            let group_is_terminal_or_honor = tile_group.honor() || tile_group.isterminal;
+            if tile_group == self.groups.last().unwrap() {
                 if tsumo {
-                    if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
+                    if group_is_terminal_or_honor {
                         fu_types.push(Fu::NonSimpleClosedTriplet);
-                        totalfu += 8;
                     } else {
                         fu_types.push(Fu::SimpleClosedTriplet);
-                        totalfu += 4;
                     }
-                } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                    totalfu += 4;
+                } else if group_is_terminal_or_honor {
                     fu_types.push(Fu::NonSimpleOpenTriplet);
                 } else {
-                    totalfu += 2;
                     fu_types.push(Fu::SimpleOpenTriplet);
                 }
                 continue;
             }
-            if !(i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal) && i.isopen {
-                totalfu += 2;
+            if !group_is_terminal_or_honor && tile_group.isopen {
                 fu_types.push(Fu::SimpleOpenTriplet);
             }
-            if !i.isopen {
-                if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                    totalfu += 8;
+            if !tile_group.isopen {
+                if group_is_terminal_or_honor {
                     fu_types.push(Fu::NonSimpleClosedTriplet);
                 } else {
-                    totalfu += 4;
                     fu_types.push(Fu::SimpleClosedTriplet);
                 }
-            } else if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                totalfu += 4;
+            } else if group_is_terminal_or_honor {
                 fu_types.push(Fu::NonSimpleOpenTriplet);
             }
         }
-        for i in &self.kans() {
-            if i.suit == Suit::Wind || i.suit == Suit::Dragon || i.isterminal {
-                if !i.isopen {
-                    totalfu += 32;
+        for tile_group in &self.kans() {
+            let group_is_terminal_or_honor = tile_group.honor() || tile_group.isterminal;
+            if group_is_terminal_or_honor {
+                if !tile_group.isopen {
                     fu_types.push(Fu::NonSimpleClosedKan);
                 } else {
                     fu_types.push(Fu::NonSimpleOpenKan);
-                    totalfu += 16;
                 }
-            } else if !i.isopen {
+            } else if !tile_group.isopen {
                 fu_types.push(Fu::SimpleClosedKan);
-                totalfu += 16;
             } else {
                 fu_types.push(Fu::SimpleOpenKan);
-                totalfu += 8;
             }
         }
         for i in self.pairs() {
@@ -277,29 +291,27 @@ impl Hand {
                 || i.suit == Suit::Dragon
             {
                 fu_types.push(Fu::Toitsu);
-                totalfu += 2;
             }
         }
         //fu wait cal
-        if self.groups.last().unwrap().group_type == GroupType::Pair {
-            fu_types.push(Fu::SingleWait);
-            totalfu += 2;
-        }
-        if self.groups.last().unwrap().group_type == GroupType::Sequence {
-            let midtile = self.groups.last().unwrap().value.parse::<u8>().unwrap() + 1;
-            if self.win_tile().value == midtile.to_string() {
-                fu_types.push(Fu::SingleWait);
-                totalfu += 2;
+        if let Some(group) = self.groups.last() {
+            match group.group_type {
+                GroupType::Pair => fu_types.push(Fu::SingleWait),
+                GroupType::Sequence => {
+                    let mid_tile = group.into_u8().unwrap() + 1;
+                    if self.win_tile().into_u8().unwrap() == mid_tile {
+                        fu_types.push(Fu::SingleWait);
+                    }
+
+                    if !self.win_tile().isterminal && group.isterminal {
+                        fu_types.push(Fu::SingleWait);
+                    }
+                }
+                _ => {}
             }
-            if !(self.win_tile().value == "1" || self.win_tile().value == "9")
-                && self.groups.last().unwrap().isterminal
-            {
-                fu_types.push(Fu::SingleWait);
-                totalfu += 2;
-            }
         }
-        //works cuz ints
-        (((totalfu + 9) / 10) * 10, fu_types)
+
+        fu_types
     }
 
     pub fn sequences(&self) -> Vec<TileGroup> {
@@ -580,8 +592,8 @@ impl Hand {
             return false;
         }
         let fu = self.calculate_fu(false);
-        for i in fu.1 {
-            if i != Fu::ClosedRon && i != Fu::BasePoints {
+        for fu_type in fu {
+            if !matches!(fu_type, Fu::ClosedRon | Fu::BasePoints) {
                 return false;
             }
         }
@@ -826,7 +838,7 @@ impl TileGroup {
         } else if value == "1" || value == "9" {
             isterminal = true;
         }
-        let tile = TileGroup {
+        let tile = Self {
             value,
             suit,
             isopen,
@@ -834,6 +846,16 @@ impl TileGroup {
             isterminal,
         };
         Ok(tile)
+    }
+
+    /// Check if the group is an honor.
+    pub fn honor(&self) -> bool {
+        matches!(self.suit, Suit::Wind | Suit::Dragon)
+    }
+
+    /// Parse the group value into an integer.
+    pub fn into_u8(&self) -> Result<u8, std::num::ParseIntError> {
+        self.value.parse()
     }
 }
 
@@ -849,7 +871,7 @@ pub enum GroupType {
 }
 
 impl GroupType {
-    pub fn group_type_from_string(group: String) -> Result<GroupType, HandErr> {
+    pub fn group_type_from_string(group: String) -> Result<Self, HandErr> {
         let count = if group.contains('o') {
             group.len() - 2
         } else {
@@ -867,25 +889,25 @@ impl GroupType {
         }
 
         match count {
-            2 => Ok(GroupType::Pair),
+            2 => Ok(Self::Pair),
             3 => {
                 if group.chars().nth(0).unwrap() == group.chars().nth(1).unwrap()
                     && group.chars().nth(1).unwrap() == group.chars().nth(2).unwrap()
                 {
-                    Ok(GroupType::Triplet)
+                    Ok(Self::Triplet)
                 } else if ["123", "234", "345", "456", "567", "678", "789"]
                     .iter()
                     .cloned()
                     .collect::<std::collections::HashSet<&str>>()
                     .contains(group.get(0..count).unwrap())
                 {
-                    return Ok(GroupType::Sequence);
+                    return Ok(Self::Sequence);
                 } else {
                     return Err(HandErr::InvalidGroup);
                 }
             }
-            4 => Ok(GroupType::Kan),
-            1 => Ok(GroupType::None),
+            4 => Ok(Self::Kan),
+            1 => Ok(Self::None),
             _ => Err(HandErr::InvalidGroup),
         }
     }
@@ -901,13 +923,13 @@ pub enum Suit {
 }
 
 impl Suit {
-    pub fn suit_from_string(suit: String) -> Result<Suit, HandErr> {
+    pub fn suit_from_string(suit: String) -> Result<Self, HandErr> {
         match suit.as_str() {
-            "s" => Ok(Suit::Souzu),
-            "p" => Ok(Suit::Pinzu),
-            "m" => Ok(Suit::Manzu),
-            "w" => Ok(Suit::Wind),
-            "d" => Ok(Suit::Dragon),
+            "s" => Ok(Self::Souzu),
+            "p" => Ok(Self::Pinzu),
+            "m" => Ok(Self::Manzu),
+            "w" => Ok(Self::Wind),
+            "d" => Ok(Self::Dragon),
             _ => Err(HandErr::InvalidSuit),
         }
     }
@@ -929,29 +951,29 @@ pub fn is_limit_hand(han: u16, fu: u16) -> bool {
 
 impl LimitHands {
     //TODO: MOVE THIS INTO A SUITABLE STRUCT LATER
-    pub fn get_limit_hand(han: u16, fu: u16) -> Option<LimitHands> {
+    pub fn get_limit_hand(han: u16, fu: u16) -> Option<Self> {
         if !is_limit_hand(han, fu) {
             return None;
         }
         if han <= 5 {
-            Some(LimitHands::Mangan)
+            Some(Self::Mangan)
         } else if han <= 7 {
-            return Some(LimitHands::Haneman);
+            return Some(Self::Haneman);
         } else if han <= 10 {
-            return Some(LimitHands::Baiman);
+            return Some(Self::Baiman);
         } else if han <= 12 {
-            return Some(LimitHands::Sanbaiman);
+            return Some(Self::Sanbaiman);
         } else {
-            return Some(LimitHands::KazoeYakuman);
+            return Some(Self::KazoeYakuman);
         }
     }
     pub fn get_score(&self) -> Vec<u16> {
         match self {
-            LimitHands::Mangan => {
+            Self::Mangan => {
                 vec![12000, 4000, 8000, 2000, 4000]
             }
-            LimitHands::Haneman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::Haneman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     let j = i / 2;
@@ -959,24 +981,24 @@ impl LimitHands {
                 }
                 out
             }
-            LimitHands::Baiman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::Baiman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     out.push(i * 2)
                 }
                 out
             }
-            LimitHands::Sanbaiman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::Sanbaiman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     out.push(i * 3)
                 }
                 out
             }
-            LimitHands::KazoeYakuman => {
-                let vec = LimitHands::Mangan.get_score();
+            Self::KazoeYakuman => {
+                let vec = Self::Mangan.get_score();
                 let mut out: Vec<u16> = Vec::new();
                 for i in vec {
                     out.push(i * 4)
