@@ -1,5 +1,7 @@
-use mahc::{calculate_total_fu_value, Fu, HandErr};
-
+use crate::fu::{calculate_total_fu_value, Fu};
+use crate::hand::error::HandErr;
+use crate::hand::Hand;
+use crate::limit_hand::LimitHands;
 use crate::yaku::Yaku;
 
 #[derive(Debug, PartialEq)]
@@ -19,6 +21,18 @@ impl std::fmt::Display for CalculatorErrors {
     }
 }
 
+/// Get the score breakdown of the hand.
+///
+/// The output is as follows:
+///
+/// 1. Payment amounts
+///     - See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the `Vec`.
+/// 2. List of yaku
+/// 3. List of fu
+/// 4. Han and fu score
+///     1. Han
+///     2. Fu
+/// 5. Is open (Does the hand contain any open melds)
 pub fn get_hand_score(
     tiles: Vec<String>,
     win: String,
@@ -34,11 +48,12 @@ pub fn get_hand_score(
     chankan: bool,
     tenhou: bool,
     honba: u16,
-) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr> {
-    let hand = mahc::Hand::new(tiles, win, seat, prev)?;
+) -> Result<(Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool), HandErr> {
+    let hand = Hand::new(tiles, win, seat, prev)?;
     if hand.kans().is_empty() && rinshan {
         return Err(HandErr::RinshanKanWithoutKan);
     }
+
     let yaku = get_yaku_han(
         &hand,
         riichi,
@@ -50,41 +65,48 @@ pub fn get_hand_score(
         tenhou,
         tsumo,
     );
+
     if yaku.0 == 0 {
         return Err(HandErr::NoYaku);
     }
-    let fu: Vec<Fu>;
+
     //fuck you chiitoiistu, why u gota be different, AND YOU TOO PINFU
     //i can move this to calculatefu method maybe?
-    if yaku.1.contains(&Yaku::Chiitoitsu) {
-        fu = vec![Fu::BasePointsChitoi];
-    } else if yaku.1.contains(&Yaku::Pinfu) {
-        if tsumo {
-            fu = vec![Fu::BasePoints];
+    let fu = {
+        if yaku.1.contains(&Yaku::Chiitoitsu) {
+            vec![Fu::BasePointsChitoi]
+        } else if yaku.1.contains(&Yaku::Pinfu) {
+            if tsumo {
+                vec![Fu::BasePoints]
+            } else {
+                vec![Fu::BasePoints, Fu::ClosedRon]
+            }
         } else {
-            fu = vec![Fu::BasePoints, Fu::ClosedRon];
+            hand.calculate_fu(tsumo)
         }
-    } else {
-        fu = hand.calculate_fu(tsumo);
-    }
+    };
     let han_and_fu = vec![yaku.0 + dora, calculate_total_fu_value(&fu)];
+
     let mut has_yakuman = false;
-    for i in &yaku.1 {
-        if i.is_yakuman() {
+    for y in &yaku.1 {
+        if y.is_yakuman() {
             has_yakuman = true;
         }
     }
+
     let scores = if has_yakuman {
         calculate_yakuman(&yaku.1)?
     } else {
         //can unwrap here because check for yaku earlier
         calculate(&han_and_fu, honba).unwrap()
     };
+
     Ok((scores, yaku.1, fu, han_and_fu, hand.is_open()))
 }
 
+/// Get the yaku score and list of yaku given a hand and some round context.
 pub fn get_yaku_han(
-    hand: &mahc::Hand,
+    hand: &Hand,
     riichi: bool,
     doubleriichi: bool,
     ippatsu: bool,
@@ -95,6 +117,7 @@ pub fn get_yaku_han(
     tsumo: bool,
 ) -> (u16, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];
+
     let conditions = [
         (riichi, Yaku::Riichi),
         (doubleriichi, Yaku::DoubleRiichi),
@@ -121,6 +144,7 @@ pub fn get_yaku_han(
         (hand.is_sanshokudoukou(), Yaku::SanshokuDoukou),
         (hand.is_chinitsu(), Yaku::Chinitsu),
     ];
+
     //check if there are many yakuman, if so return only yakuman
     //this is so unbelievably jank but it works
     let mut yakuman: Vec<Yaku> = vec![];
@@ -157,16 +181,22 @@ pub fn get_yaku_han(
             yaku.push(yaku_type);
         }
     }
+
     for _i in 0..hand.is_yakuhai() {
         yaku.push(Yaku::Yakuhai);
     }
+
     let mut yaku_han = 0;
     for y in &yaku {
         yaku_han += y.get_han(hand.is_open());
     }
+
     (yaku_han, yaku)
 }
 
+/// Calculate the payment amounts from the list of yakuman yaku.
+///
+/// See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the returned `Vec`.
 pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     let mut total = 0;
     for y in yaku {
@@ -177,7 +207,8 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     if total == 0 {
         return Err(HandErr::NoYaku);
     }
-    let basepoints: u32 = 8000 * total as u32;
+
+    let basepoints: u32 = (8000 * total).into();
     let scores = vec![
         basepoints * 6,
         basepoints * 2,
@@ -185,19 +216,26 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
         basepoints,
         basepoints * 2,
     ];
+
     Ok(scores)
 }
 
-pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
+/// Calculate the payment amounts from the han, fu, and number of honba (repeat counters).
+///
+/// See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the returned `Vec`.
+pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, HandErr> {
     let han = args[0];
     let fu = args[1];
+
     if han == 0 {
         return Err(HandErr::NoHan);
     }
+
     if fu == 0 {
         return Err(HandErr::NoFu);
     }
-    let k = mahc::LimitHands::get_limit_hand(han, fu);
+
+    let k = LimitHands::get_limit_hand(han, fu);
     if let Some(limithand) = k {
         let mut scores = limithand.get_score();
         scores[0] += honba * 300;
@@ -205,20 +243,21 @@ pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
         scores[2] += honba * 300;
         scores[3] += honba * 100;
         scores[4] += honba * 100;
-        return Ok(scores.iter().map(|x| *x as u32).collect());
+
+        return Ok(scores.iter().map(|&score| score.into()).collect());
     }
 
-    let basic_points = fu * 2u16.pow((han + 2) as u32);
+    let basic_points = fu * 2u16.pow((han + 2).into());
 
-    let dealer_ron = (((basic_points * 6 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u16;
-    let dealer_tsumo = (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
-    let non_dealer_ron = (((basic_points * 4 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u16;
+    let dealer_ron = (((basic_points * 6 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u32;
+    let dealer_tsumo = (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
+    let non_dealer_ron = (((basic_points * 4 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u32;
     let non_dealer_tsumo_to_dealer =
-        (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+        (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
     let non_dealer_tsumo_to_non_dealer =
-        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
 
-    let scores: Vec<u16> = vec![
+    let scores: Vec<u32> = vec![
         dealer_ron,
         dealer_tsumo,
         non_dealer_ron,
@@ -226,5 +265,5 @@ pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
         non_dealer_tsumo_to_dealer,
     ];
 
-    return Ok(scores.iter().map(|x| *x as u32).collect());
+    Ok(scores)
 }
