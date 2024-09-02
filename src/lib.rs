@@ -1024,7 +1024,7 @@ impl TileGroup {
     }
 
     /// Check if the group is an honor.
-    pub fn honor(&self) -> bool {
+    pub fn is_honor(&self) -> bool {
         matches!(self.suit, Suit::Wind | Suit::Dragon)
     }
 
