@@ -219,16 +219,18 @@ cd mahc/x86_64-unknown-linux-gnu/release
 
 ## TODO
 - [x] validation a hand is possible (eg not having 20 east tiles :) 
-- [x] add all da yaku DONE
-- [x] validation on if yaku is there DONE
-- [x] validate winning tile DONE DONE
-- [x] propogate the errors up for a nice printout DONE
-- [x] validate stuff like cant riichi and double riichi. all that haitei, chankan rinshan shizz DONE
-- [x] file stdIn DONE?
+- [x] add all da yaku 
+- [x] validation on if yaku is there 
+- [x] validate winning tile 
+- [x] propogate the errors up for a nice printout 
+- [x] validate stuff like cant riichi and double riichi. all that haitei, chankan rinshan shizz 
+- [x] file stdIn 
 - [x] json out flag
+- [ ] add more comprehensive tests 
 
 ## Contributing
-- If you spot a bug (which there probabably are many), put in an issue with how to reproduce it. 
+- If you spot a bug (which there probabably are many), put in an issue with how to reproduce it
+- if youd like to contribute, DO IT (send a PR) 
 - keep in mind, we pretty far from finishing it currently. so FUCK validation (for the time being) 
 
 
