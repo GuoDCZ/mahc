@@ -788,7 +788,7 @@ impl Hand {
         }
 
         for group in self.groups.clone() {
-            if group.is_honor() {
+            if !group.is_honor() {
                 return false;
             }
         }
