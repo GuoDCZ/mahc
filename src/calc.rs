@@ -1,4 +1,4 @@
-use mahc::{calculate_total_fu_value, Fu, HandErr};
+use mahc::{calculate_total_fu_value, Fu, Hand, HandErr};
 
 use crate::yaku::Yaku;
 
@@ -46,8 +46,8 @@ pub fn get_hand_score(
     chankan: bool,
     tenhou: bool,
     honba: u16,
-) -> Result<(Vec<u32>, Vec<Yaku>, Vec<mahc::Fu>, Vec<u16>, bool), HandErr> {
-    let hand = mahc::Hand::new(tiles, win, seat, prev)?;
+) -> Result<(Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool), HandErr> {
+    let hand = Hand::new(tiles, win, seat, prev)?;
     if hand.kans().is_empty() && rinshan {
         return Err(HandErr::RinshanKanWithoutKan);
     }
@@ -97,7 +97,7 @@ pub fn get_hand_score(
 
 /// Get the yaku score and list of yaku given a hand and some round context.
 pub fn get_yaku_han(
-    hand: &mahc::Hand,
+    hand: &Hand,
     riichi: bool,
     doubleriichi: bool,
     ippatsu: bool,
