@@ -1,6 +1,7 @@
+use crate::hand::error::HandErr;
 use crate::hand::Hand;
 use crate::yaku::Yaku;
-use crate::{calculate_total_fu_value, Fu, HandErr, LimitHands};
+use crate::{calculate_total_fu_value, Fu, LimitHands};
 
 #[derive(Debug, PartialEq)]
 pub enum CalculatorErrors {

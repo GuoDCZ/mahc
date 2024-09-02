@@ -3,6 +3,7 @@ use std::fs;
 
 use clap::Parser;
 use mahc::calc;
+use mahc::hand::error::HandErr;
 use mahc::yaku::Yaku;
 use mahc::Fu;
 use serde_json::json;
@@ -80,44 +81,44 @@ pub struct Args {
     json: bool,
 }
 
-pub fn parse_calculator(args: &Args) -> Result<String, mahc::HandErr> {
+pub fn parse_calculator(args: &Args) -> Result<String, HandErr> {
     let honba = args.ba;
     let hanandfu = args.manual.clone().unwrap();
     let scores = calc::calculate(&hanandfu, honba)?;
-    let printout: Result<String, mahc::HandErr> = if args.json {
+    let printout: Result<String, HandErr> = if args.json {
         Ok(json_calc_out(scores, honba, hanandfu))
     } else {
         Ok(default_calc_out(scores, honba, hanandfu))
     };
     printout
 }
-pub fn parse_hand(args: &Args) -> Result<String, mahc::HandErr> {
+pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     if args.tiles.is_none() {
-        return Err(mahc::HandErr::NoHandTiles);
+        return Err(HandErr::NoHandTiles);
     }
     if args.win.is_none() {
-        return Err(mahc::HandErr::NoWinTile);
+        return Err(HandErr::NoWinTile);
     }
     if args.tsumo && args.chankan {
-        return Err(mahc::HandErr::ChankanTsumo);
+        return Err(HandErr::ChankanTsumo);
     }
     if args.rinshan && (!args.tsumo) {
-        return Err(mahc::HandErr::RinshanWithoutTsumo);
+        return Err(HandErr::RinshanWithoutTsumo);
     }
     if args.rinshan && args.ippatsu {
-        return Err(mahc::HandErr::RinshanIppatsu);
+        return Err(HandErr::RinshanIppatsu);
     }
     if args.riichi && args.doubleriichi {
-        return Err(mahc::HandErr::DuplicateRiichi);
+        return Err(HandErr::DuplicateRiichi);
     }
     if args.ippatsu && !(args.riichi || args.doubleriichi) {
-        return Err(mahc::HandErr::IppatsuWithoutRiichi);
+        return Err(HandErr::IppatsuWithoutRiichi);
     }
     if args.doubleriichi && args.ippatsu && args.haitei {
-        return Err(mahc::HandErr::DoubleRiichiHaiteiIppatsu);
+        return Err(HandErr::DoubleRiichiHaiteiIppatsu);
     }
     if args.doubleriichi && args.haitei && args.chankan {
-        return Err(mahc::HandErr::DoubleRiichiHaiteiChankan);
+        return Err(HandErr::DoubleRiichiHaiteiChankan);
     }
     let result = calc::get_hand_score(
         args.tiles.clone().unwrap(),
@@ -275,7 +276,7 @@ pub fn parse_file(args: &Args) {
         }
     }
 }
-pub fn printout(result: Result<String, mahc::HandErr>) {
+pub fn printout(result: Result<String, HandErr>) {
     match result {
         Ok(o) => {
             println!("{}", o);
@@ -301,7 +302,9 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-    use mahc::{calculate_total_fu_value, GroupType, Hand, HandErr, Suit};
+    use mahc::hand::error::HandErr;
+    use mahc::hand::Hand;
+    use mahc::{calculate_total_fu_value, GroupType, Suit};
 
     use super::*;
     #[test]
@@ -2157,14 +2160,14 @@ mod test {
     fn no_han_for_calc() {
         let args = Args::parse_from(["", "--manual", "0", "30", "--ba", "3"]);
         let out = parse_calculator(&args);
-        assert_eq!(out.unwrap_err(), mahc::HandErr::NoHan);
+        assert_eq!(out.unwrap_err(), HandErr::NoHan);
     }
 
     #[test]
     fn no_fu_for_calc() {
         let args = Args::parse_from(["", "--manual", "4", "0", "--ba", "3"]);
         let out = parse_calculator(&args);
-        assert_eq!(out.unwrap_err(), mahc::HandErr::NoFu);
+        assert_eq!(out.unwrap_err(), HandErr::NoFu);
     }
 
     #[test]

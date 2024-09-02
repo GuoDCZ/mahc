@@ -1,6 +1,8 @@
 pub mod calc;
-pub(crate) mod hand;
+pub mod hand;
 pub mod yaku;
+
+use crate::hand::error::HandErr;
 
 /// Characters that represent terminal or honor tiles.
 // Using a fixed array gets stored on the stack rather than a `String` which gets stored on the heap.
@@ -13,53 +15,6 @@ pub enum LimitHands {
     Baiman,
     Sanbaiman,
     KazoeYakuman,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum HandErr {
-    InvalidGroup,
-    InvalidSuit,
-    InvalidShape,
-    NoYaku,
-    NoHandTiles,
-    NoWinTile,
-    DuplicateRiichi,
-    IppatsuWithoutRiichi,
-    DoubleRiichiHaiteiIppatsu,
-    DoubleRiichiHaiteiChankan,
-    ChankanTsumo,
-    RinshanKanWithoutKan,
-    RinshanWithoutTsumo,
-    RinshanIppatsu,
-    NoHan,
-    NoFu,
-}
-
-impl std::fmt::Display for HandErr {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidGroup => write!(f, "Invalid Group found"),
-            Self::InvalidSuit => write!(f, "Invalid Suit found"),
-            Self::InvalidShape => write!(f, "Invalid Hand Shape found"),
-            Self::NoYaku => write!(f, "No Yaku"),
-            Self::NoHandTiles => write!(f, "No Hand Tiles given"),
-            Self::NoWinTile => write!(f, "No Win Tile given"),
-            Self::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simultaneously"),
-            Self::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
-            Self::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
-            Self::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
-            Self::RinshanWithoutTsumo => write!(f, "Cant Rinshan without Tsumo"),
-            Self::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
-            Self::DoubleRiichiHaiteiIppatsu => {
-                write!(f, "Cant Double Riichi, Ippatsu and Haitei")
-            }
-            Self::DoubleRiichiHaiteiChankan => {
-                write!(f, "Cant Double Riichi, Ippatsu and Haitei")
-            }
-            Self::NoHan => write!(f, "No Han provided!"),
-            Self::NoFu => write!(f, "No Fu provided!"),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq)]

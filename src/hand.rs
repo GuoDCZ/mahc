@@ -1,4 +1,7 @@
-use crate::{Fu, GroupType, HandErr, Suit, TileGroup, TERMINAL_CHARS};
+pub mod error;
+
+use crate::{Fu, GroupType, Suit, TileGroup, TERMINAL_CHARS};
+use error::HandErr;
 
 #[derive(Debug)]
 pub struct Hand {
