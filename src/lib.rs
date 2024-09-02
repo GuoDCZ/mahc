@@ -47,20 +47,20 @@ impl std::fmt::Display for HandErr {
             Self::NoYaku => write!(f, "No Yaku"),
             Self::NoHandTiles => write!(f, "No Hand Tiles given"),
             Self::NoWinTile => write!(f, "No Win Tile given"),
-            Self::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simulatinously"),
+            Self::DuplicateRiichi => write!(f, "Cant Riichi and Double Riichi Simultaneously"),
             Self::IppatsuWithoutRiichi => write!(f, "Cant Ippatsu without Riichi"),
             Self::ChankanTsumo => write!(f, "Cant Tsumo and Chankan"),
             Self::RinshanKanWithoutKan => write!(f, "Cant Rinshan without Kan"),
-            Self::RinshanWithoutTsumo => write!(f, "Cant Rinshan without tsumo"),
+            Self::RinshanWithoutTsumo => write!(f, "Cant Rinshan without Tsumo"),
             Self::RinshanIppatsu => write!(f, "Cant Rinshan and Ippatsu"),
             Self::DoubleRiichiHaiteiIppatsu => {
-                write!(f, "Cant Double Riichi, Ippatsu and haitei")
+                write!(f, "Cant Double Riichi, Ippatsu and Haitei")
             }
             Self::DoubleRiichiHaiteiChankan => {
-                write!(f, "Cant Double Riichi, Ippatsu and haitei")
+                write!(f, "Cant Double Riichi, Ippatsu and Haitei")
             }
-            Self::NoHan => write!(f, "No han provided!"),
-            Self::NoFu => write!(f, "No fu provided!"),
+            Self::NoHan => write!(f, "No Han provided!"),
+            Self::NoFu => write!(f, "No Fu provided!"),
         }
     }
 }
