@@ -1055,7 +1055,7 @@ impl GroupType {
     ///
     /// let input = "789s".to_string();
     /// let actual = GroupType::group_type_from_string(input);
-    /// let expected = GroupType::Sequence;
+    /// let expected = Ok(GroupType::Sequence);
     ///
     /// assert_eq!(actual, expected);
     /// ```
