@@ -205,7 +205,8 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     if total == 0 {
         return Err(HandErr::NoYaku);
     }
-    let basepoints: u32 = 8000 * total as u32;
+
+    let basepoints: u32 = (8000 * total).into();
     let scores = vec![
         basepoints * 6,
         basepoints * 2,
@@ -240,20 +241,21 @@ pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
         scores[2] += honba * 300;
         scores[3] += honba * 100;
         scores[4] += honba * 100;
-        return Ok(scores.iter().map(|x| *x as u32).collect());
+
+        return Ok(scores.iter().map(|&score| score.into()).collect());
     }
 
-    let basic_points = fu * 2u16.pow((han + 2) as u32);
+    let basic_points = fu * 2u16.pow((han + 2).into());
 
-    let dealer_ron = (((basic_points * 6 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u16;
-    let dealer_tsumo = (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
-    let non_dealer_ron = (((basic_points * 4 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u16;
+    let dealer_ron = (((basic_points * 6 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u32;
+    let dealer_tsumo = (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
+    let non_dealer_ron = (((basic_points * 4 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u32;
     let non_dealer_tsumo_to_dealer =
-        (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+        (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
     let non_dealer_tsumo_to_non_dealer =
-        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as u16;
+        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
 
-    let scores: Vec<u16> = vec![
+    let scores: Vec<u32> = vec![
         dealer_ron,
         dealer_tsumo,
         non_dealer_ron,
@@ -261,5 +263,5 @@ pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
         non_dealer_tsumo_to_dealer,
     ];
 
-    return Ok(scores.iter().map(|x| *x as u32).collect());
+    Ok(scores)
 }
