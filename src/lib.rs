@@ -1116,9 +1116,11 @@ impl Suit {
     /// # Examples
     ///
     /// ```rust
+    /// use mahc::Suit;
+    ///
     /// let tile_string = "9m";
     /// let actual_suit = Suit::suit_from_string(tile_string.chars().nth(1).unwrap().to_string());
-    /// let expected = Suit::Manzu;
+    /// let expected = Ok(Suit::Manzu);
     ///
     /// assert_eq!(actual_suit, expected);
     /// ```
