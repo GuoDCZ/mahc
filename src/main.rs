@@ -3,9 +3,9 @@ use std::fs;
 
 use clap::Parser;
 use mahc::calc;
+use mahc::fu::Fu;
 use mahc::hand::error::HandErr;
 use mahc::yaku::Yaku;
-use mahc::Fu;
 use serde_json::json;
 
 /// riichi mahjong calculator tool
@@ -302,9 +302,10 @@ fn main() {
 
 #[cfg(test)]
 mod test {
+    use mahc::fu::calculate_total_fu_value;
     use mahc::hand::error::HandErr;
     use mahc::hand::Hand;
-    use mahc::{calculate_total_fu_value, GroupType, Suit};
+    use mahc::{GroupType, Suit};
 
     use super::*;
     #[test]
