@@ -871,6 +871,19 @@ pub enum GroupType {
 }
 
 impl GroupType {
+    /// Parse the group type from the string.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mahc::GroupType;
+    ///
+    /// let input = "789s".to_string();
+    /// let actual = GroupType::group_type_from_string(input);
+    /// let expected = GroupType::Sequence;
+    ///
+    /// assert_eq!(actual, expected);
+    /// ```
     pub fn group_type_from_string(group: String) -> Result<Self, HandErr> {
         let count = if group.contains('o') {
             group.len() - 2
@@ -923,6 +936,17 @@ pub enum Suit {
 }
 
 impl Suit {
+    /// Parse the suit from the string.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// let tile_string = "9m";
+    /// let actual_suit = Suit::suit_from_string(tile_string.chars().nth(1).unwrap().to_string());
+    /// let expected = Suit::Manzu;
+    ///
+    /// assert_eq!(actual_suit, expected);
+    /// ```
     pub fn suit_from_string(suit: String) -> Result<Self, HandErr> {
         match suit.as_str() {
             "s" => Ok(Self::Souzu),
@@ -935,26 +959,32 @@ impl Suit {
     }
 }
 
-//TODO: MOVE THIS INTO A SUITABLE STRUCT LATER
-pub fn is_limit_hand(han: u16, fu: u16) -> bool {
-    if han >= 5 {
-        return true;
-    }
-    if han == 4 && fu >= 40 {
-        return true;
-    }
-    if han == 3 && fu >= 70 {
-        return true;
-    }
-    false
-}
-
 impl LimitHands {
     //TODO: MOVE THIS INTO A SUITABLE STRUCT LATER
+    /// Check if the score of the hand is limited (no aotenjou).
+    fn is_limit_hand(han: u16, fu: u16) -> bool {
+        if han >= 5 {
+            return true;
+        }
+
+        if han == 4 && fu >= 40 {
+            return true;
+        }
+
+        if han == 3 && fu >= 70 {
+            return true;
+        }
+
+        false
+    }
+
+    /// Calculate the limit hand type from the han and fu scores.
     pub fn get_limit_hand(han: u16, fu: u16) -> Option<Self> {
-        if !is_limit_hand(han, fu) {
+        if !Self::is_limit_hand(han, fu) {
             return None;
         }
+
+        // TODO: Allow (3 han, 70+ fu) and (4 han, 40+ fu) to be considered manga.
         if han <= 5 {
             Some(Self::Mangan)
         } else if han <= 7 {
@@ -967,6 +997,16 @@ impl LimitHands {
             return Some(Self::KazoeYakuman);
         }
     }
+
+    /// Get the payment amounts.
+    ///
+    /// Format is as follows:
+    ///
+    /// - dealer_ron
+    /// - dealer_tsumo
+    /// - non_dealer_ron
+    /// - non_dealer_tsumo_to_non_dealer
+    /// - non_dealer_tsumo_to_dealer
     pub fn get_score(&self) -> Vec<u16> {
         match self {
             Self::Mangan => {

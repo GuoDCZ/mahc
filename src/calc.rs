@@ -19,6 +19,18 @@ impl std::fmt::Display for CalculatorErrors {
     }
 }
 
+/// Get the score breakdown of the hand.
+///
+/// The output is as follows:
+///
+/// 1. Payment amounts
+///     - See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the `Vec`.
+/// 2. List of yaku
+/// 3. List of fu
+/// 4. Han and fu score
+///     1. Han
+///     2. Fu
+/// 5. Is open (Does the hand contain any open melds)
 pub fn get_hand_score(
     tiles: Vec<String>,
     win: String,
@@ -83,6 +95,7 @@ pub fn get_hand_score(
     Ok((scores, yaku.1, fu, han_and_fu, hand.is_open()))
 }
 
+/// Get the yaku score and list of yaku given a hand and some round context.
 pub fn get_yaku_han(
     hand: &mahc::Hand,
     riichi: bool,
@@ -157,16 +170,22 @@ pub fn get_yaku_han(
             yaku.push(yaku_type);
         }
     }
+
     for _i in 0..hand.is_yakuhai() {
         yaku.push(Yaku::Yakuhai);
     }
+
     let mut yaku_han = 0;
     for y in &yaku {
         yaku_han += y.get_han(hand.is_open());
     }
+
     (yaku_han, yaku)
 }
 
+/// Calculate the payment amounts from the list of yakuman yaku.
+///
+/// See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the returned `Vec`.
 pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     let mut total = 0;
     for y in yaku {
@@ -188,6 +207,9 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
     Ok(scores)
 }
 
+/// Calculate the payment amounts from the han, fu, and number of honba (repeat counters).
+///
+/// See [`LimitHands::get_score()`](crate::LimitHands::get_score) for the exact format of the returned `Vec`.
 pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, mahc::HandErr> {
     let han = args[0];
     let fu = args[1];

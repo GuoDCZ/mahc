@@ -54,6 +54,7 @@ pub enum Yaku {
 }
 
 impl Yaku {
+    /// Convert the value to a `String`.
     pub fn to_string(&self, is_open: bool) -> String {
         match self {
             Self::Tanyao => "Tanyao: 1",
@@ -144,6 +145,7 @@ impl Yaku {
     }
 
     //TODO adjust for open or closed !!!!
+    /// Get the han value of the yaku.
     pub fn get_han(&self, is_open: bool) -> u16 {
         match self {
             Self::Tanyao
@@ -219,6 +221,8 @@ impl Yaku {
             | Self::Daichiishin => 1,
         }
     }
+
+    /// Check if the yaku is considered a yakuman.
     pub fn is_yakuman(&self) -> bool {
         matches!(
             self,
