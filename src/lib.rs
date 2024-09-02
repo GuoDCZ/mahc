@@ -439,7 +439,7 @@ impl Hand {
 
         if let Some(s) = suit {
             for group in &self.groups {
-                if &group.suit != s && group.is_honor() {
+                if &group.suit != s && !group.is_honor() {
                     return false;
                 }
             }
