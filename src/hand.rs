@@ -70,8 +70,8 @@ impl Hand {
                         return Err(HandErr::InvalidShape);
                     }
 
-                    let win_int = win_tile.into_u8().unwrap();
-                    let last_int = last_group.into_u8().unwrap();
+                    let win_int = win_tile.parse_u8().unwrap();
+                    let last_int = last_group.parse_u8().unwrap();
 
                     if win_int != last_int && win_int != last_int + 1 && win_int != last_int + 2 {
                         return Err(HandErr::InvalidShape);
@@ -191,8 +191,8 @@ impl Hand {
             match group.group_type {
                 GroupType::Pair => fu_types.push(Fu::SingleWait),
                 GroupType::Sequence => {
-                    let mid_tile = group.into_u8().unwrap() + 1;
-                    if self.win_tile().into_u8().unwrap() == mid_tile {
+                    let mid_tile = group.parse_u8().unwrap() + 1;
+                    if self.win_tile().parse_u8().unwrap() == mid_tile {
                         fu_types.push(Fu::SingleWait);
                     }
 
