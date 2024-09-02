@@ -1,12 +1,12 @@
 pub mod calc;
 pub mod fu;
 pub mod hand;
-pub(crate) mod tile_group;
+pub mod tile_group;
 pub mod yaku;
 
 use crate::fu::{calculate_total_fu_value, Fu};
 use crate::hand::error::HandErr;
-use crate::tile_group::TileGroup;
+use crate::tile_group::{GroupType, TileGroup};
 
 /// Characters that represent terminal or honor tiles.
 // Using a fixed array gets stored on the stack rather than a `String` which gets stored on the heap.
@@ -19,73 +19,6 @@ pub enum LimitHands {
     Baiman,
     Sanbaiman,
     KazoeYakuman,
-}
-
-//AHAHAHAHAHAHAHAH I DONT NEED THIS
-//turns our i did need this :)
-#[derive(Debug, Clone, PartialEq)]
-pub enum GroupType {
-    Sequence,
-    Triplet,
-    Kan,
-    Pair,
-    None,
-}
-
-impl GroupType {
-    /// Parse the group type from the string.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// use mahc::GroupType;
-    ///
-    /// let input = "789s".to_string();
-    /// let actual = GroupType::group_type_from_string(input);
-    /// let expected = Ok(GroupType::Sequence);
-    ///
-    /// assert_eq!(actual, expected);
-    /// ```
-    pub fn group_type_from_string(group: String) -> Result<Self, HandErr> {
-        let count = if group.contains('o') {
-            group.len() - 2
-        } else {
-            group.len() - 1
-        };
-
-        if let Some(sub_group) = group.get(0..count) {
-            for i in sub_group.chars() {
-                if !"123456789ESWNrgw".contains(i) {
-                    return Err(HandErr::InvalidGroup);
-                }
-            }
-        } else {
-            return Err(HandErr::InvalidGroup);
-        }
-
-        match count {
-            2 => Ok(Self::Pair),
-            3 => {
-                if group.chars().nth(0).unwrap() == group.chars().nth(1).unwrap()
-                    && group.chars().nth(1).unwrap() == group.chars().nth(2).unwrap()
-                {
-                    Ok(Self::Triplet)
-                } else if ["123", "234", "345", "456", "567", "678", "789"]
-                    .iter()
-                    .cloned()
-                    .collect::<std::collections::HashSet<&str>>()
-                    .contains(group.get(0..count).unwrap())
-                {
-                    return Ok(Self::Sequence);
-                } else {
-                    return Err(HandErr::InvalidGroup);
-                }
-            }
-            4 => Ok(Self::Kan),
-            1 => Ok(Self::None),
-            _ => Err(HandErr::InvalidGroup),
-        }
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Hash, Eq)]

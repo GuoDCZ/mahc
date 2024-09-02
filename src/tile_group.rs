@@ -1,5 +1,5 @@
 use crate::hand::error::HandErr;
-use crate::{GroupType, Suit};
+use crate::Suit;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TileGroup {
@@ -52,5 +52,72 @@ impl TileGroup {
     /// Parse the group value into an integer.
     pub fn parse_u8(&self) -> Result<u8, std::num::ParseIntError> {
         self.value.parse()
+    }
+}
+
+//AHAHAHAHAHAHAHAH I DONT NEED THIS
+//turns our i did need this :)
+#[derive(Debug, Clone, PartialEq)]
+pub enum GroupType {
+    Sequence,
+    Triplet,
+    Kan,
+    Pair,
+    None,
+}
+
+impl GroupType {
+    /// Parse the group type from the string.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mahc::tile_group::GroupType;
+    ///
+    /// let input = "789s".to_string();
+    /// let actual = GroupType::group_type_from_string(input);
+    /// let expected = Ok(GroupType::Sequence);
+    ///
+    /// assert_eq!(actual, expected);
+    /// ```
+    pub fn group_type_from_string(group: String) -> Result<Self, HandErr> {
+        let count = if group.contains('o') {
+            group.len() - 2
+        } else {
+            group.len() - 1
+        };
+
+        if let Some(sub_group) = group.get(0..count) {
+            for i in sub_group.chars() {
+                if !"123456789ESWNrgw".contains(i) {
+                    return Err(HandErr::InvalidGroup);
+                }
+            }
+        } else {
+            return Err(HandErr::InvalidGroup);
+        }
+
+        match count {
+            2 => Ok(Self::Pair),
+            3 => {
+                if group.chars().nth(0).unwrap() == group.chars().nth(1).unwrap()
+                    && group.chars().nth(1).unwrap() == group.chars().nth(2).unwrap()
+                {
+                    Ok(Self::Triplet)
+                } else if ["123", "234", "345", "456", "567", "678", "789"]
+                    .iter()
+                    .cloned()
+                    .collect::<std::collections::HashSet<&str>>()
+                    .contains(group.get(0..count).unwrap())
+                {
+                    return Ok(Self::Sequence);
+                } else {
+                    return Err(HandErr::InvalidGroup);
+                }
+            }
+            4 => Ok(Self::Kan),
+            1 => Ok(Self::None),
+            _ => Err(HandErr::InvalidGroup),
+        }
     }
 }
