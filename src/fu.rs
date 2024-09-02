@@ -63,3 +63,209 @@ impl Fu {
 pub fn calculate_total_fu_value(fu: &[Fu]) -> u16 {
     ((fu.iter().map(|f| f.value()).sum::<u16>() + 9) / 10) * 10
 }
+
+#[cfg(test)]
+mod tests {
+    use super::{calculate_total_fu_value, Fu};
+    use crate::hand::Hand;
+
+    #[test]
+    fn fu_calc_simpleopenkan_simpleclosedkan() {
+        let out = Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "5555mo".to_string(),
+                "11s".to_string(),
+                "8888s".to_string(),
+                "789m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 60);
+        assert_eq!(
+            actual_fu,
+            [
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::NonSimpleOpenTriplet,
+                Fu::SimpleOpenKan,
+                Fu::SimpleClosedKan,
+                Fu::SingleWait,
+            ]
+        );
+    }
+
+    #[test]
+    fn fu_calc_edge_wait() {
+        let out = Hand::new(
+            vec![
+                "555po".to_string(),
+                "234m".to_string(),
+                "11s".to_string(),
+                "rrrdo".to_string(),
+                "789m".to_string(),
+            ],
+            "7m".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 30);
+        assert_eq!(
+            actual_fu,
+            [
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::SimpleOpenTriplet,
+                Fu::NonSimpleOpenTriplet,
+                Fu::SingleWait,
+            ]
+        );
+    }
+
+    #[test]
+    fn random_fu() {
+        let out = Hand::new(
+            vec![
+                "rrrdo".to_string(),
+                "567m".to_string(),
+                "567p".to_string(),
+                "55s".to_string(),
+                "456s".to_string(),
+            ],
+            "6s".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 30);
+        assert_eq!(
+            actual_fu,
+            [Fu::BasePoints, Fu::Tsumo, Fu::NonSimpleOpenTriplet,]
+        );
+    }
+
+    #[test]
+    fn fu_cal_middle_wait() {
+        let out = Hand::new(
+            vec![
+                "123mo".to_string(),
+                "rrrrdo".to_string(),
+                "EEEEw".to_string(),
+                "WWw".to_string(),
+                "456p".to_string(),
+            ],
+            "5p".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 80);
+        assert_eq!(
+            actual_fu,
+            [
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::NonSimpleOpenKan,
+                Fu::NonSimpleClosedKan,
+                Fu::Toitsu,
+                Fu::SingleWait,
+            ]
+        );
+    }
+
+    #[test]
+    fn fu_cal_kans_seat_wind() {
+        let out = Hand::new(
+            vec![
+                "123mo".to_string(),
+                "rrrrdo".to_string(),
+                "456po".to_string(),
+                "EEEEw".to_string(),
+                "WWw".to_string(),
+            ],
+            "Ww".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 80);
+        assert_eq!(
+            actual_fu,
+            [
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::NonSimpleOpenKan,
+                Fu::NonSimpleClosedKan,
+                Fu::Toitsu,
+                Fu::SingleWait,
+            ]
+        );
+    }
+
+    #[test]
+    fn fu_cal_nontimple_closed_trip() {
+        let out = Hand::new(
+            vec![
+                "111mo".to_string(),
+                "rrrd".to_string(),
+                "345s".to_string(),
+                "11s".to_string(),
+                "EEEw".to_string(),
+            ],
+            "Ew".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(false);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 40);
+        assert_eq!(
+            actual_fu,
+            [
+                Fu::BasePoints,
+                Fu::NonSimpleOpenTriplet,
+                Fu::NonSimpleClosedTriplet,
+                Fu::NonSimpleOpenTriplet
+            ]
+        );
+    }
+
+    #[test]
+    fn fu_cal_tsu_singlewait_simple_trip_closed_simple_trip_closed_nonsimple_kan() {
+        let out = Hand::new(
+            vec![
+                "444m".to_string(),
+                "789p".to_string(),
+                "555so".to_string(),
+                "rrrrd".to_string(),
+                "11s".to_string(),
+            ],
+            "1s".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        let actual_fu = out.calculate_fu(true);
+        assert_eq!(calculate_total_fu_value(&actual_fu), 70);
+        assert_eq!(
+            actual_fu,
+            [
+                Fu::BasePoints,
+                Fu::Tsumo,
+                Fu::SimpleClosedTriplet,
+                Fu::SimpleOpenTriplet,
+                Fu::NonSimpleClosedKan,
+                Fu::SingleWait,
+            ]
+        );
+    }
+}
