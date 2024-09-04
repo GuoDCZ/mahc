@@ -1,3 +1,5 @@
+use crate::score::HanValue;
+
 #[derive(Debug, PartialEq)]
 pub enum Yaku {
     // One Han Yaku
@@ -146,7 +148,7 @@ impl Yaku {
 
     //TODO adjust for open or closed !!!!
     /// Get the han value of the yaku.
-    pub fn get_han(&self, is_open: bool) -> u16 {
+    pub fn get_han(&self, is_open: bool) -> HanValue {
         match self {
             Self::Tanyao
             | Self::Iipeikou
