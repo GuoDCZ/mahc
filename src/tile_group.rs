@@ -40,8 +40,6 @@ impl TileGroup {
             }
         } else {
             value
-            
-            
         };
 
         let group_type = GroupType::group_type_from_string(group.to_string())?;
@@ -141,5 +139,101 @@ impl GroupType {
             1 => Ok(Self::None),
             _ => Err(HandErr::InvalidGroup),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn non_honor_tilegroup_from_string() {
+        let tile = TileGroup::try_from("1m".to_string()).unwrap();
+        assert_eq!(tile.suit, Suit::Manzu);
+        assert_eq!(tile.value, "1");
+        assert!(!tile.isopen);
+        assert_eq!(tile.group_type, GroupType::None);
+        assert!(tile.isterminal);
+
+        let tile = TileGroup::try_from("111mo".to_string()).unwrap();
+        assert!(tile.isopen);
+        assert_eq!(tile.group_type, GroupType::Triplet);
+        assert_eq!(tile.suit, Suit::Manzu);
+
+        let tile = TileGroup::try_from("123m".to_string()).unwrap();
+        assert_eq!(tile.group_type, GroupType::Sequence);
+        assert_eq!(tile.suit, Suit::Manzu);
+
+        let tile = TileGroup::try_from("234m".to_string()).unwrap();
+        assert_eq!(tile.group_type, GroupType::Sequence);
+        assert_eq!(tile.suit, Suit::Manzu);
+        assert!(!tile.isterminal);
+    }
+
+    #[test]
+    fn wind_tilegroup_from_string() {
+        let tile = TileGroup::try_from("1z".to_string()).unwrap();
+        assert_eq!(tile.suit, Suit::Wind);
+        assert_eq!(tile.value, "E");
+        assert!(!tile.isopen);
+        assert_eq!(tile.group_type, GroupType::None);
+        assert_eq!(tile.isterminal, false);
+
+        let tile = TileGroup::try_from("222zo".to_string()).unwrap();
+        assert!(tile.isopen);
+        assert_eq!(tile.group_type, GroupType::Triplet);
+        assert_eq!(tile.suit, Suit::Wind);
+        assert_eq!(tile.value, "S");
+
+        let tile = TileGroup::try_from("EEEEw".to_string()).unwrap();
+        assert!(!tile.isopen);
+        assert_eq!(tile.group_type, GroupType::Kan);
+        assert_eq!(tile.suit, Suit::Wind);
+        assert_eq!(tile.value, "E");
+    }
+
+    #[test]
+    fn dragon_tilegroup_from_string() {
+        let tile = TileGroup::try_from("5z".to_string()).unwrap();
+        assert_eq!(tile.suit, Suit::Dragon);
+        assert_eq!(tile.value, "w");
+        assert!(!tile.isopen);
+        assert_eq!(tile.group_type, GroupType::None);
+
+        let tile = TileGroup::try_from("666zo".to_string()).unwrap();
+        assert_eq!(tile.suit, Suit::Dragon);
+        assert_eq!(tile.value, "g");
+        assert!(tile.isopen);
+        assert_eq!(tile.group_type, GroupType::Triplet);
+
+        let tile = TileGroup::try_from("7777z".to_string()).unwrap();
+        assert!(!tile.isopen);
+        assert_eq!(tile.group_type, GroupType::Kan);
+        assert_eq!(tile.suit, Suit::Dragon);
+        assert_eq!(tile.value, "r");
+    }
+
+    #[test]
+    fn no_suit_error_from_string() {
+        let tile = TileGroup::try_from("1".to_string());
+        assert_eq!(tile, Err(HandErr::InvalidSuit));
+    }
+
+    #[test]
+    fn no_value_error_from_string() {
+        let tile = TileGroup::try_from("m".to_string());
+        assert_eq!(tile, Err(HandErr::InvalidGroup));
+    }
+
+    #[test]
+    fn too_large_error_from_string() {
+        let tile = TileGroup::try_from("11111s".to_string());
+        assert_eq!(tile, Err(HandErr::InvalidGroup));
+    }
+
+    #[test]
+    fn invalid_suit_error_from_string() {
+        let tile = TileGroup::try_from("999z".to_string());
+        assert_eq!(tile, Err(HandErr::InvalidGroup));
     }
 }
