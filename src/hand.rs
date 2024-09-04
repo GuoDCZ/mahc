@@ -3,7 +3,6 @@ pub mod error;
 use crate::fu::Fu;
 use crate::suit::Suit;
 use crate::tile_group::{GroupType, TileGroup};
-use crate::TERMINAL_CHARS;
 use error::HandErr;
 
 #[derive(Debug)]
@@ -28,7 +27,7 @@ impl Hand {
 
         // NOTE: Strings are complicated in Rust and needs evaluation about how to iterate over one. Because the string is expected to contain ASCII characters, `.chars()` should be okay.
         for i in &tiles {
-            let tile = TileGroup::new(i.to_string())?;
+            let tile: TileGroup = i.to_string().try_into()?;
             if tile.isopen {
                 ishandopen = true;
             }
@@ -55,30 +54,7 @@ impl Hand {
         }
 
         // AHAHAHAHAHAHAHAHAh (these are special cases for singular tiles)
-        let value = win.chars().nth(0).unwrap().to_string();
-        let suitchar = &win.chars().nth(1).unwrap().to_string();
-        let suit = Suit::suit_from_string(&suitchar, &value)?;
-        let value = if suitchar == "z" {
-            match value.as_str() {
-                "1" => "E".to_string(),
-                "2" => "S".to_string(),
-                "3" => "W".to_string(),
-                "4" => "N".to_string(),
-                "5" => "w".to_string(),
-                "6" => "g".to_string(),
-                "7" => "r".to_string(),
-                _ => value,
-            }
-        } else {
-            value
-        };
-        let win_tile = TileGroup {
-            value: value.clone(),
-            suit,
-            isopen: false,
-            group_type: GroupType::None,
-            isterminal: TERMINAL_CHARS.contains(&win.chars().nth(0).unwrap()),
-        };
+        let win_tile: TileGroup = win.try_into()?;
 
         // check if last group contains the winning tile
         // FUCK handling kokuushi
@@ -105,57 +81,8 @@ impl Hand {
                 GroupType::Kan | GroupType::None => return Err(HandErr::InvalidShape),
             }
         }
-
-        let value = seat.chars().nth(0).unwrap().to_string();
-        let suitchar = &seat.chars().nth(1).unwrap().to_string();
-        let suit = Suit::suit_from_string(&suitchar, &value)?;
-        let value = if suitchar == "z" {
-            match value.as_str() {
-                "1" => "E".to_string(),
-                "2" => "S".to_string(),
-                "3" => "W".to_string(),
-                "4" => "N".to_string(),
-                "5" => "w".to_string(),
-                "6" => "g".to_string(),
-                "7" => "r".to_string(),
-                _ => value,
-            }
-        } else {
-            value
-        };
-        let seat_tile = TileGroup {
-            value: value.clone(),
-            suit, 
-            isopen: false,
-            group_type: GroupType::None,
-            isterminal: TERMINAL_CHARS.contains(&seat.chars().nth(0).unwrap()),
-        };
-
-        let value = prev.chars().nth(0).unwrap().to_string();
-        let suitchar = &prev.chars().nth(1).unwrap().to_string();
-        let suit = Suit::suit_from_string(&suitchar, &value)?;
-        let value = if suitchar == "z" {
-            match value.as_str() {
-                "1" => "E".to_string(),
-                "2" => "S".to_string(),
-                "3" => "W".to_string(),
-                "4" => "N".to_string(),
-                "5" => "w".to_string(),
-                "6" => "g".to_string(),
-                "7" => "r".to_string(),
-                _ => value,
-            }
-        } else {
-            value
-        };
-
-        let prev_tile = TileGroup {
-            value: value.clone(),
-            suit, 
-            isopen: false,
-            group_type: GroupType::None,
-            isterminal: TERMINAL_CHARS.contains(&prev.chars().nth(0).unwrap()),
-        };
+        let seat_tile: TileGroup = seat.try_into()?;
+        let prev_tile: TileGroup = prev.try_into()?;
 
         let hand = Self {
             groups: tile_groups,
@@ -2287,8 +2214,8 @@ mod tests {
                 "77m".to_string(),
             ],
             "7m".to_string(),
-            "es".to_string(),
-            "ww".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
         )
         .unwrap();
         //is open
@@ -2303,8 +2230,8 @@ mod tests {
                 "77m".to_string(),
             ],
             "7m".to_string(),
-            "es".to_string(),
-            "ww".to_string(),
+            "Es".to_string(),
+            "Ww".to_string(),
         )
         .unwrap();
         //is open

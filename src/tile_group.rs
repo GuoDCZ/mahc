@@ -9,9 +9,15 @@ pub struct TileGroup {
     pub group_type: GroupType,
     pub isterminal: bool,
 }
+impl TryFrom<String> for TileGroup {
+    type Error = HandErr;
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        TileGroup::new(value.to_string())
+    }
+}
 
 impl TileGroup {
-    pub fn new(group: String) -> Result<Self, HandErr> {
+    fn new(group: String) -> Result<Self, HandErr> {
         let isopen = group.chars().last().unwrap().to_string() == "o";
         let value = group.chars().nth(0).unwrap().to_string();
 
@@ -34,6 +40,8 @@ impl TileGroup {
             }
         } else {
             value
+            
+            
         };
 
         let group_type = GroupType::group_type_from_string(group.to_string())?;
