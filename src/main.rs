@@ -249,13 +249,15 @@ pub fn default_hand_out(
     out
 }
 pub fn parse_file(args: &Args) {
-    let string = fs::read_to_string(args.file.as_ref().unwrap());
-    if string.is_err() {
-        eprintln!("Error: Unable to read file {}", args.file.as_ref().unwrap());
-        return;
-    }
-    let string = string.unwrap();
-    let lines = string.lines();
+    let file_contents = match fs::read_to_string(args.file.as_ref().unwrap()) {
+        Ok(contents) => contents,
+        Err(_) => {
+            eprintln!("Error: Unable to read file {}", args.file.as_ref().unwrap());
+            return;
+        }
+    };
+
+    let lines = file_contents.lines();
     for string in lines {
         if string.is_empty() {
             continue;
