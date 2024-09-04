@@ -55,9 +55,26 @@ impl Hand {
         }
 
         // AHAHAHAHAHAHAHAHAh (these are special cases for singular tiles)
+        let value = win.chars().nth(0).unwrap().to_string();
+        let suitchar = &win.chars().nth(1).unwrap().to_string();
+        let suit = Suit::suit_from_string(&suitchar, &value)?;
+        let value = if suitchar == "z" {
+            match value.as_str() {
+                "1" => "E".to_string(),
+                "2" => "S".to_string(),
+                "3" => "W".to_string(),
+                "4" => "N".to_string(),
+                "5" => "w".to_string(),
+                "6" => "g".to_string(),
+                "7" => "r".to_string(),
+                _ => value,
+            }
+        } else {
+            value
+        };
         let win_tile = TileGroup {
-            value: win.chars().nth(0).unwrap().to_string(),
-            suit: Suit::suit_from_string(win.chars().nth(1).unwrap().to_string())?,
+            value: value.clone(),
+            suit,
             isopen: false,
             group_type: GroupType::None,
             isterminal: TERMINAL_CHARS.contains(&win.chars().nth(0).unwrap()),
@@ -89,17 +106,52 @@ impl Hand {
             }
         }
 
+        let value = seat.chars().nth(0).unwrap().to_string();
+        let suitchar = &seat.chars().nth(1).unwrap().to_string();
+        let suit = Suit::suit_from_string(&suitchar, &value)?;
+        let value = if suitchar == "z" {
+            match value.as_str() {
+                "1" => "E".to_string(),
+                "2" => "S".to_string(),
+                "3" => "W".to_string(),
+                "4" => "N".to_string(),
+                "5" => "w".to_string(),
+                "6" => "g".to_string(),
+                "7" => "r".to_string(),
+                _ => value,
+            }
+        } else {
+            value
+        };
         let seat_tile = TileGroup {
-            value: seat.chars().nth(0).unwrap().to_string(),
-            suit: Suit::suit_from_string(seat.chars().nth(1).unwrap().to_string())?,
+            value: value.clone(),
+            suit, 
             isopen: false,
             group_type: GroupType::None,
             isterminal: TERMINAL_CHARS.contains(&seat.chars().nth(0).unwrap()),
         };
 
+        let value = prev.chars().nth(0).unwrap().to_string();
+        let suitchar = &prev.chars().nth(1).unwrap().to_string();
+        let suit = Suit::suit_from_string(&suitchar, &value)?;
+        let value = if suitchar == "z" {
+            match value.as_str() {
+                "1" => "E".to_string(),
+                "2" => "S".to_string(),
+                "3" => "W".to_string(),
+                "4" => "N".to_string(),
+                "5" => "w".to_string(),
+                "6" => "g".to_string(),
+                "7" => "r".to_string(),
+                _ => value,
+            }
+        } else {
+            value
+        };
+
         let prev_tile = TileGroup {
-            value: prev.chars().nth(0).unwrap().to_string(),
-            suit: Suit::suit_from_string(prev.chars().nth(1).unwrap().to_string())?,
+            value: value.clone(),
+            suit, 
             isopen: false,
             group_type: GroupType::None,
             isterminal: TERMINAL_CHARS.contains(&prev.chars().nth(0).unwrap()),
@@ -920,7 +972,7 @@ mod tests {
         let out = Hand::new(
             vec![
                 "1s".to_string(),
-                "1s".to_string(),
+                "2s".to_string(),
                 "1m".to_string(),
                 "9m".to_string(),
                 "1p".to_string(),
@@ -2189,7 +2241,7 @@ mod tests {
                 "rrrd".to_string(),
             ],
             "rd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();

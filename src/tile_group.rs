@@ -15,12 +15,26 @@ impl TileGroup {
         let isopen = group.chars().last().unwrap().to_string() == "o";
         let value = group.chars().nth(0).unwrap().to_string();
 
-        let suit = if !isopen {
+        let suitchar = if !isopen {
             group.chars().last().unwrap().to_string()
         } else {
             group.chars().nth(group.len() - 2).unwrap().to_string()
         };
-        let suit = Suit::suit_from_string(suit)?;
+        let suit = Suit::suit_from_string(&suitchar, &value)?;
+        let value = if suitchar == "z" {
+            match value.as_str() {
+                "1" => "E".to_string(),
+                "2" => "S".to_string(),
+                "3" => "W".to_string(),
+                "4" => "N".to_string(),
+                "5" => "w".to_string(),
+                "6" => "g".to_string(),
+                "7" => "r".to_string(),
+                _ => value,
+            }
+        } else {
+            value
+        };
 
         let group_type = GroupType::group_type_from_string(group.to_string())?;
 
@@ -29,7 +43,7 @@ impl TileGroup {
             if value == "1" || value == "7" {
                 isterminal = true;
             }
-        } else if value == "1" || value == "9" {
+        } else if (value == "1" || value == "9") && suit != Suit::Wind && suit != Suit::Dragon {
             isterminal = true;
         }
 
