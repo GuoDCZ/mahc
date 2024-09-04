@@ -4,7 +4,8 @@ use std::fs;
 use clap::Parser;
 use mahc::calc;
 use mahc::hand::error::HandErr;
-use mahc::score::{FuValue, HanValue, HonbaCounter, Payment, Score};
+use mahc::payment::Payment;
+use mahc::score::{FuValue, HanValue, HonbaCounter, Score};
 use serde_json::json;
 
 /// riichi mahjong calculator tool
@@ -84,7 +85,7 @@ pub fn parse_calculator(args: &Args) -> Result<String, HandErr> {
     let honba = args.ba;
     let han = args.manual.as_ref().unwrap()[0];
     let fu = args.manual.as_ref().unwrap()[1].into();
-    let payment = calc::calculate(han, fu, honba)?;
+    let payment = calc::calculate(han, fu)?;
 
     if args.json {
         Ok(json_calc_out(&payment, honba, han, fu))
@@ -155,14 +156,14 @@ pub fn json_calc_out(payment: &Payment, honba: HonbaCounter, han: HanValue, fu: 
     "honba" : honba,
         "scores" : {
             "dealer" : {
-                "ron" : payment.dealer_ron(),
-                "tsumo" : payment.dealer_tsumo()
+                "ron" : payment.dealer_ron(honba),
+                "tsumo" : payment.dealer_tsumo(honba)
             },
             "non-dealer" : {
-                "ron" : payment.non_dealer_ron(),
+                "ron" : payment.non_dealer_ron(honba),
                 "tsumo" : {
-                    "dealer" : payment.non_dealer_tsumo_to_dealer(),
-                    "non-dealer" : payment.non_dealer_tsumo_to_non_dealer()
+                    "dealer" : payment.non_dealer_tsumo_to_dealer(honba),
+                    "non-dealer" : payment.non_dealer_tsumo_to_non_dealer(honba)
                 }
             }
         }
@@ -191,11 +192,11 @@ pub fn default_calc_out(
         han = han,
         fu = fu,
         honba = honba_str,
-        dealer_ron = payment.dealer_ron(),
-        dealer_each = payment.dealer_tsumo(),
-        non_dealer_ron = payment.non_dealer_ron(),
-        non_dealer_payment = payment.non_dealer_tsumo_to_non_dealer(),
-        dealer_payment = payment.non_dealer_tsumo_to_dealer()
+        dealer_ron = payment.dealer_ron(honba),
+        dealer_each = payment.dealer_tsumo(honba),
+        non_dealer_ron = payment.non_dealer_ron(honba),
+        non_dealer_payment = payment.non_dealer_tsumo_to_non_dealer(honba),
+        dealer_payment = payment.non_dealer_tsumo_to_dealer(honba)
     )
 }
 
@@ -209,14 +210,14 @@ pub fn json_hand_out(score: &Score, args: &Args) -> String {
         "yakuString" : score.yaku().iter().map(|x| x.to_string(score.is_open())).collect::<Vec<String>>(),
         "scores" : {
             "dealer" : {
-                "ron" : score.payment().dealer_ron(),
-                "tsumo" : score.payment().dealer_tsumo()
+                "ron" : score.payment().dealer_ron(score.honba()),
+                "tsumo" : score.payment().dealer_tsumo(score.honba())
             },
             "non-dealer" : {
-                "ron" : score.payment().non_dealer_ron(),
+                "ron" : score.payment().non_dealer_ron(score.honba()),
                 "tsumo" : {
-                "dealer" : score.payment().non_dealer_tsumo_to_dealer(),
-                "non-dealer" : score.payment().non_dealer_tsumo_to_non_dealer()
+                "dealer" : score.payment().non_dealer_tsumo_to_dealer(score.honba()),
+                "non-dealer" : score.payment().non_dealer_tsumo_to_non_dealer(score.honba())
                 }
             }
         }
@@ -244,11 +245,13 @@ pub fn default_hand_out(score: &Score, args: &Args) -> String {
     out.push_str(
         format!(
             "\nDealer: {} ({})\nNon-dealer: {} ({}/{})",
-            score.payment().dealer_ron(),
-            score.payment().dealer_tsumo(),
-            score.payment().non_dealer_ron(),
-            score.payment().non_dealer_tsumo_to_non_dealer(),
-            score.payment().non_dealer_tsumo_to_dealer()
+            score.payment().dealer_ron(score.honba()),
+            score.payment().dealer_tsumo(score.honba()),
+            score.payment().non_dealer_ron(score.honba()),
+            score
+                .payment()
+                .non_dealer_tsumo_to_non_dealer(score.honba()),
+            score.payment().non_dealer_tsumo_to_dealer(score.honba())
         )
         .as_str(),
     );

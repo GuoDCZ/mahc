@@ -1,8 +1,5 @@
-use crate::score::{
-    FuValue, HanValue, Payment, DEALER_RON_MULTIPLIER, DEALER_TSUMO_MULTIPLIER,
-    NON_DEALER_RON_MULTIPLIER, NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
-    NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
-};
+use crate::payment::Payment;
+use crate::score::{FuValue, HanValue};
 
 #[derive(Debug)]
 pub enum LimitHands {
@@ -62,12 +59,6 @@ impl LimitHands {
             Self::KazoeYakuman => 8_000,
         };
 
-        Payment::new(
-            base_points * DEALER_RON_MULTIPLIER,
-            base_points * DEALER_TSUMO_MULTIPLIER,
-            base_points * NON_DEALER_RON_MULTIPLIER,
-            base_points * NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
-            base_points * NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
-        )
+        Payment::new(base_points)
     }
 }

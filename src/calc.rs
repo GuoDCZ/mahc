@@ -2,11 +2,8 @@ use crate::fu::{calculate_total_fu_value, Fu};
 use crate::hand::error::HandErr;
 use crate::hand::Hand;
 use crate::limit_hand::LimitHands;
-use crate::score::{
-    FuValue, HanValue, HonbaCounter, Payment, Points, Score, DEALER_RON_MULTIPLIER,
-    DEALER_TSUMO_MULTIPLIER, NON_DEALER_RON_MULTIPLIER, NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
-    NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
-};
+use crate::payment::Payment;
+use crate::score::{FuValue, HanValue, HonbaCounter, Score};
 use crate::yaku::Yaku;
 
 #[derive(Debug, PartialEq)]
@@ -93,9 +90,9 @@ pub fn get_hand_score(
         calculate_yakuman(&yaku.1)?
     } else {
         //can unwrap here because check for yaku earlier
-        calculate(han, fu_value, honba).unwrap()
+        calculate(han, fu_value).unwrap()
     };
-    let score = Score::new(payment, yaku.1, fu, han, fu_value, hand.is_open());
+    let score = Score::new(payment, yaku.1, fu, han, fu_value, honba, hand.is_open());
 
     Ok(score)
 }
@@ -203,19 +200,13 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Payment, HandErr> {
     }
 
     let basepoints: u64 = (8_000 * total).into();
-    let payment = Payment::new(
-        basepoints * DEALER_RON_MULTIPLIER,
-        basepoints * DEALER_TSUMO_MULTIPLIER,
-        basepoints * NON_DEALER_RON_MULTIPLIER,
-        basepoints * NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
-        basepoints * NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
-    );
+    let payment = Payment::new(basepoints);
 
     Ok(payment)
 }
 
 /// Calculate the payment amounts from the han, fu, and number of honba (repeat counters).
-pub fn calculate(han: HanValue, fu: FuValue, honba: HonbaCounter) -> Result<Payment, HandErr> {
+pub fn calculate(han: HanValue, fu: FuValue) -> Result<Payment, HandErr> {
     if han == 0 {
         return Err(HandErr::NoHan);
     }
@@ -226,43 +217,12 @@ pub fn calculate(han: HanValue, fu: FuValue, honba: HonbaCounter) -> Result<Paym
 
     let k = LimitHands::get_limit_hand(han, fu);
     if let Some(limithand) = k {
-        let mut payment = limithand.get_score();
-        payment.set_dealer_ron(payment.dealer_ron() + (honba * 300));
-        payment.set_dealer_tsumo(payment.dealer_tsumo() + (honba * 100));
-        payment.set_non_dealer_ron(payment.non_dealer_ron() + (honba * 300));
-        payment.set_non_dealer_tsumo_to_non_dealer(
-            payment.non_dealer_tsumo_to_non_dealer() + (honba * 100),
-        );
-        payment
-            .set_non_dealer_tsumo_to_dealer(payment.non_dealer_tsumo_to_dealer() + (honba * 100));
+        let payment = limithand.get_score();
 
         return Ok(payment);
     }
 
-    let basic_points = fu * 2u64.pow(han + 2);
-
-    let dealer_ron = (((basic_points * DEALER_RON_MULTIPLIER + honba * 300) as f64 / 100.0).ceil()
-        * 100.0) as Points;
-    let dealer_tsumo = (((basic_points * DEALER_TSUMO_MULTIPLIER + honba * 100) as f64 / 100.0)
-        .ceil()
-        * 100.0) as Points;
-    let non_dealer_ron = (((basic_points * NON_DEALER_RON_MULTIPLIER + honba * 300) as f64 / 100.0)
-        .ceil()
-        * 100.0) as Points;
-    let non_dealer_tsumo_to_dealer =
-        (((basic_points * NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER + honba * 100) as f64 / 100.0)
-            .ceil()
-            * 100.0) as Points;
-    let non_dealer_tsumo_to_non_dealer =
-        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as Points;
-
-    let payment = Payment::new(
-        dealer_ron,
-        dealer_tsumo,
-        non_dealer_ron,
-        non_dealer_tsumo_to_non_dealer,
-        non_dealer_tsumo_to_dealer,
-    );
+    let payment = Payment::from_han_and_fu(han, fu);
 
     Ok(payment)
 }
