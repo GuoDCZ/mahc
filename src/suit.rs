@@ -42,7 +42,7 @@ impl Suit {
                 } else if vec!["5", "6", "7"].contains(&value.as_str()) {
                     Ok(Self::Dragon)
                 } else {
-                    Err(HandErr::InvalidSuit)
+                    Err(HandErr::InvalidGroup)
                 }
             }
             _ => Err(HandErr::InvalidSuit),
