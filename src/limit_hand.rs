@@ -1,3 +1,9 @@
+use crate::score::{
+    FuValue, HanValue, Payment, DEALER_RON_MULTIPLIER, DEALER_TSUMO_MULTIPLIER,
+    NON_DEALER_RON_MULTIPLIER, NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
+    NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
+};
+
 #[derive(Debug)]
 pub enum LimitHands {
     Mangan,
@@ -10,7 +16,7 @@ pub enum LimitHands {
 impl LimitHands {
     //TODO: MOVE THIS INTO A SUITABLE STRUCT LATER
     /// Check if the score of the hand is limited (no aotenjou).
-    fn is_limit_hand(han: u16, fu: u16) -> bool {
+    fn is_limit_hand(han: HanValue, fu: FuValue) -> bool {
         if han >= 5 {
             return true;
         }
@@ -27,7 +33,7 @@ impl LimitHands {
     }
 
     /// Calculate the limit hand type from the han and fu scores.
-    pub fn get_limit_hand(han: u16, fu: u16) -> Option<Self> {
+    pub fn get_limit_hand(han: HanValue, fu: FuValue) -> Option<Self> {
         if !Self::is_limit_hand(han, fu) {
             return None;
         }
@@ -47,52 +53,21 @@ impl LimitHands {
     }
 
     /// Get the payment amounts.
-    ///
-    /// Format is as follows:
-    ///
-    /// - dealer_ron
-    /// - dealer_tsumo
-    /// - non_dealer_ron
-    /// - non_dealer_tsumo_to_non_dealer
-    /// - non_dealer_tsumo_to_dealer
-    pub fn get_score(&self) -> Vec<u16> {
-        match self {
-            Self::Mangan => {
-                vec![12000, 4000, 8000, 2000, 4000]
-            }
-            Self::Haneman => {
-                let vec = Self::Mangan.get_score();
-                let mut out: Vec<u16> = Vec::new();
-                for i in vec {
-                    let j = i / 2;
-                    out.push(i + j)
-                }
-                out
-            }
-            Self::Baiman => {
-                let vec = Self::Mangan.get_score();
-                let mut out: Vec<u16> = Vec::new();
-                for i in vec {
-                    out.push(i * 2)
-                }
-                out
-            }
-            Self::Sanbaiman => {
-                let vec = Self::Mangan.get_score();
-                let mut out: Vec<u16> = Vec::new();
-                for i in vec {
-                    out.push(i * 3)
-                }
-                out
-            }
-            Self::KazoeYakuman => {
-                let vec = Self::Mangan.get_score();
-                let mut out: Vec<u16> = Vec::new();
-                for i in vec {
-                    out.push(i * 4)
-                }
-                out
-            }
-        }
+    pub fn get_score(&self) -> Payment {
+        let base_points = match self {
+            Self::Mangan => 2_000,
+            Self::Haneman => 3_000,
+            Self::Baiman => 4_000,
+            Self::Sanbaiman => 6_000,
+            Self::KazoeYakuman => 8_000,
+        };
+
+        Payment::new(
+            base_points * DEALER_RON_MULTIPLIER,
+            base_points * DEALER_TSUMO_MULTIPLIER,
+            base_points * NON_DEALER_RON_MULTIPLIER,
+            base_points * NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
+            base_points * NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
+        )
     }
 }

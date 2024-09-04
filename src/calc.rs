@@ -2,6 +2,11 @@ use crate::fu::{calculate_total_fu_value, Fu};
 use crate::hand::error::HandErr;
 use crate::hand::Hand;
 use crate::limit_hand::LimitHands;
+use crate::score::{
+    FuValue, HanValue, HonbaCounter, Payment, Points, Score, DEALER_RON_MULTIPLIER,
+    DEALER_TSUMO_MULTIPLIER, NON_DEALER_RON_MULTIPLIER, NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
+    NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
+};
 use crate::yaku::Yaku;
 
 #[derive(Debug, PartialEq)]
@@ -22,21 +27,10 @@ impl std::fmt::Display for CalculatorErrors {
 }
 
 /// Get the score breakdown of the hand.
-///
-/// The output is as follows:
-///
-/// 1. Payment amounts
-///     - See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the `Vec`.
-/// 2. List of yaku
-/// 3. List of fu
-/// 4. Han and fu score
-///     1. Han
-///     2. Fu
-/// 5. Is open (Does the hand contain any open melds)
 pub fn get_hand_score(
     tiles: Vec<String>,
     win: String,
-    dora: u16,
+    dora: u32,
     seat: String,
     prev: String,
     tsumo: bool,
@@ -47,8 +41,8 @@ pub fn get_hand_score(
     rinshan: bool,
     chankan: bool,
     tenhou: bool,
-    honba: u16,
-) -> Result<(Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool), HandErr> {
+    honba: HonbaCounter,
+) -> Result<Score, HandErr> {
     let hand = Hand::new(tiles, win, seat, prev)?;
     if hand.kans().is_empty() && rinshan {
         return Err(HandErr::RinshanKanWithoutKan);
@@ -85,7 +79,8 @@ pub fn get_hand_score(
             hand.calculate_fu(tsumo)
         }
     };
-    let han_and_fu = vec![yaku.0 + dora, calculate_total_fu_value(&fu)];
+    let han = yaku.0 + dora;
+    let fu_value = calculate_total_fu_value(&fu);
 
     let mut has_yakuman = false;
     for y in &yaku.1 {
@@ -94,14 +89,15 @@ pub fn get_hand_score(
         }
     }
 
-    let scores = if has_yakuman {
+    let payment = if has_yakuman {
         calculate_yakuman(&yaku.1)?
     } else {
         //can unwrap here because check for yaku earlier
-        calculate(&han_and_fu, honba).unwrap()
+        calculate(han, fu_value, honba).unwrap()
     };
+    let score = Score::new(payment, yaku.1, fu, han, fu_value, hand.is_open());
 
-    Ok((scores, yaku.1, fu, han_and_fu, hand.is_open()))
+    Ok(score)
 }
 
 /// Get the yaku score and list of yaku given a hand and some round context.
@@ -115,7 +111,7 @@ pub fn get_yaku_han(
     chankan: bool,
     tenhou: bool,
     tsumo: bool,
-) -> (u16, Vec<Yaku>) {
+) -> (HanValue, Vec<Yaku>) {
     let mut yaku: Vec<Yaku> = vec![];
 
     let conditions = [
@@ -173,7 +169,7 @@ pub fn get_yaku_han(
         }
     }
     if !yakuman.is_empty() {
-        return (yakuman.len() as u16, yakuman);
+        return (yakuman.len() as HanValue, yakuman);
     }
 
     for (condition, yaku_type) in conditions {
@@ -195,9 +191,7 @@ pub fn get_yaku_han(
 }
 
 /// Calculate the payment amounts from the list of yakuman yaku.
-///
-/// See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the returned `Vec`.
-pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
+pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Payment, HandErr> {
     let mut total = 0;
     for y in yaku {
         if y.is_yakuman() {
@@ -208,25 +202,20 @@ pub fn calculate_yakuman(yaku: &Vec<Yaku>) -> Result<Vec<u32>, HandErr> {
         return Err(HandErr::NoYaku);
     }
 
-    let basepoints: u32 = (8000 * total).into();
-    let scores = vec![
-        basepoints * 6,
-        basepoints * 2,
-        basepoints * 4,
-        basepoints,
-        basepoints * 2,
-    ];
+    let basepoints: u64 = (8_000 * total).into();
+    let payment = Payment::new(
+        basepoints * DEALER_RON_MULTIPLIER,
+        basepoints * DEALER_TSUMO_MULTIPLIER,
+        basepoints * NON_DEALER_RON_MULTIPLIER,
+        basepoints * NON_DEALER_TSUMO_TO_NON_DEALER_MULTIPLIER,
+        basepoints * NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER,
+    );
 
-    Ok(scores)
+    Ok(payment)
 }
 
 /// Calculate the payment amounts from the han, fu, and number of honba (repeat counters).
-///
-/// See [`LimitHands::get_score()`](crate::limit_hand::LimitHands::get_score) for the exact format of the returned `Vec`.
-pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, HandErr> {
-    let han = args[0];
-    let fu = args[1];
-
+pub fn calculate(han: HanValue, fu: FuValue, honba: HonbaCounter) -> Result<Payment, HandErr> {
     if han == 0 {
         return Err(HandErr::NoHan);
     }
@@ -237,33 +226,43 @@ pub fn calculate(args: &[u16], honba: u16) -> Result<Vec<u32>, HandErr> {
 
     let k = LimitHands::get_limit_hand(han, fu);
     if let Some(limithand) = k {
-        let mut scores = limithand.get_score();
-        scores[0] += honba * 300;
-        scores[1] += honba * 100;
-        scores[2] += honba * 300;
-        scores[3] += honba * 100;
-        scores[4] += honba * 100;
+        let mut payment = limithand.get_score();
+        payment.set_dealer_ron(payment.dealer_ron() + (honba * 300));
+        payment.set_dealer_tsumo(payment.dealer_tsumo() + (honba * 100));
+        payment.set_non_dealer_ron(payment.non_dealer_ron() + (honba * 300));
+        payment.set_non_dealer_tsumo_to_non_dealer(
+            payment.non_dealer_tsumo_to_non_dealer() + (honba * 100),
+        );
+        payment
+            .set_non_dealer_tsumo_to_dealer(payment.non_dealer_tsumo_to_dealer() + (honba * 100));
 
-        return Ok(scores.iter().map(|&score| score.into()).collect());
+        return Ok(payment);
     }
 
-    let basic_points = fu * 2u16.pow((han + 2).into());
+    let basic_points = fu * 2u64.pow(han + 2);
 
-    let dealer_ron = (((basic_points * 6 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u32;
-    let dealer_tsumo = (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
-    let non_dealer_ron = (((basic_points * 4 + honba * 300) as f64 / 100.0).ceil() * 100.0) as u32;
+    let dealer_ron = (((basic_points * DEALER_RON_MULTIPLIER + honba * 300) as f64 / 100.0).ceil()
+        * 100.0) as Points;
+    let dealer_tsumo = (((basic_points * DEALER_TSUMO_MULTIPLIER + honba * 100) as f64 / 100.0)
+        .ceil()
+        * 100.0) as Points;
+    let non_dealer_ron = (((basic_points * NON_DEALER_RON_MULTIPLIER + honba * 300) as f64 / 100.0)
+        .ceil()
+        * 100.0) as Points;
     let non_dealer_tsumo_to_dealer =
-        (((basic_points * 2 + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
+        (((basic_points * NON_DEALER_TSUMO_TO_DEALER_MULTIPLIER + honba * 100) as f64 / 100.0)
+            .ceil()
+            * 100.0) as Points;
     let non_dealer_tsumo_to_non_dealer =
-        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as u32;
+        (((basic_points + honba * 100) as f64 / 100.0).ceil() * 100.0) as Points;
 
-    let scores: Vec<u32> = vec![
+    let payment = Payment::new(
         dealer_ron,
         dealer_tsumo,
         non_dealer_ron,
         non_dealer_tsumo_to_non_dealer,
         non_dealer_tsumo_to_dealer,
-    ];
+    );
 
-    Ok(scores)
+    Ok(payment)
 }

@@ -1,3 +1,5 @@
+use crate::score::FuValue;
+
 #[derive(Debug, PartialEq)]
 pub enum Fu {
     BasePoints,
@@ -39,7 +41,7 @@ impl std::fmt::Display for Fu {
 
 impl Fu {
     /// Get the minipoint value.
-    pub fn value(&self) -> u16 {
+    pub fn value(&self) -> FuValue {
         match self {
             Self::BasePoints => 20,
             Self::BasePointsChitoi => 25,
@@ -60,8 +62,8 @@ impl Fu {
 }
 
 /// Sum up all of the fu, rounding to the nearest 10.
-pub fn calculate_total_fu_value(fu: &[Fu]) -> u16 {
-    ((fu.iter().map(|f| f.value()).sum::<u16>() + 9) / 10) * 10
+pub fn calculate_total_fu_value(fu: &[Fu]) -> FuValue {
+    ((fu.iter().map(|f| f.value()).sum::<FuValue>() + 9) / 10) * 10
 }
 
 #[cfg(test)]

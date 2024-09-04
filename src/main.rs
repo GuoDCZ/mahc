@@ -3,9 +3,8 @@ use std::fs;
 
 use clap::Parser;
 use mahc::calc;
-use mahc::fu::Fu;
 use mahc::hand::error::HandErr;
-use mahc::yaku::Yaku;
+use mahc::score::{FuValue, HanValue, HonbaCounter, Payment, Score};
 use serde_json::json;
 
 /// riichi mahjong calculator tool
@@ -22,7 +21,7 @@ pub struct Args {
 
     /// Han from dora
     #[arg(short, long, default_value_t = 0)]
-    dora: u16,
+    dora: u32,
 
     /// seat wind
     #[arg(short, long, default_value = "Ew")]
@@ -66,11 +65,11 @@ pub struct Args {
 
     /// honba count
     #[arg(short, long, default_value_t = 0)]
-    ba: u16,
+    ba: HonbaCounter,
 
     /// calculator mode
     #[arg(short, long, default_value = None, value_delimiter = ' ', num_args = 2)]
-    manual: Option<Vec<u16>>,
+    manual: Option<Vec<u32>>,
 
     /// file input
     #[arg(short, long, default_value = None)]
@@ -83,15 +82,17 @@ pub struct Args {
 
 pub fn parse_calculator(args: &Args) -> Result<String, HandErr> {
     let honba = args.ba;
-    let hanandfu = args.manual.clone().unwrap();
-    let scores = calc::calculate(&hanandfu, honba)?;
-    let printout: Result<String, HandErr> = if args.json {
-        Ok(json_calc_out(scores, honba, hanandfu))
+    let han = args.manual.as_ref().unwrap()[0];
+    let fu = args.manual.as_ref().unwrap()[1].into();
+    let payment = calc::calculate(han, fu, honba)?;
+
+    if args.json {
+        Ok(json_calc_out(&payment, honba, han, fu))
     } else {
-        Ok(default_calc_out(scores, honba, hanandfu))
-    };
-    printout
+        Ok(default_calc_out(&payment, honba, han, fu))
+    }
 }
+
 pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     if args.tiles.is_none() {
         return Err(HandErr::NoHandTiles);
@@ -120,7 +121,7 @@ pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     if args.doubleriichi && args.haitei && args.chankan {
         return Err(HandErr::DoubleRiichiHaiteiChankan);
     }
-    let result = calc::get_hand_score(
+    let score = calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
         args.dora,
@@ -139,115 +140,138 @@ pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
 
     //TODO VALIDATION (i dont care enough yet)
 
-    let printout: String = if args.json {
-        json_hand_out(result, args)
+    let printout = if args.json {
+        json_hand_out(&score, args)
     } else {
-        default_hand_out(result, args)
+        default_hand_out(&score, args)
     };
     Ok(printout)
 }
-pub fn json_calc_out(result: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String {
+
+pub fn json_calc_out(payment: &Payment, honba: HonbaCounter, han: HanValue, fu: FuValue) -> String {
     let out = json!({
-    "han" : hanandfu[0],
-    "fu" : hanandfu[1],
+    "han" : han,
+    "fu" : fu,
     "honba" : honba,
         "scores" : {
             "dealer" : {
-                "ron" : result[0],
-                "tsumo" : result[1]
+                "ron" : payment.dealer_ron(),
+                "tsumo" : payment.dealer_tsumo()
             },
             "non-dealer" : {
-                "ron" : result[2],
+                "ron" : payment.non_dealer_ron(),
                 "tsumo" : {
-                    "dealer" : result[4],
-                    "non-dealer" : result[3]
+                    "dealer" : payment.non_dealer_tsumo_to_dealer(),
+                    "non-dealer" : payment.non_dealer_tsumo_to_non_dealer()
                 }
             }
         }
     });
     out.to_string()
 }
-pub fn default_calc_out(score: Vec<u32>, honba: u16, hanandfu: Vec<u16>) -> String {
-    if honba != 0 {
-        return format!(
-            "\n{} Han/ {} Fu/ {} Honba\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-            hanandfu[0], hanandfu[1], honba, score[0], score[1], score[2], score[3], score[4]
-        );
-    }
+
+pub fn default_calc_out(
+    payment: &Payment,
+    honba: HonbaCounter,
+    han: HanValue,
+    fu: FuValue,
+) -> String {
+    let honba_str = if honba != 0 {
+        format!("/ {honba} Honba")
+    } else {
+        "".to_string()
+    };
+
     format!(
-        "\n{} Han/ {} Fu\nDealer: {} ({})\nnon-dealer: {} ({}/{})",
-        hanandfu[0], hanandfu[1], score[0], score[1], score[2], score[3], score[4]
+        "\n{han} Han\
+        / {fu} Fu\
+        {honba}\
+        \nDealer: {dealer_ron} ({dealer_each})\
+        \nnon-dealer: {non_dealer_ron} ({non_dealer_payment}/{dealer_payment})",
+        han = han,
+        fu = fu,
+        honba = honba_str,
+        dealer_ron = payment.dealer_ron(),
+        dealer_each = payment.dealer_tsumo(),
+        non_dealer_ron = payment.non_dealer_ron(),
+        non_dealer_payment = payment.non_dealer_tsumo_to_non_dealer(),
+        dealer_payment = payment.non_dealer_tsumo_to_dealer()
     )
 }
-pub fn json_hand_out(
-    result: (Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool),
-    args: &Args,
-) -> String {
+
+pub fn json_hand_out(score: &Score, args: &Args) -> String {
     let out = json!({
-        "han" : result.3[0],
-        "fu" : result.3[1],
+        "han" : score.han(),
+        "fu" : score.fu_score(),
         "honba" : args.ba,
         "dora" : args.dora,
-        "fuString" : result.2.iter().map(|x| x.to_string()).collect::<Vec<String>>(),
-        "yakuString" : result.1.iter().map(|x| x.to_string(result.4)).collect::<Vec<String>>(),
+        "fuString" : score.fu().iter().map(|x| x.to_string()).collect::<Vec<String>>(),
+        "yakuString" : score.yaku().iter().map(|x| x.to_string(score.is_open())).collect::<Vec<String>>(),
         "scores" : {
             "dealer" : {
-                "ron" : result.0[0],
-                "tsumo" : result.0[1]
+                "ron" : score.payment().dealer_ron(),
+                "tsumo" : score.payment().dealer_tsumo()
             },
             "non-dealer" : {
-                "ron" : result.0[2],
+                "ron" : score.payment().non_dealer_ron(),
                 "tsumo" : {
-                "dealer" : result.0[4],
-                "non-dealer" : result.0[3]
+                "dealer" : score.payment().non_dealer_tsumo_to_dealer(),
+                "non-dealer" : score.payment().non_dealer_tsumo_to_non_dealer()
                 }
             }
         }
     });
     out.to_string()
 }
-pub fn default_hand_out(
-    result: (Vec<u32>, Vec<Yaku>, Vec<Fu>, Vec<u16>, bool),
-    args: &Args,
-) -> String {
+pub fn default_hand_out(score: &Score, args: &Args) -> String {
     let mut out: String = String::new();
-    if !result.1[0].is_yakuman() {
+    if !score.yaku()[0].is_yakuman() {
         if args.ba != 0 {
             out.push_str(
                 format!(
                     "\n{} Han/ {} Fu/ {} Honba",
-                    result.3[0], result.3[1], args.ba
+                    score.han(),
+                    score.fu_score(),
+                    args.ba
                 )
                 .as_str(),
             )
         } else {
-            out.push_str(format!("\n{} Han/ {} Fu", result.3[0], result.3[1]).as_str())
+            out.push_str(&format!("\n{} Han/ {} Fu", score.han(), score.fu_score()))
         }
     }
 
     out.push_str(
         format!(
             "\nDealer: {} ({})\nNon-dealer: {} ({}/{})",
-            result.0[0], result.0[1], result.0[2], result.0[3], result.0[4]
+            score.payment().dealer_ron(),
+            score.payment().dealer_tsumo(),
+            score.payment().non_dealer_ron(),
+            score.payment().non_dealer_tsumo_to_non_dealer(),
+            score.payment().non_dealer_tsumo_to_dealer()
         )
         .as_str(),
     );
 
-    if !result.1[0].is_yakuman() && args.dora != 0 {
+    if !score.yaku()[0].is_yakuman() && args.dora != 0 {
         out.push_str(format!("\nDora: {}", args.dora).as_str());
     }
+
     out.push_str("\nYaku: ");
-    for i in &result.1 {
-        out.push_str(format!("\n  {}", i.to_string(result.4)).as_str());
+    for yaku in score.yaku() {
+        out.push_str(format!("\n  {}", yaku.to_string(score.is_open())).as_str());
     }
-    if !result.1[0].is_yakuman() {
+
+    if !score.yaku()[0].is_yakuman() {
         out.push_str("\nFu: ");
-        for i in result.2 {
-            out.push_str(format!("\n  {}", i).as_str());
+        for fu in score.fu() {
+            out.push_str(format!("\n  {}", fu).as_str());
         }
     }
+
     out
 }
+
 pub fn parse_file(args: &Args) {
     let file_contents = match fs::read_to_string(args.file.as_ref().unwrap()) {
         Ok(contents) => contents,
@@ -278,6 +302,7 @@ pub fn parse_file(args: &Args) {
         }
     }
 }
+
 pub fn printout(result: Result<String, HandErr>) {
     match result {
         Ok(o) => {
