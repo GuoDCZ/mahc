@@ -31,7 +31,7 @@ impl Suit {
     /// ```
     pub fn suit_from_string(suit: &String, value: &String) -> Result<Self, HandErr> {
         if vec!["s", "p", "m"].contains(&suit.as_str())
-            && !vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"].contains(&value.as_str())
+            && !vec!["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].contains(&value.as_str())
         {
             return Err(HandErr::InvalidGroup);
         }
