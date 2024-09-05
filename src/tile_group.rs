@@ -249,4 +249,30 @@ mod tests {
         let tile = TileGroup::try_from("999z".to_string());
         assert_eq!(tile, Err(HandErr::InvalidGroup));
     }
+
+    #[test]
+    fn is_akadora_from_string() {
+        let tile = TileGroup::try_from("0m".to_string()).unwrap();
+        assert_eq!(tile.value, "5");
+        assert_eq!(tile.isaka, true);
+        assert_eq!(tile.group_type, GroupType::None);
+
+        let tile = TileGroup::try_from("055m".to_string()).unwrap();
+        assert_eq!(tile.value, "5");
+        assert_eq!(tile.isaka, true);
+        assert_eq!(tile.group_type, GroupType::Triplet);
+
+        let tile = TileGroup::try_from("406m".to_string()).unwrap();
+        assert_eq!(tile.value, "4");
+        assert_eq!(tile.isaka, true);
+        assert_eq!(tile.group_type, GroupType::Sequence);
+    }
+
+    #[test]
+    fn is_not_akadora_from_string() {
+        let tile = TileGroup::try_from("1m".to_string()).unwrap();
+        assert_eq!(tile.value, "1");
+        assert_eq!(tile.isaka, false);
+        assert_eq!(tile.group_type, GroupType::None);
+    }
 }
