@@ -8,6 +8,7 @@ pub struct TileGroup {
     pub isopen: bool,
     pub group_type: GroupType,
     pub isterminal: bool,
+    pub isaka: bool,
 }
 impl TryFrom<String> for TileGroup {
     type Error = HandErr;
@@ -19,7 +20,17 @@ impl TryFrom<String> for TileGroup {
 impl TileGroup {
     fn new(group: String) -> Result<Self, HandErr> {
         let isopen = group.chars().last().unwrap().to_string() == "o";
-        let value = group.chars().nth(0).unwrap().to_string();
+
+        // is akadora check (sussy bcuz not every tile needs an akadora attribute)
+        let mut isaka = false;
+        let value = if group.chars().nth(0).unwrap().to_string() == "0" {
+            "5".to_string()
+        } else {
+            group.chars().nth(0).unwrap().to_string()
+        };
+        if group.contains("0") {
+            isaka = true;
+        }
 
         let suitchar = if !isopen {
             group.chars().last().unwrap().to_string()
@@ -59,6 +70,7 @@ impl TileGroup {
             isopen,
             group_type,
             isterminal,
+            isaka,
         };
 
         Ok(tile)
@@ -100,12 +112,13 @@ impl GroupType {
     ///
     /// assert_eq!(actual, expected);
     /// ```
-    pub fn group_type_from_string(group: String) -> Result<Self, HandErr> {
+    pub fn group_type_from_string(mut group: String) -> Result<Self, HandErr> {
         let count = if group.contains('o') {
             group.len() - 2
         } else {
             group.len() - 1
         };
+        group = group.replace("0", "5");
 
         if let Some(sub_group) = group.get(0..count) {
             for i in sub_group.chars() {
