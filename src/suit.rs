@@ -120,4 +120,19 @@ mod test {
 
         assert_eq!(actual, expected);
     }
+    #[test]
+    fn akadora_suit_from_string() {
+        let value = "0".to_string();
+        let suit = "m".to_string();
+        let actual = Suit::suit_from_string(&suit, &value);
+        let expected = Ok(Suit::Manzu);
+        assert_eq!(actual, expected);
+
+        let value = "0".to_string();
+        let suit = "z".to_string();
+        let actual = Suit::suit_from_string(&suit, &value);
+        let expected = Err(HandErr::InvalidGroup); 
+        assert_eq!(actual, expected);
+
+    }
 }
