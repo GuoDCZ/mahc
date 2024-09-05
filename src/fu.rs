@@ -82,7 +82,7 @@ mod tests {
                 "789m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -112,7 +112,7 @@ mod tests {
                 "789m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -141,7 +141,7 @@ mod tests {
                 "456s".to_string(),
             ],
             "6s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();

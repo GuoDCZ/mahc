@@ -30,12 +30,29 @@ impl Suit {
     /// assert_eq!(actual_suit, expected);
     /// ```
     pub fn suit_from_string(suit: &String, value: &String) -> Result<Self, HandErr> {
-       match suit.as_str() {
+        if vec!["s", "p", "m"].contains(&suit.as_str())
+            && !vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"].contains(&value.as_str())
+        {
+            return Err(HandErr::InvalidGroup);
+        }
+        match suit.as_str() {
             "s" => Ok(Self::Souzu),
             "p" => Ok(Self::Pinzu),
             "m" => Ok(Self::Manzu),
-            "w" => Ok(Self::Wind),
-            "d" => Ok(Self::Dragon),
+            "w" => {
+                if !vec!["E", "S", "W", "N"].contains(&value.as_str()) {
+                    Err(HandErr::InvalidGroup)
+                } else {
+                    Ok(Self::Wind)
+                }
+            }
+            "d" => {
+                if !vec!["r", "g", "w"].contains(&value.as_str()) {
+                    Err(HandErr::InvalidGroup)
+                } else {
+                    Ok(Self::Dragon)
+                }
+            }
             "z" => {
                 if vec!["1", "2", "3", "4"].contains(&value.as_str()) {
                     Ok(Self::Wind)
