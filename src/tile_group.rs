@@ -12,13 +12,7 @@ pub struct TileGroup {
 }
 impl TryFrom<String> for TileGroup {
     type Error = HandErr;
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        TileGroup::new(value.to_string())
-    }
-}
-
-impl TileGroup {
-    fn new(group: String) -> Result<Self, HandErr> {
+    fn try_from(group: String) -> Result<Self, Self::Error> {
         let isopen = group.chars().last().unwrap().to_string() == "o";
 
         // is akadora check (sussy bcuz not every tile needs an akadora attribute)
@@ -64,6 +58,19 @@ impl TileGroup {
             isterminal = true;
         }
 
+        TileGroup::new(value, suit, isopen, group_type, isterminal, isaka)
+    }
+}
+
+impl TileGroup {
+    fn new(
+        value: String,
+        suit: Suit,
+        isopen: bool,
+        group_type: GroupType,
+        isterminal: bool,
+        isaka: bool,
+    ) -> Result<Self, HandErr> {
         let tile = Self {
             value,
             suit,
