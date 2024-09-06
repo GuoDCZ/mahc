@@ -11,7 +11,6 @@ pub enum LimitHands {
 }
 
 impl LimitHands {
-    //TODO: MOVE THIS INTO A SUITABLE STRUCT LATER
     /// Check if the score of the hand is limited (no aotenjou).
     fn is_limit_hand(han: HanValue, fu: FuValue) -> bool {
         if han >= 5 {

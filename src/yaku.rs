@@ -124,7 +124,6 @@ impl Yaku {
                 }
             }
 
-            //TODO gota be a better way of doing this
             Self::KazoeYakuman => "Kazoe Yakuman ",
             Self::KokushiMusou => "KokushiMusou Yakuman",
             Self::KokushiMusou13SidedWait => "KokushiMusou Yakuman 13 sided wait",
@@ -146,7 +145,6 @@ impl Yaku {
         .to_string()
     }
 
-    //TODO adjust for open or closed !!!!
     /// Get the han value of the yaku.
     pub fn get_han(&self, is_open: bool) -> HanValue {
         match self {
