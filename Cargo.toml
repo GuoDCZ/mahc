@@ -4,7 +4,7 @@ version = "1.5.2"
 edition = "2021"
 authors =[  "Tharun <tharun1@hotmail.co.uk>" ]
 description = "cli riichi mahjong calculator, which spits out yaku and fu for a given hand"
-repository = "https://github.com/DrCheeseFace/rusty-mahjcalc"
+repository = "https://github.com/DrCheeseFace/mahc"
 license = "MIT"
 readme = "README.md"
 

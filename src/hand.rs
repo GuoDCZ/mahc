@@ -3,7 +3,6 @@ pub mod error;
 use crate::fu::Fu;
 use crate::suit::Suit;
 use crate::tile_group::{GroupType, TileGroup};
-use crate::TERMINAL_CHARS;
 use error::HandErr;
 
 #[derive(Debug)]
@@ -28,7 +27,7 @@ impl Hand {
 
         // NOTE: Strings are complicated in Rust and needs evaluation about how to iterate over one. Because the string is expected to contain ASCII characters, `.chars()` should be okay.
         for i in &tiles {
-            let tile = TileGroup::new(i.to_string())?;
+            let tile: TileGroup = i.to_string().try_into()?;
             if tile.isopen {
                 ishandopen = true;
             }
@@ -55,13 +54,7 @@ impl Hand {
         }
 
         // AHAHAHAHAHAHAHAHAh (these are special cases for singular tiles)
-        let win_tile = TileGroup {
-            value: win.chars().nth(0).unwrap().to_string(),
-            suit: Suit::suit_from_string(win.chars().nth(1).unwrap().to_string())?,
-            isopen: false,
-            group_type: GroupType::None,
-            isterminal: TERMINAL_CHARS.contains(&win.chars().nth(0).unwrap()),
-        };
+        let win_tile: TileGroup = win.try_into()?;
 
         // check if last group contains the winning tile
         // FUCK handling kokuushi
@@ -88,22 +81,8 @@ impl Hand {
                 GroupType::Kan | GroupType::None => return Err(HandErr::InvalidShape),
             }
         }
-
-        let seat_tile = TileGroup {
-            value: seat.chars().nth(0).unwrap().to_string(),
-            suit: Suit::suit_from_string(seat.chars().nth(1).unwrap().to_string())?,
-            isopen: false,
-            group_type: GroupType::None,
-            isterminal: TERMINAL_CHARS.contains(&seat.chars().nth(0).unwrap()),
-        };
-
-        let prev_tile = TileGroup {
-            value: prev.chars().nth(0).unwrap().to_string(),
-            suit: Suit::suit_from_string(prev.chars().nth(1).unwrap().to_string())?,
-            isopen: false,
-            group_type: GroupType::None,
-            isterminal: TERMINAL_CHARS.contains(&prev.chars().nth(0).unwrap()),
-        };
+        let seat_tile: TileGroup = seat.try_into()?;
+        let prev_tile: TileGroup = prev.try_into()?;
 
         let hand = Self {
             groups: tile_groups,
@@ -912,7 +891,7 @@ mod tests {
                 "wwd".to_string(),
             ],
             "wd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -920,7 +899,7 @@ mod tests {
         let out = Hand::new(
             vec![
                 "1s".to_string(),
-                "1s".to_string(),
+                "2s".to_string(),
                 "1m".to_string(),
                 "9m".to_string(),
                 "1p".to_string(),
@@ -934,7 +913,7 @@ mod tests {
                 "wwd".to_string(),
             ],
             "wd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -956,7 +935,7 @@ mod tests {
                 "wwd".to_string(),
             ],
             "wd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -979,7 +958,7 @@ mod tests {
                 "rd".to_string(),
             ],
             "rd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1002,7 +981,7 @@ mod tests {
                 "wwd".to_string(),
             ],
             "wd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1020,7 +999,7 @@ mod tests {
                 "99s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1034,7 +1013,7 @@ mod tests {
                 "999s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1052,7 +1031,7 @@ mod tests {
                 "999s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1066,7 +1045,7 @@ mod tests {
                 "999s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1084,7 +1063,7 @@ mod tests {
                 "99s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1098,7 +1077,7 @@ mod tests {
                 "99s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1118,7 +1097,7 @@ mod tests {
                 "EEw".to_string(),
             ],
             "Ew".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1132,7 +1111,7 @@ mod tests {
                 "EEEw".to_string(),
             ],
             "Ew".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1150,7 +1129,7 @@ mod tests {
                 "EEEw".to_string(),
             ],
             "Ew".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1164,7 +1143,7 @@ mod tests {
                 "EEEw".to_string(),
             ],
             "Ew".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1182,7 +1161,7 @@ mod tests {
                 "999s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1196,7 +1175,7 @@ mod tests {
                 "999s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1210,7 +1189,7 @@ mod tests {
                 "99s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1224,7 +1203,7 @@ mod tests {
                 "55s".to_string(),
             ],
             "5s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1238,7 +1217,7 @@ mod tests {
                 "999s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1256,7 +1235,7 @@ mod tests {
                 "888s".to_string(),
             ],
             "8s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1270,7 +1249,7 @@ mod tests {
                 "888s".to_string(),
             ],
             "8s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1284,7 +1263,7 @@ mod tests {
                 "888s".to_string(),
             ],
             "8s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1299,7 +1278,7 @@ mod tests {
                 "99s".to_string(),
             ],
             "9s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1317,7 +1296,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1331,7 +1310,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1345,7 +1324,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1363,7 +1342,7 @@ mod tests {
                 "11m".to_string(),
             ],
             "1m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1377,7 +1356,7 @@ mod tests {
                 "111s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1395,7 +1374,7 @@ mod tests {
                 "11m".to_string(),
             ],
             "1m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1410,7 +1389,7 @@ mod tests {
                 "111s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1424,7 +1403,7 @@ mod tests {
                 "111s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1442,7 +1421,7 @@ mod tests {
                 "567p".to_string(),
             ],
             "6p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1456,7 +1435,7 @@ mod tests {
                 "567p".to_string(),
             ],
             "6p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1471,7 +1450,7 @@ mod tests {
                 "567p".to_string(),
             ],
             "6p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1489,7 +1468,7 @@ mod tests {
                 "567p".to_string(),
             ],
             "6p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1503,7 +1482,7 @@ mod tests {
                 "567p".to_string(),
             ],
             "6p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1521,7 +1500,7 @@ mod tests {
                 "456m".to_string(),
             ],
             "6m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1535,7 +1514,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1549,7 +1528,7 @@ mod tests {
                 "333s".to_string(),
             ],
             "3s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1567,7 +1546,7 @@ mod tests {
                 "456m".to_string(),
             ],
             "6m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1582,7 +1561,7 @@ mod tests {
                 "456m".to_string(),
             ],
             "5m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1596,7 +1575,7 @@ mod tests {
                 "456m".to_string(),
             ],
             "5m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1610,7 +1589,7 @@ mod tests {
                 "rrrd".to_string(),
             ],
             "rd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1630,7 +1609,7 @@ mod tests {
                 "77p".to_string(),
             ],
             "7p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1647,7 +1626,7 @@ mod tests {
                 "77p".to_string(),
             ],
             "7p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1662,7 +1641,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1682,7 +1661,7 @@ mod tests {
                 "77p".to_string(),
             ],
             "7p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1696,7 +1675,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1714,7 +1693,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1729,7 +1708,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1743,7 +1722,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1761,7 +1740,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1776,7 +1755,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1790,7 +1769,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1804,7 +1783,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1822,7 +1801,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1836,7 +1815,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1854,7 +1833,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1869,7 +1848,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1884,7 +1863,7 @@ mod tests {
                 "99p".to_string(),
             ],
             "9p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1902,7 +1881,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1917,7 +1896,7 @@ mod tests {
                 "ggd".to_string(),
             ],
             "gd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1932,7 +1911,7 @@ mod tests {
                 "11p".to_string(),
             ],
             "1p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1950,7 +1929,7 @@ mod tests {
                 "gggd".to_string(),
             ],
             "gd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1964,7 +1943,7 @@ mod tests {
                 "234p".to_string(),
             ],
             "4p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1982,7 +1961,7 @@ mod tests {
                 "gggd".to_string(),
             ],
             "gd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -1997,7 +1976,7 @@ mod tests {
                 "gggd".to_string(),
             ],
             "gd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2012,7 +1991,7 @@ mod tests {
                 "33p".to_string(),
             ],
             "3p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2031,7 +2010,7 @@ mod tests {
                 "333p".to_string(),
             ],
             "3p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2046,7 +2025,7 @@ mod tests {
                 "333p".to_string(),
             ],
             "3p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2061,7 +2040,7 @@ mod tests {
                 "333p".to_string(),
             ],
             "3p".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2079,7 +2058,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2094,7 +2073,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2109,7 +2088,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2127,7 +2106,7 @@ mod tests {
                 "11s".to_string(),
             ],
             "1s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2142,7 +2121,7 @@ mod tests {
                 "gggd".to_string(),
             ],
             "gd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2157,7 +2136,7 @@ mod tests {
                 "456so".to_string(),
             ],
             "5s".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2175,7 +2154,7 @@ mod tests {
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2189,7 +2168,7 @@ mod tests {
                 "rrrd".to_string(),
             ],
             "rd".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2197,13 +2176,13 @@ mod tests {
         let out = Hand::new(
             vec![
                 "3333mo".to_string(),
-                "WWWm".to_string(),
+                "WWWw".to_string(),
                 "22s".to_string(),
                 "234m".to_string(),
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2217,7 +2196,7 @@ mod tests {
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2235,8 +2214,8 @@ mod tests {
                 "77m".to_string(),
             ],
             "7m".to_string(),
-            "es".to_string(),
-            "ww".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
         )
         .unwrap();
         //is open
@@ -2251,8 +2230,8 @@ mod tests {
                 "77m".to_string(),
             ],
             "7m".to_string(),
-            "es".to_string(),
-            "ww".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
         )
         .unwrap();
         //is open
@@ -2270,7 +2249,7 @@ mod tests {
                 "77m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2286,7 +2265,7 @@ mod tests {
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2302,7 +2281,7 @@ mod tests {
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2320,7 +2299,7 @@ mod tests {
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2334,7 +2313,7 @@ mod tests {
                 "678m".to_string(),
             ],
             "7m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
@@ -2348,7 +2327,7 @@ mod tests {
                 "345m".to_string(),
             ],
             "4m".to_string(),
-            "Es".to_string(),
+            "Ew".to_string(),
             "Ww".to_string(),
         )
         .unwrap();
