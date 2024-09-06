@@ -189,6 +189,77 @@ impl Hand {
         fu_types
     }
 
+    /// Get the dora count in the hand from dora indicator tiles.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use mahc::hand::Hand;
+    /// use mahc::tile_group::TileGroup;
+    /// let hand = Hand::new(
+    ///     vec![
+    ///         "123p".to_string(),
+    ///         "505s".to_string(),
+    ///         "EEEw".to_string(),
+    ///         "9999m".to_string(),
+    ///         "rrd".to_string(),
+    ///     ],
+    ///     "rd".to_string(),
+    ///     "Ew".to_string(),
+    ///     "Ew".to_string(),
+    /// )
+    /// .unwrap();
+    /// let doras: Vec<TileGroup> = vec![
+    ///    "1p".to_string().try_into().unwrap(),
+    ///    "4s".to_string().try_into().unwrap(),
+    ///    "Nw".to_string().try_into().unwrap(),
+    ///    "8m".to_string().try_into().unwrap(),
+    ///    "gd".to_string().try_into().unwrap(),
+    /// ];
+    ///
+    /// let dora = hand.get_dora_count(Some(doras));
+    /// assert_eq!(dora, 14);
+    /// ```
+    pub fn get_dora_count(&self, dora_indicator_tiles: Option<Vec<TileGroup>>) -> u32 {
+        let mut count = 0;
+        for group in &self.groups {
+            if group.isaka {
+                count += 1;
+            }
+        }
+        if dora_indicator_tiles.is_none() {
+            return count;
+        }
+        for tile in dora_indicator_tiles.unwrap() {
+            let dora_tile = tile.next_tile().unwrap();
+            for triplet in self.triplets() {
+                if triplet.value == dora_tile.value && triplet.suit == dora_tile.suit {
+                    count += 3;
+                }
+            }
+            for kan in self.kans() {
+                if kan.value == dora_tile.value && kan.suit == dora_tile.suit {
+                    count += 4;
+                }
+            }
+            for pair in self.pairs() {
+                if pair.value == dora_tile.value && pair.suit == dora_tile.suit {
+                    count += 2;
+                }
+            }
+            for sequence in self.sequences() {
+                if (sequence.value == dora_tile.value
+                    || (sequence.parse_u8().unwrap() + 1).to_string() == dora_tile.value
+                    || (sequence.parse_u8().unwrap() + 2).to_string() == dora_tile.value)
+                    && sequence.suit == dora_tile.suit
+                {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
+
     /// Get the sequence groups in the hand.
     pub fn sequences(&self) -> Vec<TileGroup> {
         // TODO: We can do better than cloning into `into_iter()`.
@@ -2443,7 +2514,7 @@ mod tests {
 mod tile_group_tests {
     use super::Hand;
     use crate::suit::Suit;
-    use crate::tile_group::GroupType;
+    use crate::tile_group::{GroupType, TileGroup};
 
     #[test]
     fn identify_pair() {
@@ -2593,5 +2664,48 @@ mod tile_group_tests {
         assert_eq!(out.sequences()[0].group_type, GroupType::Sequence);
         assert_eq!(out.sequences()[0].suit, Suit::Pinzu);
         assert!(out.sequences()[0].isopen);
+    }
+    #[test]
+    fn dora_count_all() {
+        let out = Hand::new(
+            vec![
+                "123p".to_string(),
+                "505s".to_string(),
+                "EEEw".to_string(),
+                "9999m".to_string(),
+                "rrd".to_string(),
+            ],
+            "rd".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        let dora_1: TileGroup = "1p".to_string().try_into().unwrap();
+        let dora_2: TileGroup = "4s".to_string().try_into().unwrap();
+        let dora_3: TileGroup = "Nw".to_string().try_into().unwrap();
+        let dora_4: TileGroup = "8m".to_string().try_into().unwrap();
+        let dora_5: TileGroup = "gd".to_string().try_into().unwrap();
+        let doras = vec![dora_1, dora_2, dora_3, dora_4, dora_5];
+
+        let dora = out.get_dora_count(Some(doras));
+        assert_eq!(dora, 14);
+    }
+    #[test]
+    fn dora_count_aka() {
+        let out = Hand::new(
+            vec![
+                "123p".to_string(),
+                "505s".to_string(),
+                "EEEw".to_string(),
+                "9999m".to_string(),
+                "rrd".to_string(),
+            ],
+            "rd".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        let dora = out.get_dora_count(None);
+        assert_eq!(dora, 1);
     }
 }

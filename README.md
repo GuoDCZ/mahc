@@ -42,15 +42,22 @@ note: the winning group has to go last (this is to calculate fu correctly)
 ### Using file input
 ``` 
 # hands.txt
---tiles EEw NNw SSw WWw rrd wwd ggd -w gd -p Ew -s Ew -d 2
---tiles 123p 456p 789p rrrdo 99p -w 9p -p Ew -s Ew -d 2'
+--tiles 1p 9p 1s 9s 1m 9m rd gd wd Ew Sw Nw WWw -w Ww -p Ew -s Ew
+--tiles 11z NNw SSw WWw rrd wwd ggd -w gd -p Ew -s Ew -d Ew Ew
 -m 4 30 --ba 3
 ```
 
 
 ```bash
 ~/$ mahc -f hands.txt
-> Dealer: 144000 (48000)
+
+❯ Dealer: 96000 (32000)
+  Non-dealer: 64000 (16000/32000)
+  Yaku:
+    KokushiMusou Yakuman
+    KokushiMusou Yakuman 13 sided wait
+  
+  Dealer: 144000 (48000)
   Non-dealer: 96000 (24000/48000)
   Yaku:
     Tsuuiisou Yakuman
@@ -60,39 +67,29 @@ note: the winning group has to go last (this is to calculate fu correctly)
   4 Han/ 30 Fu/ 3 Honba
   Dealer: 12500 (4200)
   non-dealer: 8600 (2300/4200)
-  
-  6 Han/ 30 Fu
-  Dealer: 18000 (6000)
-  Non-dealer: 12000 (3000/6000)
-  Dora: 2
-  Yaku:
-    Honitsu: 2
-    Ittsuu: 1
-    Yakuhai: 1
-  Fu:
-    BasePoints: 20
-    NonSimpleOpenTriplet: 4
-    SingleWait: 2
 ```
 ### Json out
 in ***normal mode***
 ```bash
-~/$ mahc --tiles 123p 456p 789p rrrdo 99p -w 9p -p Ew -s Ew -d 2 --json
+~/$ mahc --tiles 123p 456p 789p rrrdo 99p -w 9p -p Ew -s Ew -d 9p --json
 ```
 yields
 ```json
 {
-    "dora":2,
+    "dora":1,
     "fu":30,
-    "fuString":["BasePoints: 20","NonSimpleOpenTriplet: 4","SingleWait: 2"],
-    "han":6,
+    "fuString":[ "BasePoints: 20", "NonSimpleOpenTriplet: 4", "SingleWait: 2"
+    ],
+    "han":5,
     "honba":0,
     "scores":{
-        "dealer":{"ron":18000,"tsumo":6000},
-        "non-dealer":{"ron":12000,"tsumo":{"dealer":6000,"non-dealer":3000}}
+        "dealer":{"ron":12000,"tsumo":4000},
+        "non-dealer":{
+            "ron":8000, 
+            "tsumo":{"dealer":4000,"non-dealer":2000}
+        }
     },
-    "yakuString":["Honitsu: 2","Ittsuu: 1","Yakuhai: 1"]
-}
+    "yakuString":["Honitsu: 2","Ittsuu: 1","Yakuhai: 1"]}
 ```
 and in ***calculator mode***
 ```bash

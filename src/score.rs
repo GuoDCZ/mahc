@@ -26,6 +26,8 @@ pub struct Score {
     honba: HonbaCounter,
     /// Is the hand open when it scored?
     is_open: bool,
+    /// total number of han from dora 
+    dora_count: u32,
 }
 
 impl Score {
@@ -38,6 +40,7 @@ impl Score {
         fu_score: FuValue,
         honba: HonbaCounter,
         is_open: bool,
+        dora_count: u32,
     ) -> Self {
         Self {
             payment,
@@ -47,6 +50,7 @@ impl Score {
             fu_score,
             honba,
             is_open,
+            dora_count,
         }
     }
 
@@ -83,5 +87,10 @@ impl Score {
     /// Get the state of whether or not the hand was opened.
     pub fn is_open(&self) -> bool {
         self.is_open
+    }
+
+    /// Get the total number of han from dora. 
+    pub fn dora_count(&self) -> u32{
+        self.dora_count
     }
 }

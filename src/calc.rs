@@ -4,6 +4,7 @@ use crate::hand::Hand;
 use crate::limit_hand::LimitHands;
 use crate::payment::Payment;
 use crate::score::{FuValue, HanValue, HonbaCounter, Score};
+use crate::tile_group::TileGroup;
 use crate::yaku::Yaku;
 
 #[derive(Debug, PartialEq)]
@@ -27,7 +28,7 @@ impl std::fmt::Display for CalculatorErrors {
 pub fn get_hand_score(
     tiles: Vec<String>,
     win: String,
-    dora: u32,
+    dora: Option<Vec<String>>,
     seat: String,
     prev: String,
     tsumo: bool,
@@ -76,7 +77,17 @@ pub fn get_hand_score(
             hand.calculate_fu(tsumo)
         }
     };
-    let han = yaku.0 + dora;
+
+    // get han from dora tiles
+    let doras: Option<Vec<TileGroup>> = dora.map(|dora_tiles| {
+        dora_tiles
+            .into_iter()
+            .filter_map(|tile| tile.try_into().ok())
+            .collect()
+    });
+    let dora_count = hand.get_dora_count(doras);
+
+    let han = yaku.0 + dora_count;
     let fu_value = calculate_total_fu_value(&fu);
 
     let mut has_yakuman = false;
@@ -92,7 +103,16 @@ pub fn get_hand_score(
         //can unwrap here because check for yaku earlier
         calculate(han, fu_value).unwrap()
     };
-    let score = Score::new(payment, yaku.1, fu, han, fu_value, honba, hand.is_open());
+    let score = Score::new(
+        payment,
+        yaku.1,
+        fu,
+        han,
+        fu_value,
+        honba,
+        hand.is_open(),
+        dora_count,
+    );
 
     Ok(score)
 }

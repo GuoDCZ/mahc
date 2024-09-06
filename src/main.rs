@@ -20,9 +20,9 @@ pub struct Args {
     #[arg(short, long)]
     win: Option<String>,
 
-    /// Han from dora
-    #[arg(short, long, default_value_t = 0)]
-    dora: u32,
+    /// Dora indicator tiles
+    #[arg(short, long, value_delimiter = ' ', num_args = 1..)]
+    dora: Option<Vec<String>>,
 
     /// seat wind
     #[arg(short, long, default_value = "Ew")]
@@ -125,7 +125,7 @@ pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     let score = calc::get_hand_score(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
-        args.dora,
+        args.dora.clone(),
         args.seat.clone(),
         args.prev.clone(),
         args.tsumo,
@@ -142,9 +142,9 @@ pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     //TODO VALIDATION (i dont care enough yet)
 
     let printout = if args.json {
-        json_hand_out(&score, args)
+        json_hand_out(&score)
     } else {
-        default_hand_out(&score, args)
+        default_hand_out(&score)
     };
     Ok(printout)
 }
@@ -200,12 +200,12 @@ pub fn default_calc_out(
     )
 }
 
-pub fn json_hand_out(score: &Score, args: &Args) -> String {
+pub fn json_hand_out(score: &Score) -> String {
     let out = json!({
         "han" : score.han(),
         "fu" : score.fu_score(),
-        "honba" : args.ba,
-        "dora" : args.dora,
+        "honba" : score.honba(), 
+        "dora" : score.dora_count(),
         "fuString" : score.fu().iter().map(|x| x.to_string()).collect::<Vec<String>>(),
         "yakuString" : score.yaku().iter().map(|x| x.to_string(score.is_open())).collect::<Vec<String>>(),
         "scores" : {
@@ -224,16 +224,16 @@ pub fn json_hand_out(score: &Score, args: &Args) -> String {
     });
     out.to_string()
 }
-pub fn default_hand_out(score: &Score, args: &Args) -> String {
+pub fn default_hand_out(score: &Score) -> String {
     let mut out: String = String::new();
     if !score.yaku()[0].is_yakuman() {
-        if args.ba != 0 {
+        if score.honba() != 0 {
             out.push_str(
                 format!(
                     "\n{} Han/ {} Fu/ {} Honba",
                     score.han(),
                     score.fu_score(),
-                    args.ba
+                    score.honba()
                 )
                 .as_str(),
             )
@@ -256,8 +256,8 @@ pub fn default_hand_out(score: &Score, args: &Args) -> String {
         .as_str(),
     );
 
-    if !score.yaku()[0].is_yakuman() && args.dora != 0 {
-        out.push_str(format!("\nDora: {}", args.dora).as_str());
+    if !score.yaku()[0].is_yakuman() && score.dora_count() != 0 {
+        out.push_str(format!("\nDora: {}", score.dora_count()).as_str());
     }
 
     out.push_str("\nYaku: ");
