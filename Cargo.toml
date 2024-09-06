@@ -10,7 +10,6 @@ readme = "README.md"
 
 [dependencies]
 clap = { version = "4.5.9", features = ["derive"] }
-regex = "1.10.5"
 serde_json = "1.0"
 
 
