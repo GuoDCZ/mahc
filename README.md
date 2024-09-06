@@ -20,7 +20,7 @@ CLI tool that calculates the score of a hand in riichi mahjong. <br>
 ### Normal Mode
 note: the winning group has to go last (this is to calculate fu correctly)
 ``` bash
-~/$ mahc --tiles rrrd EEEw 234p 234p 11p -w 1p -p Ew -s Ew
+~/$ mahc --tiles 777z 111z 234p 234p 11p -w 1p -p Ew -s Ew
 > 7 Han/ 50 Fu
   Dealer: 18000 (6000)
   Non-dealer: 12000 (3000/6000)
@@ -116,27 +116,29 @@ yields
 
 ### Suits
 
-| Suit  | Tiles                                      |
-|-------|--------------------------------------------|
+| Type  | Notation                                      |
+|-------|-----------------------------------------------|
 | Man (Characters) | 1m, 2m, 3m, 4m, 5m, 6m, 7m, 8m, 9m |
 | Pin (Circles)    | 1p, 2p, 3p, 4p, 5p, 6p, 7p, 8p, 9p |
 | Sou (Bamboos)    | 1s, 2s, 3s, 4s, 5s, 6s, 7s, 8s, 9s |
 
 ### Honors
 
-| Type  | Notation          |
-|-------|-------------------|
-| Winds | Ew, Sw, Ww, Nw    |
-| Dragons | rd, gd, wd      |
+| Type    | Notation       | MPSZ Notation      |
+|---------|----------------|--------------------|
+| Winds   | Ew, Sw, Ww, Nw |1z, 2z, 3z, 4z      |
+| Dragons | wd, gd, rd     |5z, 6z, 7z          |
 
 ### Special Notation
 
-| Description     | Example           |
-|-----------------|-------------------|
+| Description     | Example                                         |
+|-----------------|-------------------------------------------------|
 | Open Sets       | 234po (an open sequence of 2, 3, 4 in Pin suit) |
+| akadora         | 0m, 0p, 0s                                      | 
 
 - eg: EEEw (triplet of east wind)
 - eg: 234m (sequence of 2 3 4 Man)
+- eg: 406s (sequence of 4 5 6 Sou with the akadora 5 sou)
 - eg: rrrrdo (open quad of red dragon)
 - eg: 11s (pair of 1 sou)
 - eg: 8m (8 man tile)
@@ -163,7 +165,7 @@ cd mahc/x86_64-unknown-linux-gnu/release
 ./mahc --version
 ```
 
-### Implemented hand validations as of yet
+## Implemented hand validations as of yet
 
 ##### One Han Yaku
 - [x] Tanyao
