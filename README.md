@@ -227,6 +227,8 @@ cd mahc/x86_64-unknown-linux-gnu/release
 - [x] file stdIn 
 - [x] json out flag
 - [ ] add more comprehensive tests 
+- [ ] document the undocumented 
+- [ ] tile input for ```--dora``` flag
 
 ## Contributing
 - If you spot a bug (which there probabably are many), put in an issue with how to reproduce it
