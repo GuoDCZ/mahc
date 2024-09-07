@@ -1,5 +1,6 @@
 use std::ffi::OsString;
-use std::fs;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
 
 use clap::Parser;
 use mahc::calc;
@@ -79,6 +80,10 @@ pub struct Args {
     /// stdout as json
     #[arg(long, default_value_t = false)]
     json: bool,
+
+    /// file output
+    #[arg(short, default_value = "mahc.txt")]
+    output: Option<String>,
 }
 
 pub fn parse_calculator(args: &Args) -> Result<String, HandErr> {
@@ -204,7 +209,7 @@ pub fn json_hand_out(score: &Score) -> String {
     let out = json!({
         "han" : score.han(),
         "fu" : score.fu_score(),
-        "honba" : score.honba(), 
+        "honba" : score.honba(),
         "dora" : score.dora_count(),
         "fuString" : score.fu().iter().map(|x| x.to_string()).collect::<Vec<String>>(),
         "yakuString" : score.yaku().iter().map(|x| x.to_string(score.is_open())).collect::<Vec<String>>(),
@@ -283,30 +288,33 @@ pub fn parse_file(args: &Args) {
             return;
         }
     };
+    let results: Vec<Result<String, HandErr>> = file_contents
+        .lines()
+        .filter(|x| !x.is_empty())
+        .map(|x| {
+            let mut current_line_args = vec![OsString::from("mahc")];
+            for arg in x.split_whitespace() {
+                current_line_args.push(arg.into());
+            }
+            let args = Args::parse_from(&current_line_args);
+            if let Some(_) = args.file {
+                parse_file(&args);
+                Ok("".to_string())
+            } else if args.manual.is_some() {
+                parse_calculator(&args)
+            } else {
+                parse_hand(&args)
+            }
+        })
+        .collect();
 
-    let lines = file_contents.lines();
-    for string in lines {
-        if string.is_empty() {
-            continue;
-        }
-        let mut current_line_args = vec![OsString::from("mahc")];
-        for arg in string.split_whitespace() {
-            current_line_args.push(arg.into());
-        }
-        let args = Args::parse_from(&current_line_args);
-        if args.file.is_some() {
-            parse_file(&args);
-        } else if args.manual.is_some() {
-            let result = parse_calculator(&args);
-            printout(result);
-        } else {
-            let result = parse_hand(&args);
-            printout(result);
-        }
+    for result in results {
+        writeout(&result, args.output.as_ref().unwrap());
+        printout(&result)
     }
 }
 
-pub fn printout(result: Result<String, HandErr>) {
+pub fn printout(result: &Result<String, HandErr>) {
     match result {
         Ok(o) => {
             println!("{}", o);
@@ -317,17 +325,40 @@ pub fn printout(result: Result<String, HandErr>) {
     }
 }
 
+pub fn writeout(result: &Result<String, HandErr>, output: &str) {
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(output)
+        .expect("unable to open file");
+
+    let mut content = match result {
+        Ok(o) => o.clone(),
+        Err(e) => e.to_string(),
+    };
+    content.push_str("\n");
+
+    file.write_all(content.as_bytes())
+        .expect("unable to write to file");
+}
+
 fn main() {
     let args = Args::parse();
-    if args.file.is_some() {
+
+    let result = if let Some(_) = args.file {
         parse_file(&args);
+        return;
     } else if args.manual.is_some() {
-        let result = parse_calculator(&args);
-        printout(result);
+        parse_calculator(&args)
     } else {
-        let result = parse_hand(&args);
-        printout(result);
+        parse_hand(&args)
+    };
+
+    if let Some(output) = &args.output {
+        writeout(&result, output);
     }
+
+    printout(&result);
 }
 
 #[cfg(test)]
