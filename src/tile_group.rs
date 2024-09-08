@@ -215,6 +215,16 @@ impl GroupType {
             _ => Err(HandErr::InvalidGroup),
         }
     }
+
+    pub fn tile_count(&self) -> u8 {
+        match self {
+            Self::Pair => 2,
+            Self::Triplet => 3,
+            Self::Sequence => 3,
+            Self::Kan => 4,
+            Self::None => 1,
+        }
+    }
 }
 
 #[cfg(test)]

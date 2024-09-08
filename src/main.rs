@@ -129,7 +129,7 @@ pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     if args.doubleriichi && args.haitei && args.chankan {
         return Err(HandErr::DoubleRiichiHaiteiChankan);
     }
-    let hand = Hand::new(
+    let hand = Hand::new_from_strings(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
         args.prev.clone(),

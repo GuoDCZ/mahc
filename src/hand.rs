@@ -17,32 +17,25 @@ pub struct Hand {
 
 impl Hand {
     pub fn new(
-        tiles: Vec<String>,
-        win: String,
-        prev: String,
-        seat: String,
+        groups: Vec<TileGroup>,
+        win_tile: TileGroup,
+        seat_tile: TileGroup,
+        prev_tile: TileGroup,
     ) -> Result<Self, HandErr> {
-        let mut tile_groups: Vec<TileGroup> = Vec::new();
-        let mut ishandopen = false;
-
-        // NOTE: Strings are complicated in Rust and needs evaluation about how to iterate over one. Because the string is expected to contain ASCII characters, `.chars()` should be okay.
-        for i in &tiles {
-            let tile: TileGroup = i.to_string().try_into()?;
-            if tile.isopen {
-                ishandopen = true;
-            }
-            tile_groups.push(tile);
-        }
-
         //TODO: standard hand ONLY CHECK MUST FIX FOR KOKUSHI
         let mut full_shape_count = 0;
         let mut pair_count = 0;
         let mut no_shape_count = 0;
-        for group in &tile_groups {
+        let mut isopen = false;
+
+        for group in &groups {
             match group.group_type {
                 GroupType::Triplet | GroupType::Sequence | GroupType::Kan => full_shape_count += 1,
                 GroupType::Pair => pair_count += 1,
                 GroupType::None => no_shape_count += 1,
+            }
+            if group.isopen {
+                isopen = true;
             }
         }
 
@@ -52,14 +45,11 @@ impl Hand {
         {
             return Err(HandErr::InvalidShape);
         }
-
-        // AHAHAHAHAHAHAHAHAh (these are special cases for singular tiles)
-        let win_tile: TileGroup = win.try_into()?;
-
         // check if last group contains the winning tile
         // FUCK handling kokuushi
-        if tiles.len() != 13 {
-            let last_group = tile_groups.last().unwrap();
+        let tilecount: u8 = groups.iter().map(|s| s.group_type.tile_count()).sum();
+        if tilecount == 13 {
+            let last_group = groups.last().unwrap();
             match last_group.group_type {
                 GroupType::Sequence => {
                     if win_tile.suit != last_group.suit {
@@ -81,16 +71,34 @@ impl Hand {
                 GroupType::Kan | GroupType::None => return Err(HandErr::InvalidShape),
             }
         }
-        let seat_tile: TileGroup = seat.try_into()?;
-        let prev_tile: TileGroup = prev.try_into()?;
 
-        let hand = Self {
-            groups: tile_groups,
+        Ok(Hand {
+            groups,
             win_tile,
             seat_tile,
             prev_tile,
-            isopen: ishandopen,
-        };
+            isopen,
+        })
+    }
+    pub fn new_from_strings(
+        tiles: Vec<String>,
+        win: String,
+        prev: String,
+        seat: String,
+    ) -> Result<Self, HandErr> {
+        let mut tile_groups: Vec<TileGroup> = Vec::new();
+
+        // NOTE: Strings are complicated in Rust and needs evaluation about how to iterate over one. Because the string is expected to contain ASCII characters, `.chars()` should be okay.
+        for i in &tiles {
+            let tile: TileGroup = i.to_string().try_into()?;
+            tile_groups.push(tile);
+        }
+
+        let win_tile: TileGroup = win.try_into()?;
+        let seat_tile: TileGroup = seat.try_into()?;
+        let prev_tile: TileGroup = prev.try_into()?;
+
+        let hand = Hand::new(tile_groups, win_tile, seat_tile, prev_tile)?;
 
         Ok(hand)
     }
@@ -196,7 +204,7 @@ impl Hand {
     /// ```rust
     /// use mahc::hand::Hand;
     /// use mahc::tile_group::TileGroup;
-    /// let hand = Hand::new(
+    /// let hand = Hand::new_from_strings(
     ///     vec![
     ///         "123p".to_string(),
     ///         "505s".to_string(),
@@ -945,7 +953,7 @@ mod tests {
 
     #[test]
     fn yaku_kokushi() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "1s".to_string(),
                 "2s".to_string(),
@@ -967,7 +975,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_kokushi());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "1s".to_string(),
                 "2s".to_string(),
@@ -989,7 +997,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_kokushi());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "1s".to_string(),
                 "9s".to_string(),
@@ -1012,7 +1020,7 @@ mod tests {
         .unwrap();
         assert!(out.is_kokushi());
         assert!(out.is_kokushi13sided());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "1s".to_string(),
                 "9s".to_string(),
@@ -1035,7 +1043,7 @@ mod tests {
         .unwrap();
         assert!(out.is_kokushi());
         assert!(!out.is_kokushi13sided());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "9s".to_string(),
                 "9s".to_string(),
@@ -1061,7 +1069,7 @@ mod tests {
 
     #[test]
     fn yaku_daisuushii() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEw".to_string(),
                 "SSSw".to_string(),
@@ -1075,7 +1083,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_daisuushii());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEw".to_string(),
                 "SSw".to_string(),
@@ -1093,7 +1101,7 @@ mod tests {
 
     #[test]
     fn yaku_shousuushi() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEw".to_string(),
                 "SSw".to_string(),
@@ -1107,7 +1115,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_shousuushii());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEw".to_string(),
                 "22s".to_string(),
@@ -1125,7 +1133,7 @@ mod tests {
 
     #[test]
     fn yaku_suukantsu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEw".to_string(),
                 "2222p".to_string(),
@@ -1139,7 +1147,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_suukantsu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEw".to_string(),
                 "2222p".to_string(),
@@ -1157,7 +1165,7 @@ mod tests {
 
     #[test]
     fn yaku_daichiishin() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSw".to_string(),
                 "rrd".to_string(),
@@ -1173,7 +1181,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_daichiishin());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "WWw".to_string(),
                 "NNNw".to_string(),
@@ -1191,7 +1199,7 @@ mod tests {
 
     #[test]
     fn yaku_tsuuiisou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSw".to_string(),
                 "NNNw".to_string(),
@@ -1205,7 +1213,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_tsuuiisou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "11s".to_string(),
                 "NNNw".to_string(),
@@ -1223,7 +1231,7 @@ mod tests {
 
     #[test]
     fn yaku_cuurenpoutou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -1237,7 +1245,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_chuurenpoutou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -1251,7 +1259,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_chuurenpoutou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123s".to_string(),
                 "234s".to_string(),
@@ -1265,7 +1273,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_chuurenpoutou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -1279,7 +1287,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_chuurenpoutou9sided());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "234s".to_string(),
@@ -1297,7 +1305,7 @@ mod tests {
 
     #[test]
     fn yaku_ryuuiisou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "234p".to_string(),
                 "234s".to_string(),
@@ -1311,7 +1319,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_ryuuiisou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "234s".to_string(),
                 "234s".to_string(),
@@ -1325,7 +1333,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_ryuuiisou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "345s".to_string(),
                 "234s".to_string(),
@@ -1340,7 +1348,7 @@ mod tests {
         .unwrap();
         assert!(!out.is_ryuuiisou());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "234s".to_string(),
                 "234s".to_string(),
@@ -1358,7 +1366,7 @@ mod tests {
 
     #[test]
     fn yaku_chinroutou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111so".to_string(),
                 "1111m".to_string(),
@@ -1372,7 +1380,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_chinroutou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "1111m".to_string(),
@@ -1386,7 +1394,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_chinroutou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "1111m".to_string(),
@@ -1404,7 +1412,7 @@ mod tests {
 
     #[test]
     fn yaku_suuankoutankiwait() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -1418,7 +1426,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_suuankoutankiwait());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -1436,7 +1444,7 @@ mod tests {
 
     #[test]
     fn yaku_suuankou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -1451,7 +1459,7 @@ mod tests {
         .unwrap();
         assert!(out.is_suuankou(false));
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -1465,7 +1473,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_suuankou(true));
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "888p".to_string(),
@@ -1483,7 +1491,7 @@ mod tests {
 
     #[test]
     fn yaku_daisangen() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "gggd".to_string(),
@@ -1497,7 +1505,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_daisangen());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrrd".to_string(),
                 "ggggd".to_string(),
@@ -1512,7 +1520,7 @@ mod tests {
         .unwrap();
         assert!(out.is_daisangen());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrrd".to_string(),
                 "gggd".to_string(),
@@ -1530,7 +1538,7 @@ mod tests {
 
     #[test]
     fn yaku_chinitsu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "222p".to_string(),
                 "123p".to_string(),
@@ -1544,7 +1552,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_chinitsu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "222p".to_string(),
                 "123p".to_string(),
@@ -1562,7 +1570,7 @@ mod tests {
 
     #[test]
     fn yaku_sanshokudoukou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "222p".to_string(),
                 "222m".to_string(),
@@ -1576,7 +1584,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_sanshokudoukou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "222p".to_string(),
                 "2222m".to_string(),
@@ -1590,7 +1598,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_sanshokudoukou());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "222p".to_string(),
                 "333m".to_string(),
@@ -1608,7 +1616,7 @@ mod tests {
 
     #[test]
     fn yaku_pinfu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "678p".to_string(),
@@ -1623,7 +1631,7 @@ mod tests {
         .unwrap();
         assert!(out.is_pinfu());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "678po".to_string(),
@@ -1637,7 +1645,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_pinfu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "678p".to_string(),
@@ -1651,7 +1659,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_pinfu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "678p".to_string(),
@@ -1669,7 +1677,7 @@ mod tests {
 
     #[test]
     fn yaku_menzentsumo() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "11s".to_string(),
                 "22p".to_string(),
@@ -1686,7 +1694,7 @@ mod tests {
         .unwrap();
         assert!(out.is_menzentsumo(true));
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "11s".to_string(),
                 "22p".to_string(),
@@ -1703,7 +1711,7 @@ mod tests {
         .unwrap();
         assert!(!out.is_menzentsumo(false));
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1721,7 +1729,7 @@ mod tests {
 
     #[test]
     fn yaku_chiitoitsu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "11s".to_string(),
                 "22p".to_string(),
@@ -1737,7 +1745,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_chiitoitsu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1755,7 +1763,7 @@ mod tests {
 
     #[test]
     fn yaku_chantaiyao() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1770,7 +1778,7 @@ mod tests {
         .unwrap();
         assert!(out.is_chantaiyao());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "999p".to_string(),
@@ -1784,7 +1792,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_chantaiyao());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "999p".to_string(),
@@ -1802,7 +1810,7 @@ mod tests {
 
     #[test]
     fn yaku_ittsuu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "456p".to_string(),
@@ -1817,7 +1825,7 @@ mod tests {
         .unwrap();
         assert!(out.is_ittsuu());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "789m".to_string(),
                 "456m".to_string(),
@@ -1831,7 +1839,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_ittsuu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123s".to_string(),
                 "789s".to_string(),
@@ -1845,7 +1853,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_ittsuu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123m".to_string(),
                 "456m".to_string(),
@@ -1863,7 +1871,7 @@ mod tests {
 
     #[test]
     fn yaku_sankantsu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "9999so".to_string(),
                 "123p".to_string(),
@@ -1877,7 +1885,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_sankantsu());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "9999so".to_string(),
                 "123p".to_string(),
@@ -1895,7 +1903,7 @@ mod tests {
 
     #[test]
     fn yaku_honroutou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "999s".to_string(),
                 "111p".to_string(),
@@ -1910,7 +1918,7 @@ mod tests {
         .unwrap();
         assert!(out.is_honroutou());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "999s".to_string(),
                 "123p".to_string(),
@@ -1925,7 +1933,7 @@ mod tests {
         .unwrap();
         assert!(!out.is_honroutou());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "999s".to_string(),
                 "111p".to_string(),
@@ -1943,7 +1951,7 @@ mod tests {
 
     #[test]
     fn yaku_junchantaiyao() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "123p".to_string(),
@@ -1958,7 +1966,7 @@ mod tests {
         .unwrap();
         assert!(out.is_junchantaiyao());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "123p".to_string(),
@@ -1973,7 +1981,7 @@ mod tests {
         .unwrap();
         assert!(!out.is_junchantaiyao());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111s".to_string(),
                 "111m".to_string(),
@@ -1991,7 +1999,7 @@ mod tests {
 
     #[test]
     fn yaku_shousangen() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2005,7 +2013,7 @@ mod tests {
         )
         .unwrap();
         assert!(out.is_shousangen());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2023,7 +2031,7 @@ mod tests {
 
     #[test]
     fn yaku_honitsu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2038,7 +2046,7 @@ mod tests {
         .unwrap();
         assert!(out.is_honitsu());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2053,7 +2061,7 @@ mod tests {
         .unwrap();
         assert!(!out.is_honitsu());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2072,7 +2080,7 @@ mod tests {
 
     #[test]
     fn yaku_sanankou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2087,7 +2095,7 @@ mod tests {
         .unwrap();
         assert!(!out.is_sanankou(false));
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "222p".to_string(),
@@ -2102,7 +2110,7 @@ mod tests {
         .unwrap();
         assert!(out.is_sanankou(true));
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "123s".to_string(),
@@ -2120,7 +2128,7 @@ mod tests {
 
     #[test]
     fn yaku_sanshokudoujun() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "234p".to_string(),
@@ -2135,7 +2143,7 @@ mod tests {
         .unwrap();
         assert!(out.is_sanshokudoujun());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "678s".to_string(),
                 "234p".to_string(),
@@ -2150,7 +2158,7 @@ mod tests {
         .unwrap();
         assert!(out.is_sanshokudoujun());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111p".to_string(),
                 "234p".to_string(),
@@ -2168,7 +2176,7 @@ mod tests {
 
     #[test]
     fn yaku_toitoi() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "EEEw".to_string(),
@@ -2183,7 +2191,7 @@ mod tests {
         .unwrap();
         assert!(out.is_toitoi());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "2222m".to_string(),
@@ -2198,7 +2206,7 @@ mod tests {
         .unwrap();
         assert!(out.is_toitoi());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "2222m".to_string(),
@@ -2216,7 +2224,7 @@ mod tests {
 
     #[test]
     fn yaku_yakuhai() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "234m".to_string(),
@@ -2230,7 +2238,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(out.is_yakuhai(), 1);
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEwo".to_string(),
                 "234m".to_string(),
@@ -2244,7 +2252,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(out.is_yakuhai(), 2);
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "3333mo".to_string(),
                 "WWWw".to_string(),
@@ -2258,7 +2266,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(out.is_yakuhai(), 1);
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "3333mo".to_string(),
                 "222m".to_string(),
@@ -2276,7 +2284,7 @@ mod tests {
 
     #[test]
     fn yaku_ryanpeikou() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123s".to_string(),
                 "123s".to_string(),
@@ -2292,7 +2300,7 @@ mod tests {
         //is open
         assert!(out.is_ryanpeikou());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123s".to_string(),
                 "123s".to_string(),
@@ -2311,7 +2319,7 @@ mod tests {
 
     #[test]
     fn yaku_iipeko() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123s".to_string(),
                 "123s".to_string(),
@@ -2327,7 +2335,7 @@ mod tests {
         //is open
         assert!(!out.is_iipeikou());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "234m".to_string(),
@@ -2343,7 +2351,7 @@ mod tests {
         //is open
         assert!(!out.is_iipeikou());
 
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrd".to_string(),
                 "234m".to_string(),
@@ -2361,7 +2369,7 @@ mod tests {
 
     #[test]
     fn yaku_tanyao() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "5555mo".to_string(),
@@ -2375,7 +2383,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_tanyao());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "333mo".to_string(),
                 "5555mo".to_string(),
@@ -2389,7 +2397,7 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_tanyao());
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "555mo".to_string(),
                 "678p".to_string(),
@@ -2407,7 +2415,7 @@ mod tests {
 
     #[test]
     fn invalid_group_sequence_not_in_order() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "135m".to_string(),
                 "SSSw".to_string(),
@@ -2424,7 +2432,7 @@ mod tests {
 
     #[test]
     fn invalid_group_size_too_small() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -2441,7 +2449,7 @@ mod tests {
 
     #[test]
     fn invalid_group_size_too_big() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSSSSw".to_string(),
                 "SSSw".to_string(),
@@ -2458,7 +2466,7 @@ mod tests {
 
     #[test]
     fn invalid_suit() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "hhhjo".to_string(),
                 "SSSw".to_string(),
@@ -2475,14 +2483,14 @@ mod tests {
 
     #[test]
     fn hand_too_small() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec!["SSSw".to_string()],
             "3s".to_string(),
             "3s".to_string(),
             "3s".to_string(),
         );
         assert_eq!(out.unwrap_err(), HandErr::InvalidShape);
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec!["SSSw".to_string()],
             "3s".to_string(),
             "3s".to_string(),
@@ -2492,7 +2500,7 @@ mod tests {
     }
     #[test]
     fn hand_too_big() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -2518,7 +2526,7 @@ mod tile_group_tests {
 
     #[test]
     fn identify_pair() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -2540,7 +2548,7 @@ mod tile_group_tests {
     #[test]
     #[allow(non_snake_case)]
     fn identify_tilegroup_closed_wind_trip_SSS() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "SSSw".to_string(),
                 "SSSw".to_string(),
@@ -2562,7 +2570,7 @@ mod tile_group_tests {
     #[test]
     #[allow(non_snake_case)]
     fn identify_tilegroup_open_wind_kan_EEEE() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "EEEEwo".to_string(),
                 "SSSw".to_string(),
@@ -2584,7 +2592,7 @@ mod tile_group_tests {
     #[test]
     #[allow(non_snake_case)]
     fn identify_tilegroup_closed_dragon_kan_RRRR() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrrd".to_string(),
                 "rrrrd".to_string(),
@@ -2605,7 +2613,7 @@ mod tile_group_tests {
 
     #[test]
     fn identify_tilegroup_closed_manzu_trip_111() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111m".to_string(),
                 "SSSw".to_string(),
@@ -2626,7 +2634,7 @@ mod tile_group_tests {
 
     #[test]
     fn identify_tilegroup_closed_souzu_seq_789() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "789s".to_string(),
                 "SSSw".to_string(),
@@ -2647,7 +2655,7 @@ mod tile_group_tests {
 
     #[test]
     fn identify_tilegroup_open_pinzu_234() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "234po".to_string(),
                 "SSSw".to_string(),
@@ -2667,7 +2675,7 @@ mod tile_group_tests {
     }
     #[test]
     fn dora_count_all() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "505s".to_string(),
@@ -2692,7 +2700,7 @@ mod tile_group_tests {
     }
     #[test]
     fn dora_count_aka() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123p".to_string(),
                 "505s".to_string(),

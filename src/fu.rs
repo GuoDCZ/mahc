@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn fu_calc_simpleopenkan_simpleclosedkan() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "5555mo".to_string(),
@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn fu_calc_edge_wait() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "555po".to_string(),
                 "234m".to_string(),
@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn random_fu() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "rrrdo".to_string(),
                 "567m".to_string(),
@@ -155,7 +155,7 @@ mod tests {
 
     #[test]
     fn fu_cal_middle_wait() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123mo".to_string(),
                 "rrrrdo".to_string(),
@@ -185,7 +185,7 @@ mod tests {
 
     #[test]
     fn fu_cal_kans_seat_wind() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "123mo".to_string(),
                 "rrrrdo".to_string(),
@@ -215,7 +215,7 @@ mod tests {
 
     #[test]
     fn fu_cal_nontimple_closed_trip() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "111mo".to_string(),
                 "rrrd".to_string(),
@@ -243,7 +243,7 @@ mod tests {
 
     #[test]
     fn fu_cal_tsu_singlewait_simple_trip_closed_simple_trip_closed_nonsimple_kan() {
-        let out = Hand::new(
+        let out = Hand::new_from_strings(
             vec![
                 "444m".to_string(),
                 "789p".to_string(),
