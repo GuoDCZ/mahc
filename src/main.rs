@@ -5,8 +5,10 @@ use std::io::Write;
 use clap::Parser;
 use mahc::calc;
 use mahc::hand::error::HandErr;
+use mahc::hand::Hand;
 use mahc::payment::Payment;
 use mahc::score::{FuValue, HanValue, HonbaCounter, Score};
+use mahc::tile_group::TileGroup;
 use serde_json::json;
 
 /// riichi mahjong calculator tool
@@ -127,12 +129,21 @@ pub fn parse_hand(args: &Args) -> Result<String, HandErr> {
     if args.doubleriichi && args.haitei && args.chankan {
         return Err(HandErr::DoubleRiichiHaiteiChankan);
     }
-    let score = calc::get_hand_score(
+    let hand = Hand::new(
         args.tiles.clone().unwrap(),
         args.win.clone().unwrap(),
-        args.dora.clone(),
-        args.seat.clone(),
         args.prev.clone(),
+        args.seat.clone(),
+    )?;
+    let doras: Option<Vec<TileGroup>> = args.dora.clone().map(|dora_tiles| {
+        dora_tiles
+            .into_iter()
+            .filter_map(|tile| tile.try_into().ok())
+            .collect()
+    });
+    let score = calc::get_hand_score(
+        hand,
+        doras,
         args.tsumo,
         args.riichi,
         args.doubleriichi,

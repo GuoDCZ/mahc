@@ -26,11 +26,8 @@ impl std::fmt::Display for CalculatorErrors {
 
 /// Get the score breakdown of the hand.
 pub fn get_hand_score(
-    tiles: Vec<String>,
-    win: String,
-    dora: Option<Vec<String>>,
-    seat: String,
-    prev: String,
+    hand: Hand,
+    dora: Option<Vec<TileGroup>>,
     tsumo: bool,
     riichi: bool,
     doubleriichi: bool,
@@ -41,7 +38,6 @@ pub fn get_hand_score(
     tenhou: bool,
     honba: HonbaCounter,
 ) -> Result<Score, HandErr> {
-    let hand = Hand::new(tiles, win, seat, prev)?;
     if hand.kans().is_empty() && rinshan {
         return Err(HandErr::RinshanKanWithoutKan);
     }
@@ -79,13 +75,7 @@ pub fn get_hand_score(
     };
 
     // get han from dora tiles
-    let doras: Option<Vec<TileGroup>> = dora.map(|dora_tiles| {
-        dora_tiles
-            .into_iter()
-            .filter_map(|tile| tile.try_into().ok())
-            .collect()
-    });
-    let dora_count = hand.get_dora_count(doras);
+    let dora_count = hand.get_dora_count(dora);
 
     let han = yaku.0 + dora_count;
     let fu_value = calculate_total_fu_value(&fu);
