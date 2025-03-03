@@ -1,7 +1,7 @@
 use crate::hand::error::HandErr;
 use crate::suit::Suit;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TileGroup {
     pub value: String,
     pub suit: Suit,
@@ -151,7 +151,7 @@ impl TileGroup {
 
 //AHAHAHAHAHAHAHAH I DONT NEED THIS
 //turns our i did need this :)
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum GroupType {
     Sequence,
     Triplet,

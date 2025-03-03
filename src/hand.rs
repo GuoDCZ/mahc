@@ -361,18 +361,25 @@ impl Hand {
     pub fn is_ryanpeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
 
-        if seqs.len() != 4 {
+        if seqs.len() != 4 || self.is_open() {
             return false;
         }
 
-        seqs.dedup();
-        seqs.len() == 2
+        seqs.sort();
+        if seqs[1] == seqs[2] {
+            seqs.dedup();
+            seqs.len() == 1
+        } else {
+            seqs.dedup();
+            seqs.len() == 2
+        }
     }
 
     /// Check if the hand contains two identical sequences.
     pub fn is_iipeikou(&self) -> bool {
         let mut seqs: Vec<TileGroup> = self.sequences();
 
+        seqs.sort();
         seqs.dedup();
         !(self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou())
     }
@@ -2364,6 +2371,21 @@ mod tests {
         )
         .unwrap();
         //is open
+        assert!(!out.is_ryanpeikou());
+
+        let out = Hand::new_from_strings(
+            vec![
+                "123s".to_string(),
+                "123s".to_string(),
+                "123s".to_string(),
+                "678m".to_string(),
+                "77m".to_string(),
+            ],
+            "7m".to_string(),
+            "Ew".to_string(),
+            "Ww".to_string(),
+        )
+        .unwrap();
         assert!(!out.is_ryanpeikou());
     }
 
