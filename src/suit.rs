@@ -1,6 +1,6 @@
 use crate::hand::error::HandErr;
 
-#[derive(Debug, Clone, PartialEq, Hash, Eq)]
+#[derive(Debug, Clone, PartialEq, Hash, Eq, PartialOrd, Ord)]
 pub enum Suit {
     Manzu,
     Pinzu,
