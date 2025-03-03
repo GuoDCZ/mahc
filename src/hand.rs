@@ -449,18 +449,23 @@ impl Hand {
             return false;
         }
 
-        let mut list_of_vals: Vec<String> = vec![];
+        let mut list_of_seqs: Vec<(String, Suit)> = vec![];
         for sequence_group in self.sequences() {
-            list_of_vals.push(sequence_group.value.clone());
+            list_of_seqs.push((sequence_group.value.clone(), sequence_group.suit.clone()));
         }
-        list_of_vals.dedup();
-
-        if self.sequences().len() == 3 {
-            if list_of_vals.len() == 1 {
+        list_of_seqs.sort();
+        list_of_seqs.dedup();
+        if list_of_seqs.len() == 3 {
+            if list_of_seqs[0].0 == list_of_seqs[1].0 && list_of_seqs[1].0 == list_of_seqs[2].0 {
                 return true;
             }
-        } else if list_of_vals.len() == 2 {
-            return true;
+        } else if list_of_seqs.len() == 4 {
+            if list_of_seqs[1].0 == list_of_seqs[2].0 {
+                if list_of_seqs[0].0 == list_of_seqs[1].0 || list_of_seqs[2].0 == list_of_seqs[3].0
+                {
+                    return true;
+                }
+            }
         }
 
         false
@@ -646,14 +651,17 @@ impl Hand {
         for group in self.triplets().iter().chain(self.kans().iter()) {
             list_of_vals.push(group.value.clone());
         }
-        list_of_vals.dedup();
-
-        if self.triplets().len() + self.kans().len() == 3 {
-            if list_of_vals.len() == 1 {
+        list_of_vals.sort();
+        
+        if list_of_vals[1] == list_of_vals[2] {
+            if list_of_vals[0] == list_of_vals[1] {
                 return true;
             }
-        } else if list_of_vals.len() == 2 {
-            return true;
+            if list_of_vals.len() == 4 {
+                if list_of_vals[2] == list_of_vals[3] {
+                    return true;
+                }
+            }
         }
 
         false
