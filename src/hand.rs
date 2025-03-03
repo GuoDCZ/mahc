@@ -48,8 +48,12 @@ impl Hand {
         // check if last group contains the winning tile
         // FUCK handling kokuushi
         let tilecount: u8 = groups.iter().map(|s| s.group_type.tile_count()).sum();
-        if tilecount == 13 {
+        if tilecount == 14 {
             let last_group = groups.last().unwrap();
+            // last group should not be open
+            if last_group.isopen {
+                return Err(HandErr::InvalidShape);
+            }
             match last_group.group_type {
                 GroupType::Sequence => {
                     if win_tile.suit != last_group.suit {
