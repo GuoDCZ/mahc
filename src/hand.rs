@@ -652,7 +652,7 @@ impl Hand {
             list_of_vals.push(group.value.clone());
         }
         list_of_vals.sort();
-        
+
         if list_of_vals[1] == list_of_vals[2] {
             if list_of_vals[0] == list_of_vals[1] {
                 return true;
@@ -1620,6 +1620,20 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_sanshokudoukou());
+        let out = Hand::new_from_strings(
+            vec![
+                "444s".to_string(),
+                "444m".to_string(),
+                "222s".to_string(),
+                "11p".to_string(),
+                "222p".to_string(),
+            ],
+            "2p".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        assert!(!out.is_sanshokudoukou());
     }
 
     #[test]
@@ -2180,6 +2194,34 @@ mod tests {
         )
         .unwrap();
         assert!(!out.is_sanshokudoujun());
+        let out = Hand::new_from_strings(
+            vec![
+                "678p".to_string(),
+                "234s".to_string(),
+                "234p".to_string(),
+                "234p".to_string(),
+                "11p".to_string(),
+            ],
+            "1p".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        assert!(!out.is_sanshokudoujun());
+        let out = Hand::new_from_strings(
+            vec![
+                "234m".to_string(),
+                "234s".to_string(),
+                "234p".to_string(),
+                "234p".to_string(),
+                "11p".to_string(),
+            ],
+            "1p".to_string(),
+            "Ew".to_string(),
+            "Ew".to_string(),
+        )
+        .unwrap();
+        assert!(out.is_sanshokudoujun());
     }
 
     #[test]
