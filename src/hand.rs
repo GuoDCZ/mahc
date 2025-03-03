@@ -72,7 +72,14 @@ impl Hand {
                         return Err(HandErr::InvalidShape);
                     }
                 }
-                GroupType::Kan | GroupType::None => return Err(HandErr::InvalidShape),
+                GroupType::Kan => return Err(HandErr::InvalidShape),
+                GroupType::None => {
+                    // TODO(zhiyao): A hacky way to check for kokushi.
+                    // Maybe we should find a more explicit way.
+                    if !(no_shape_count == 12 && pair_count == 1) {
+                        return Err(HandErr::InvalidShape);
+                    }
+                }
             }
         }
 
