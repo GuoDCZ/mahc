@@ -355,24 +355,20 @@ impl Hand {
 
     /// Check if the hand only contains simple tiles -- no terminal or honor tiles.
     pub fn is_tanyao(&self) -> bool {
-        if self.groups.len() == 13 {
-            return false;
-        }
-
-        for group in self.groups.clone() {
-            if group.isterminal || group.is_honor() {
-                return false;
-            }
-        }
-
-        true
+        self.groups
+            .iter()
+            .all(|group| !group.isterminal && !group.is_honor())
     }
 
     /// Check if the hand contains two unique identical sequences.
     pub fn is_ryanpeikou(&self) -> bool {
+        if self.is_open() {
+            return false;
+        }
+
         let mut seqs: Vec<TileGroup> = self.sequences();
 
-        if seqs.len() != 4 || self.is_open() {
+        if seqs.len() != 4 {
             return false;
         }
 
@@ -388,11 +384,20 @@ impl Hand {
 
     /// Check if the hand contains two identical sequences.
     pub fn is_iipeikou(&self) -> bool {
-        let mut seqs: Vec<TileGroup> = self.sequences();
+        if self.is_open() {
+            return false;
+        }
 
+        let mut seqs: Vec<TileGroup> = self.sequences();
         seqs.sort();
-        seqs.dedup();
-        !(self.sequences().len() == seqs.len() || self.is_open() || self.is_ryanpeikou())
+        let mut seqs_dedup: Vec<TileGroup> = seqs.clone();
+        seqs_dedup.dedup();
+
+        match seqs.len() - seqs_dedup.len() {
+            1 => true,
+            2 => seqs[1] == seqs[2],
+            _ => false,
+        }
     }
 
     /// Check if the hand contains value honors.
@@ -400,26 +405,14 @@ impl Hand {
         // i do it like this because a single group can have multiple yakuhai
         let mut count = 0;
 
-        for triplet_group in self.triplets() {
-            if triplet_group.value == self.prev_tile.value {
+        for group in self.triplets().iter().chain(self.kans().iter()) {
+            if group.value == self.prev_tile.value {
                 count += 1;
             }
-            if triplet_group.value == self.seat_tile.value {
+            if group.value == self.seat_tile.value {
                 count += 1;
             }
-            if triplet_group.suit == Suit::Dragon {
-                count += 1;
-            }
-        }
-
-        for kan_group in self.kans() {
-            if kan_group.value == self.prev_tile.value {
-                count += 1;
-            }
-            if kan_group.value == self.seat_tile.value {
-                count += 1;
-            }
-            if kan_group.suit == Suit::Dragon {
+            if group.suit == Suit::Dragon {
                 count += 1;
             }
         }
@@ -436,20 +429,10 @@ impl Hand {
     ///
     /// If the last necessary triplet is formed from a ron, it is not considered concealed and sanankou is not granted.
     pub fn is_sanankou(&self, tsumo: bool) -> bool {
-        if self.groups.len() == 13 {
-            return false;
-        }
-
         let mut closed_triplet_count = 0;
 
-        for triplet_group in self.triplets() {
+        for triplet_group in self.triplets().iter().chain(self.kans().iter()) {
             if !triplet_group.isopen {
-                closed_triplet_count += 1;
-            }
-        }
-
-        for kan_group in self.kans() {
-            if !kan_group.isopen {
                 closed_triplet_count += 1;
             }
         }
@@ -467,26 +450,20 @@ impl Hand {
             return false;
         }
 
-        let mut list_of_seqs: Vec<(String, Suit)> = vec![];
-        for sequence_group in self.sequences() {
-            list_of_seqs.push((sequence_group.value.clone(), sequence_group.suit.clone()));
-        }
-        list_of_seqs.sort();
-        list_of_seqs.dedup();
-        if list_of_seqs.len() == 3 {
-            if list_of_seqs[0].0 == list_of_seqs[1].0 && list_of_seqs[1].0 == list_of_seqs[2].0 {
-                return true;
-            }
-        } else if list_of_seqs.len() == 4 {
-            if list_of_seqs[1].0 == list_of_seqs[2].0 {
-                if list_of_seqs[0].0 == list_of_seqs[1].0 || list_of_seqs[2].0 == list_of_seqs[3].0
-                {
-                    return true;
-                }
-            }
-        }
+        let mut seqs: Vec<_> = self
+            .sequences()
+            .iter()
+            .map(|group| (group.value.clone(), group.suit.clone()))
+            .collect();
 
-        false
+        seqs.sort();
+        seqs.dedup();
+
+        match seqs.len() {
+            3 => seqs[1].0 == seqs[2].0 && seqs[0].0 == seqs[1].0,
+            4 => seqs[1].0 == seqs[2].0 && (seqs[0].0 == seqs[1].0 || seqs[2].0 == seqs[3].0),
+            _ => false,
+        }
     }
 
     /// Check if the hand only contains tiles of one suit and any honor tiles.
